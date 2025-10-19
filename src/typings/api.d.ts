@@ -71,7 +71,7 @@ declare namespace Api {
       userName: string
       userGender: string
       nickName: string
-      userPhone: string
+      phoneNumber: string
       userEmail: string
       userRoles: string[]
       createBy: string
@@ -82,7 +82,10 @@ declare namespace Api {
 
     /** 用户搜索参数 */
     type UserSearchParams = Partial<
-      Pick<UserListItem, 'id' | 'userName' | 'userGender' | 'userPhone' | 'userEmail' | 'status'> &
+      Pick<
+        UserListItem,
+        'id' | 'userName' | 'userGender' | 'phoneNumber' | 'userEmail' | 'status'
+      > &
         Api.Common.CommonSearchParams
     >
 

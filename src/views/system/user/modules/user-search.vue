@@ -42,6 +42,7 @@
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
+          { label: '全部', value: '' },
           { label: '在线', value: '1' },
           { label: '离线', value: '2' },
           { label: '异常', value: '3' },
@@ -66,7 +67,7 @@
     },
     {
       label: '手机号',
-      key: 'userPhone',
+      key: 'phoneNumber',
       type: 'input',
       props: { placeholder: '请输入手机号', maxlength: '11' }
     },

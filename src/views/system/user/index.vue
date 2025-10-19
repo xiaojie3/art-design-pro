@@ -43,7 +43,6 @@
 
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
-  import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
   import { useTable } from '@/composables/useTable'
   import { fetchGetUserList } from '@/api/system-manage'
   import UserSearch from './modules/user-search.vue'
@@ -66,13 +65,14 @@
   const searchForm = ref({
     userName: undefined,
     userGender: undefined,
-    userPhone: undefined,
+    phoneNumber: undefined,
     userEmail: undefined,
-    status: '1'
+    status: ''
   })
 
   // 用户状态配置
   const USER_STATUS_CONFIG = {
+    '0': { type: 'primary' as const, text: '全部' },
     '1': { type: 'success' as const, text: '在线' },
     '2': { type: 'info' as const, text: '离线' },
     '3': { type: 'warning' as const, text: '异常' },
@@ -147,7 +147,7 @@
           // checked: false, // 隐藏列
           formatter: (row) => row.userGender
         },
-        { prop: 'userPhone', label: '手机号' },
+        { prop: 'phoneNumber', label: '手机号' },
         {
           prop: 'status',
           label: '状态',
@@ -182,21 +182,15 @@
     },
     // 数据处理
     transform: {
-      // 数据转换器 - 替换头像
+      // 数据转换器 - 确保使用后端返回的数据
       dataTransformer: (records) => {
         // 类型守卫检查
         if (!Array.isArray(records)) {
           console.warn('数据转换器: 期望数组类型，实际收到:', typeof records)
           return []
         }
-
-        // 使用本地头像替换接口返回的头像
-        return records.map((item, index: number) => {
-          return {
-            ...item,
-            avatar: ACCOUNT_TABLE_DATA[index % ACCOUNT_TABLE_DATA.length].avatar
-          }
-        })
+        // 直接返回后端数据，不做本地替换
+        return records
       }
     }
   })
