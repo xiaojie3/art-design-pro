@@ -66,9 +66,9 @@ declare namespace Api {
     /** 用户列表项 */
     interface UserListItem {
       id: number
-      avatar: string
       status: string
       userName: string
+      deptName: string
       userGender: string
       nickName: string
       phoneNumber: string
@@ -84,7 +84,7 @@ declare namespace Api {
     type UserSearchParams = Partial<
       Pick<
         UserListItem,
-        'id' | 'userName' | 'userGender' | 'phoneNumber' | 'userEmail' | 'status'
+        'id' | 'userName' | 'deptName' | 'userGender' | 'phoneNumber' | 'userEmail' | 'status'
       > &
         Api.Common.CommonSearchParams
     >
@@ -96,8 +96,8 @@ declare namespace Api {
     interface RoleListItem {
       roleId: number
       roleName: string
-      roleCode: string
-      description: string
+      roleKey: string
+      remark: string
       enabled: boolean
       createTime: string
     }
