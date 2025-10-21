@@ -22,8 +22,8 @@
         <ElSelect v-model="formData.role" multiple>
           <ElOption
             v-for="role in roleList"
-            :key="role.roleCode"
-            :value="role.roleCode"
+            :key="role.roleKey"
+            :value="role.roleKey"
             :label="role.roleName"
           />
         </ElSelect>
@@ -39,8 +39,11 @@
 </template>
 
 <script setup lang="ts">
-  import { ROLE_LIST_DATA } from '@/mock/temp/formData'
+  // 移除mock数据导入，改为导入API
+  import { fetchGetRoleList } from '@/api/system-manage'
   import type { FormInstance, FormRules } from 'element-plus'
+  import { ElMessage } from 'element-plus'
+  import { ref, computed, reactive, watch, nextTick } from 'vue'
 
   interface Props {
     visible: boolean
@@ -56,8 +59,8 @@
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
 
-  // 角色列表数据
-  const roleList = ref(ROLE_LIST_DATA)
+  // 角色列表数据 - 初始化为空数组
+  const roleList = ref<Api.SystemManage.RoleListItem[]>([])
 
   // 对话框显示控制
   const dialogVisible = computed({
@@ -109,6 +112,21 @@
   }
 
   /**
+   * 获取角色列表数据
+   */
+  const getRoleList = async () => {
+    try {
+      const response = await fetchGetRoleList({})
+      if (response && response.records) {
+        roleList.value = response.records
+      }
+    } catch (error) {
+      ElMessage.error('获取角色列表失败')
+      console.error('获取角色列表失败:', error)
+    }
+  }
+
+  /**
    * 监听对话框状态变化
    * 当对话框打开时初始化表单数据并清除验证状态
    */
@@ -116,6 +134,8 @@
     () => [props.visible, props.type, props.userData],
     ([visible]) => {
       if (visible) {
+        // 每次对话框打开时重新获取角色列表
+        getRoleList()
         initFormData()
         nextTick(() => {
           formRef.value?.clearValidate()

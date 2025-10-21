@@ -44,10 +44,10 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/composables/useTable'
-  import { fetchGetUserList } from '@/api/system-manage'
+  import { fetchFindUserPage } from '@/api/system-manage'
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
-  import { ElTag, ElMessageBox, ElImage } from 'element-plus'
+  import { ElTag, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'User' })
 
@@ -106,7 +106,7 @@
   } = useTable({
     // 核心配置
     core: {
-      apiFn: fetchGetUserList,
+      apiFn: fetchFindUserPage,
       apiParams: {
         current: 1,
         size: 20,
@@ -123,22 +123,14 @@
         {
           prop: 'avatar',
           label: '用户名',
-          width: 280,
-          formatter: (row) => {
-            return h('div', { class: 'user', style: 'display: flex; align-items: center' }, [
-              h(ElImage, {
-                class: 'avatar',
-                src: row.avatar,
-                previewSrcList: [row.avatar],
-                // 图片预览是否插入至 body 元素上，用于解决表格内部图片预览样式异常
-                previewTeleported: true
-              }),
-              h('div', {}, [
-                h('p', { class: 'user-name' }, row.userName),
-                h('p', { class: 'email' }, row.userEmail)
-              ])
-            ])
-          }
+          sortable: true,
+          formatter: (row) => row.userName
+        },
+        {
+          prop: 'deptName',
+          label: '部门',
+          sortable: true,
+          formatter: (row) => row.deptName
         },
         {
           prop: 'userGender',
