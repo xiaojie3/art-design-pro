@@ -235,6 +235,15 @@
       "role": "Role Manage",
       "userCenter": "User Center",
       "menu": "Menu Manage"
+    },
+    "resources": {
+      "title": "Resource Management",
+      "school": "School Management",
+      "campus": "Campus Management",
+      "college": "College Management",
+      "department": "Department Management",
+      "major": "Major Management",
+      "class": "Class Management"
     }
   },
   "table": {

@@ -235,6 +235,15 @@
       "role": "角色管理",
       "userCenter": "个人中心",
       "menu": "菜单管理"
+    },
+    "resources": {
+      "title": "资源管理",
+      "school": "学校管理",
+      "campus": "校区管理",
+      "college": "学院管理",
+      "department": "部门管理",
+      "major": "专业管理",
+      "class": "班级管理"
     }
   },
   "table": {
