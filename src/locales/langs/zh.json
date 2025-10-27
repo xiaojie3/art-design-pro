@@ -236,6 +236,17 @@
       "userCenter": "个人中心",
       "menu": "菜单管理"
     },
+    "devTools": {
+      "title": "开发工具",
+      "widgets": {
+        "title": "组件",
+        "iconList": "图标列表"
+      },
+      "examples": {
+        "title": "示例",
+        "forms": "表单"
+      }
+    },
     "resources": {
       "title": "资源管理",
       "school": "学校管理",

@@ -6,7 +6,7 @@ export const resourcesRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.resources.title',
-    icon: '&#xe7b9;',
+    icon: '&#xe8af;',
     roles: ['R_SUPER', 'R_ADMIN']
   },
   children: [

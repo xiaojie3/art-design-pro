@@ -236,6 +236,17 @@
       "userCenter": "User Center",
       "menu": "Menu Manage"
     },
+    "devTools": {
+      "title": "Dev Tools",
+      "widgets": {
+        "title": "Widgets",
+        "iconList": "Icon List"
+      },
+      "examples": {
+        "title": "Examples",
+        "forms": "Forms"
+      }
+    },
     "resources": {
       "title": "Resource Management",
       "school": "School Management",
