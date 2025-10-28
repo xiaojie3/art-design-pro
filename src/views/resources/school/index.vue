@@ -23,6 +23,8 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import request from '@/utils/http'
+  import { $t } from '@/locales'
+  import { useI18n } from 'vue-i18n'
   interface Emits {
     (e: 'update:modelValue', value: Record<string, any>): void
     (e: 'search', params: Record<string, any>): void
@@ -76,16 +78,46 @@
   onMounted(() => {
     loadInitialData()
   })
-
+  const { t } = useI18n()
   /**
    * 表单校验规则
    */
   const formRules = {
-    schoolCode: [{ required: true, message: '请输入学校代码', trigger: 'blur' }],
-    chineseName: [{ required: true, message: '请输入学校名称', trigger: 'blur' }],
-    chineseAbbr: [{ required: true, message: '请输入学校简称', trigger: 'blur' }],
-    englishName: [{ required: true, message: '请输入英文名称', trigger: 'blur' }],
-    englishAbbr: [{ required: true, message: '请输入英文简称', trigger: 'blur' }]
+    schoolCode: [
+      {
+        required: true,
+        message: t('menus.resources.school.placeholder.schoolCode'),
+        trigger: 'blur'
+      }
+    ],
+    chineseName: [
+      {
+        required: true,
+        message: t('menus.resources.school.placeholder.chineseName'),
+        trigger: 'blur'
+      }
+    ],
+    chineseAbbr: [
+      {
+        required: true,
+        message: t('menus.resources.school.placeholder.chineseAbbr'),
+        trigger: 'blur'
+      }
+    ],
+    englishName: [
+      {
+        required: true,
+        message: t('menus.resources.school.placeholder.englishName'),
+        trigger: 'blur'
+      }
+    ],
+    englishAbbr: [
+      {
+        required: true,
+        message: t('menus.resources.school.placeholder.englishAbbr'),
+        trigger: 'blur'
+      }
+    ]
   }
 
   const labelWidth = ref(100)
@@ -113,49 +145,49 @@
   // 基础表单项配置
   const baseFormItems = {
     schoolCode: createFormItem({
-      label: '学校代码',
+      label: $t('menus.resources.school.label.schoolCode'),
       key: 'schoolCode',
       type: 'input',
-      placeholder: '请输入学校代码',
+      placeholder: $t('menus.resources.school.placeholder.schoolCode'),
       clearable: true
     }),
     chineseName: createFormItem({
-      label: '学校名称',
+      label: $t('menus.resources.school.label.chineseName'),
       key: 'chineseName',
       type: 'input',
-      placeholder: '请输入学校名称'
+      placeholder: $t('menus.resources.school.placeholder.chineseName')
     }),
     chineseAbbr: createFormItem({
-      label: '学校简称',
+      label: $t('menus.resources.school.label.chineseAbbr'),
       key: 'chineseAbbr',
       type: 'input',
-      placeholder: '请输入学校简称'
+      placeholder: $t('menus.resources.school.placeholder.chineseAbbr')
     }),
     englishName: createFormItem({
-      label: '英文名称',
+      label: $t('menus.resources.school.label.englishName'),
       key: 'englishName',
       type: 'input',
-      placeholder: '请输入英文名称'
+      placeholder: $t('menus.resources.school.placeholder.englishName')
     }),
     englishAbbr: createFormItem({
-      label: '英文简称',
+      label: $t('menus.resources.school.label.englishAbbr'),
       key: 'englishAbbr',
       type: 'input',
-      placeholder: '请输入英文简称'
+      placeholder: $t('menus.resources.school.placeholder.englishAbbr')
     }),
     address: createFormItem({
-      label: '地址',
+      label: $t('menus.resources.school.label.address'),
       key: 'address',
       type: 'input',
-      placeholder: '请输入地址'
+      placeholder: $t('menus.resources.school.placeholder.address')
     }),
     intro: createFormItem({
-      label: '介绍',
+      label: $t('menus.resources.school.label.intro'),
       key: 'intro',
       type: 'input',
       span: 24,
       props: {
-        placeholder: '请输入介绍',
+        placeholder: $t('menus.resources.school.placeholder.intro'),
         type: 'textarea',
         rows: 4
       }
@@ -199,6 +231,10 @@
 </script>
 
 <style scoped lang="scss">
+  .el-form-item__label {
+    box-sizing: none;
+  }
+
   .form-example {
     padding-bottom: 20px;
 

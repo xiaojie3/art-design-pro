@@ -15,7 +15,7 @@ export const resourcesRoutes: AppRouteRecord = {
       name: 'School',
       component: '/resources/school',
       meta: {
-        title: 'menus.resources.school'
+        title: 'menus.resources.school.title'
       }
     },
     {
@@ -23,7 +23,7 @@ export const resourcesRoutes: AppRouteRecord = {
       name: 'Campus',
       component: '/resources/campus',
       meta: {
-        title: 'menus.resources.campus'
+        title: 'menus.resources.campus.title'
       }
     },
     {
@@ -31,7 +31,7 @@ export const resourcesRoutes: AppRouteRecord = {
       name: 'College',
       component: '/resources/college',
       meta: {
-        title: 'menus.resources.college'
+        title: 'menus.resources.college.title'
       }
     },
     {
@@ -39,7 +39,7 @@ export const resourcesRoutes: AppRouteRecord = {
       name: 'Department',
       component: '/resources/department',
       meta: {
-        title: 'menus.resources.department'
+        title: 'menus.resources.department.title'
       }
     },
     {
@@ -47,7 +47,7 @@ export const resourcesRoutes: AppRouteRecord = {
       name: 'Major',
       component: '/resources/major',
       meta: {
-        title: 'menus.resources.major'
+        title: 'menus.resources.major.title'
       }
     },
     {
@@ -55,7 +55,7 @@ export const resourcesRoutes: AppRouteRecord = {
       name: 'Class',
       component: '/resources/class',
       meta: {
-        title: 'menus.resources.class'
+        title: 'menus.resources.class.title'
       }
     }
   ]
