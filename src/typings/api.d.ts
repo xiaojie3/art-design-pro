@@ -94,17 +94,40 @@ declare namespace Api {
 
     /** 角色列表项 */
     interface RoleListItem {
-      roleId: number
+      id: string
+      roleCode: string
       roleName: string
-      roleKey: string
-      remark: string
+      description: string
       enabled: boolean
       createTime: string
     }
 
     /** 角色搜索参数 */
     type RoleSearchParams = Partial<
-      Pick<RoleListItem, 'roleId' | 'roleName' | 'roleCode' | 'description' | 'enabled'> &
+      Pick<RoleListItem, 'id' | 'roleCode' | 'roleName' | 'enabled' | 'createTime'> &
+        Api.Common.CommonSearchParams
+    >
+  }
+  namespace ResourceManage {
+    /** 学院列表 */
+    type CollegeList = Api.Common.PaginatedResponse<CollegeListItem>
+
+    /** 学院列表项 */
+    interface CollegeListItem {
+      id: string
+      collegeCode: string
+      campusId: string
+      collegeName: string
+      chineseAbbr: string
+      englishName: string
+      dean: string
+      contact: string
+      intro: string
+    }
+
+    /** 学院搜索参数 */
+    type CollegeSearchParams = Partial<
+      Pick<CollegeListItem, 'id' | 'collegeName' | 'englishName' | 'dean' | 'contact' | 'intro'> &
         Api.Common.CommonSearchParams
     >
   }

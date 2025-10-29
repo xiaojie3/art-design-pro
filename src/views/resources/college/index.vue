@@ -1,11 +1,11 @@
 <template>
   <div class="role-page art-full-height">
-    <RoleSearch
+    <Search
       v-show="showSearchBar"
       v-model="searchForm"
       @search="handleSearch"
       @reset="resetSearchParams"
-    ></RoleSearch>
+    ></Search>
 
     <ElCard
       class="art-table-card"
@@ -37,18 +37,11 @@
       </ArtTable>
     </ElCard>
 
-    <!-- 角色编辑弹窗 -->
-    <RoleEditDialog
+    <!-- 编辑弹窗 -->
+    <EditDialog
       v-model="dialogVisible"
       :dialog-type="dialogType"
-      :role-data="currentRoleData"
-      @success="refreshData"
-    />
-
-    <!-- 菜单权限弹窗 -->
-    <RolePermissionDialog
-      v-model="permissionDialog"
-      :role-data="currentRoleData"
+      :role-data="currentData"
       @success="refreshData"
     />
   </div>
@@ -56,33 +49,28 @@
 
 <script setup lang="ts">
   import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue'
-  import { Setting, Edit, Delete } from '@element-plus/icons-vue'
   import { useTable } from '@/composables/useTable'
-  import { fetchGetRoleList } from '@/api/system-manage'
+  import { fetchGetCollegePage } from '@/api/resource-manage'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
-  import RoleSearch from './modules/role-search.vue'
-  import RoleEditDialog from './modules/role-edit-dialog.vue'
-  import RolePermissionDialog from './modules/role-permission-dialog.vue'
-  import { ElTag, ElMessageBox } from 'element-plus'
+  import Search from './modules/search.vue'
+  import EditDialog from './modules/edit-dialog.vue'
+  import { ElMessageBox } from 'element-plus'
 
-  defineOptions({ name: 'Role' })
+  defineOptions({ name: 'College' })
 
-  type RoleListItem = Api.SystemManage.RoleListItem
+  type CollegeListItem = Api.ResourceManage.CollegeListItem
 
   // 搜索表单
   const searchForm = ref({
-    roleName: undefined,
-    roleCode: undefined,
-    description: undefined,
-    enabled: undefined,
-    daterange: undefined
+    collegeName: undefined,
+    collegeCode: undefined
   })
 
   const showSearchBar = ref(false)
 
   const dialogVisible = ref(false)
   const permissionDialog = ref(false)
-  const currentRoleData = ref<RoleListItem | undefined>(undefined)
+  const currentData = ref<CollegeListItem | undefined>(undefined)
 
   const {
     columns,
@@ -99,7 +87,7 @@
   } = useTable({
     // 核心配置
     core: {
-      apiFn: fetchGetRoleList,
+      apiFn: fetchGetCollegePage,
       apiParams: {
         current: 1,
         size: 20
@@ -108,46 +96,24 @@
       excludeParams: ['daterange'],
       columnsFactory: () => [
         {
-          type: 'index',
-          label: '序号',
+          prop: 'collegeCode',
+          label: '学院编码',
           width: 100
         },
         {
-          prop: 'roleName',
-          label: '角色名称',
+          prop: 'collegeName',
+          label: '学院名称',
           minWidth: 120
         },
         {
-          prop: 'roleCode',
-          label: '角色编码',
+          prop: 'chineseAbbr',
+          label: '学院简称',
           minWidth: 120
         },
         {
-          prop: 'description',
-          label: '角色描述',
-          minWidth: 150,
-          showOverflowTooltip: true
-        },
-        {
-          prop: 'enabled',
-          label: '角色状态',
-          width: 100,
-          formatter: (row) => {
-            const statusConfig = row.enabled
-              ? { type: 'success', text: '启用' }
-              : { type: 'warning', text: '禁用' }
-            return h(
-              ElTag,
-              { type: statusConfig.type as 'success' | 'warning' },
-              () => statusConfig.text
-            )
-          }
-        },
-        {
-          prop: 'createTime',
-          label: '创建日期',
-          width: 180,
-          sortable: true
+          prop: 'englishName',
+          label: '学院英文名称',
+          minWidth: 150
         },
         {
           prop: 'operation',
@@ -157,24 +123,7 @@
           formatter: (row) =>
             h('div', [
               h(ArtButtonMore, {
-                list: [
-                  {
-                    key: 'permission',
-                    label: '菜单权限',
-                    icon: Setting
-                  },
-                  {
-                    key: 'edit',
-                    label: '编辑角色',
-                    icon: Edit
-                  },
-                  {
-                    key: 'delete',
-                    label: '删除角色',
-                    icon: Delete,
-                    color: '#f56c6c'
-                  }
-                ],
+                list: [],
                 onClick: (item: ButtonMoreItem) => buttonMoreClick(item, row)
               })
             ])
@@ -185,10 +134,10 @@
 
   const dialogType = ref<'add' | 'edit'>('add')
 
-  const showDialog = (type: 'add' | 'edit', row?: RoleListItem) => {
+  const showDialog = (type: 'add' | 'edit', row?: CollegeListItem) => {
     dialogVisible.value = true
     dialogType.value = type
-    currentRoleData.value = row
+    currentData.value = row
   }
 
   /**
@@ -205,7 +154,7 @@
     getData()
   }
 
-  const buttonMoreClick = (item: ButtonMoreItem, row: RoleListItem) => {
+  const buttonMoreClick = (item: ButtonMoreItem, row: CollegeListItem) => {
     switch (item.key) {
       case 'permission':
         showPermissionDialog(row)
@@ -219,13 +168,13 @@
     }
   }
 
-  const showPermissionDialog = (row?: RoleListItem) => {
+  const showPermissionDialog = (row?: CollegeListItem) => {
     permissionDialog.value = true
-    currentRoleData.value = row
+    currentData.value = row
   }
 
-  const deleteRole = (row: RoleListItem) => {
-    ElMessageBox.confirm(`确定删除角色"${row.roleName}"吗？此操作不可恢复！`, '删除确认', {
+  const deleteRole = (row: CollegeListItem) => {
+    ElMessageBox.confirm(`确定删除学院"${row.collegeName}"吗？此操作不可恢复！`, '删除确认', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'

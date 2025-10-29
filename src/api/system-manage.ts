@@ -17,6 +17,21 @@ export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
   })
 }
 
+// 新增角色
+export function fetchAddRole(params: Api.SystemManage.RoleListItem) {
+  return request.post<Api.SystemManage.RoleListItem>({
+    url: '/api/role',
+    params
+  })
+}
+// 编辑角色
+export function fetchUpdateRole(params: Api.SystemManage.RoleListItem) {
+  return request.put<Api.SystemManage.RoleListItem>({
+    url: '/api/role',
+    params
+  })
+}
+
 // 获取菜单列表
 export function fetchGetMenuList() {
   return request.get<AppRouteRecord[]>({

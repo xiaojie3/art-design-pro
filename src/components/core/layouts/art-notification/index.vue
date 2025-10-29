@@ -91,6 +91,7 @@
   import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
   import { useI18n } from 'vue-i18n'
   import AppConfig from '@/config'
+  import robot from '@/assets/img/avatar/robot.webp'
 
   defineOptions({ name: 'ArtNotification' })
 
@@ -187,32 +188,32 @@
       {
         title: '池不胖 关注了你',
         time: '2021-2-26 23:50',
-        avatar: ''
+        avatar: robot
       },
       {
         title: '唐不苦 关注了你',
         time: '2021-2-21 8:05',
-        avatar: ''
+        avatar: robot
       },
       {
         title: '中小鱼 关注了你',
         time: '2020-1-17 21:12',
-        avatar: ''
+        avatar: robot
       },
       {
         title: '何小荷 关注了你',
         time: '2021-01-14 0:20',
-        avatar: ''
+        avatar: robot
       },
       {
         title: '誶誶淰 关注了你',
         time: '2020-12-20 0:15',
-        avatar: ''
+        avatar: robot
       },
       {
         title: '冷月呆呆 关注了你',
         time: '2020-12-17 22:06',
-        avatar: ''
+        avatar: robot
       }
     ])
 

@@ -67,6 +67,7 @@
   import { Picture, Paperclip, Close } from '@element-plus/icons-vue'
   import { mittBus } from '@/utils/sys'
   import meAvatar from '@/assets/img/avatar/avatar.webp'
+  import robot from '@/assets/img/avatar/robot.webp'
 
   defineOptions({ name: 'ArtChatWindow' })
 
@@ -107,7 +108,7 @@
       content: '你好！我是你的AI助手，有什么我可以帮你的吗？',
       time: '10:00',
       isMe: false,
-      avatar: '🤖'
+      avatar: robot
     },
     {
       id: 2,
@@ -123,7 +124,7 @@
       content: '好的，我来为您介绍系统的主要功能。首先，您可以通过左侧菜单访问不同的功能模块...',
       time: '10:02',
       isMe: false,
-      avatar: '🤖'
+      avatar: robot
     },
     {
       id: 4,
@@ -139,7 +140,7 @@
       content: '当然可以。数据分析模块可以帮助您实时监控关键指标，并生成详细的报表...',
       time: '10:06',
       isMe: false,
-      avatar: '🤖'
+      avatar: robot
     },
     {
       id: 6,
@@ -155,7 +156,7 @@
       content: '您可以先创建一个项目，然后在项目中添加相关的数据源，系统会自动进行分析。',
       time: '10:09',
       isMe: false,
-      avatar: '🤖'
+      avatar: robot
     },
     {
       id: 8,
@@ -171,7 +172,7 @@
       content: '不客气，有任何问题随时联系我。',
       time: '10:11',
       isMe: false,
-      avatar: '🤖'
+      avatar: robot
     }
   ]
 

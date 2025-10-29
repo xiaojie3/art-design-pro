@@ -53,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+  import robot from '@/assets/img/avatar/robot.webp'
   interface UserTableItem {
     username: string
     province: string
@@ -81,7 +82,7 @@
       percentage: 60,
       pro: 0,
       color: 'rgb(var(--art-primary)) !important',
-      avatar: ''
+      avatar: robot
     },
     {
       username: '何小荷',
@@ -91,7 +92,7 @@
       percentage: 20,
       pro: 0,
       color: 'rgb(var(--art-secondary)) !important',
-      avatar: ''
+      avatar: robot
     },
     {
       username: '誶誶淰',
@@ -101,7 +102,7 @@
       percentage: 60,
       pro: 0,
       color: 'rgb(var(--art-warning)) !important',
-      avatar: ''
+      avatar: robot
     },
     {
       username: '发呆草',
@@ -111,7 +112,7 @@
       percentage: 50,
       pro: 0,
       color: 'rgb(var(--art-info)) !important',
-      avatar: ''
+      avatar: robot
     },
     {
       username: '甜筒',
@@ -121,7 +122,7 @@
       percentage: 70,
       pro: 0,
       color: 'rgb(var(--art-error)) !important',
-      avatar: ''
+      avatar: robot
     },
     {
       username: '冷月呆呆',
@@ -131,7 +132,7 @@
       percentage: 90,
       pro: 0,
       color: 'rgb(var(--art-success)) !important',
-      avatar: ''
+      avatar: robot
     }
   ])
 

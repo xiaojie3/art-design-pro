@@ -22,8 +22,8 @@
         <ElSelect v-model="formData.role" multiple>
           <ElOption
             v-for="role in roleList"
-            :key="role.roleKey"
-            :value="role.roleKey"
+            :key="role.roleCode"
+            :value="role.roleCode"
             :label="role.roleName"
           />
         </ElSelect>

@@ -62,17 +62,11 @@
 
   // 加载初始数据的函数
   const loadInitialData = async () => {
-    try {
-      const responseData = await request.get<FormData>({
-        url: '/api/school'
-      })
-      // 后端返回的数据结构与 FormData 一致，直接赋值
-      formData.value = { ...responseData } // 用扩展运算符避免直接修改响应对象
-      console.log('初始数据加载成功:', formData.value)
-    } catch (error) {
-      console.error('初始数据加载失败:', error)
-      // 可添加错误提示，如：ElMessage.error('加载数据失败，请重试')
-    }
+    const responseData = await request.get<FormData>({
+      url: '/api/school'
+    })
+    // 后端返回的数据结构与 FormData 一致，直接赋值
+    formData.value = { ...responseData } // 用扩展运算符避免直接修改响应对象
   }
   // 组件挂载后执行加载
   onMounted(() => {
