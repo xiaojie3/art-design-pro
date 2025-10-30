@@ -377,6 +377,22 @@
         "englishAbbr": "Please enter English abbreviation",
         "address": "Please enter address",
         "intro": "Please enter introduction"
+      },
+      "table": {
+        "column": {
+          "campusCode": "Campus Code",
+          "chineseName": "Chinese Name",
+          "chineseAbbr": "Chinese Abbr",
+          "englishName": "English Name",
+          "englishAbbr": "English Abbr",
+          "address": "Address",
+          "intro": "Introduction"
+        }
+      },
+      "operation": {
+        "add": "Add Campus",
+        "edit": "Edit Campus",
+        "delete": "Delete Campus"
       }
     },
     "college": {
@@ -400,6 +416,11 @@
           "address": "Address",
           "intro": "Introduction"
         }
+      },
+      "operation": {
+        "add": "Add College",
+        "edit": "Edit College",
+        "delete": "Delete College"
       }
     },
     "department": {

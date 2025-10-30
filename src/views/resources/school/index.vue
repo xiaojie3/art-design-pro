@@ -225,10 +225,6 @@
 </script>
 
 <style scoped lang="scss">
-  .el-form-item__label {
-    box-sizing: none;
-  }
-
   .form-example {
     padding-bottom: 20px;
 

@@ -109,6 +109,38 @@ declare namespace Api {
     >
   }
   namespace ResourceManage {
+    /** 校区列表 */
+    type CampusList = Api.Common.PaginatedResponse<CampusListItem>
+
+    /** 校区列表项 */
+    interface CampusListItem {
+      id: string
+      campusCode: string
+      schoolId: string
+      chineseName: string
+      englishName: string
+      address: string
+      principal: string
+      contact: string
+      intro: string
+    }
+
+    /** 校区搜索参数 */
+    type CampusSearchParams = Partial<
+      Pick<
+        CampusListItem,
+        | 'id'
+        | 'campusCode'
+        | 'chineseName'
+        | 'englishName'
+        | 'address'
+        | 'principal'
+        | 'contact'
+        | 'intro'
+      > &
+        Api.Common.CommonSearchParams
+    >
+
     /** 学院列表 */
     type CollegeList = Api.Common.PaginatedResponse<CollegeListItem>
 

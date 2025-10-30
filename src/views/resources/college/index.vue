@@ -20,7 +20,9 @@
       >
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增角色</ElButton>
+            <ElButton @click="showDialog('add')" v-ripple>
+              {{ t('resources.college.operation.add') }}
+            </ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -50,11 +52,13 @@
 <script setup lang="ts">
   import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue'
   import { useTable } from '@/composables/useTable'
-  import { fetchGetCollegePage } from '@/api/resource-manage'
+  import { fetchFindCollegePage } from '@/api/resource-manage'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
   import Search from './modules/search.vue'
   import EditDialog from './modules/edit-dialog.vue'
   import { ElMessageBox } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
+  const { t } = useI18n()
 
   defineOptions({ name: 'College' })
 
@@ -87,7 +91,7 @@
   } = useTable({
     // 核心配置
     core: {
-      apiFn: fetchGetCollegePage,
+      apiFn: fetchFindCollegePage,
       apiParams: {
         current: 1,
         size: 20
@@ -97,27 +101,27 @@
       columnsFactory: () => [
         {
           prop: 'collegeCode',
-          label: '学院编码',
+          label: t('resources.college.table.column.collegeCode'),
           width: 100
         },
         {
           prop: 'collegeName',
-          label: '学院名称',
+          label: t('resources.college.table.column.chineseName'),
           minWidth: 120
         },
         {
           prop: 'chineseAbbr',
-          label: '学院简称',
+          label: t('resources.college.table.column.chineseAbbr'),
           minWidth: 120
         },
         {
           prop: 'englishName',
-          label: '学院英文名称',
+          label: t('resources.college.table.column.englishName'),
           minWidth: 150
         },
         {
           prop: 'operation',
-          label: '操作',
+          label: t('table.column.operation'),
           width: 80,
           fixed: 'right',
           formatter: (row) =>
