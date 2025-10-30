@@ -13,7 +13,9 @@
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增用户</ElButton>
+            <ElButton @click="showDialog('add')" v-ripple>
+              {{ t('system.user.operation.add') }}
+            </ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -48,6 +50,8 @@
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
   import { ElTag, ElMessageBox } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
+  const { t } = useI18n()
 
   defineOptions({ name: 'User' })
 
@@ -119,30 +123,30 @@
       // },
       columnsFactory: () => [
         { type: 'selection' }, // 勾选列
-        { type: 'index', width: 60, label: '序号' }, // 序号
+        { type: 'index', width: 60, label: t('table.column.index') }, // 序号
         {
           prop: 'avatar',
-          label: '用户名',
+          label: t('system.user.table.column.avatar'),
           sortable: true,
           formatter: (row) => row.userName
         },
         {
           prop: 'deptName',
-          label: '部门',
+          label: t('system.user.table.column.deptName'),
           sortable: true,
           formatter: (row) => row.deptName
         },
         {
           prop: 'userGender',
-          label: '性别',
+          label: t('system.user.table.column.gender'),
           sortable: true,
           // checked: false, // 隐藏列
           formatter: (row) => row.userGender
         },
-        { prop: 'phoneNumber', label: '手机号' },
+        { prop: 'phoneNumber', label: t('system.user.table.column.phone') },
         {
           prop: 'status',
-          label: '状态',
+          label: t('system.user.table.column.status'),
           formatter: (row) => {
             const statusConfig = getUserStatusConfig(row.status)
             return h(ElTag, { type: statusConfig.type }, () => statusConfig.text)
@@ -150,12 +154,12 @@
         },
         {
           prop: 'createTime',
-          label: '创建日期',
+          label: t('table.column.createTime'),
           sortable: true
         },
         {
           prop: 'operation',
-          label: '操作',
+          label: t('table.column.operation'),
           width: 120,
           fixed: 'right', // 固定列
           formatter: (row) =>

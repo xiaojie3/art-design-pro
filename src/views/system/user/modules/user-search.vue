@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+  import { useI18n } from 'vue-i18n'
+  const { t } = useI18n()
   interface Props {
     modelValue: Record<string, any>
   }
@@ -59,30 +61,30 @@
   // 表单配置
   const formItems = computed(() => [
     {
-      label: '用户名',
+      label: t('system.user.table.column.userName'),
       key: 'userName',
       type: 'input',
-      placeholder: '请输入用户名',
+      placeholder: t('system.user.placeholder.userName'),
       clearable: true
     },
     {
-      label: '手机号',
+      label: t('system.user.table.column.phone'),
       key: 'phoneNumber',
       type: 'input',
-      props: { placeholder: '请输入手机号', maxlength: '11' }
+      props: { placeholder: t('system.user.placeholder.phone'), maxlength: '11' }
     },
     {
-      label: '邮箱',
+      label: t('system.user.table.column.email'),
       key: 'userEmail',
       type: 'input',
-      props: { placeholder: '请输入邮箱' }
+      props: { placeholder: t('system.user.placeholder.email') }
     },
     {
-      label: '状态',
+      label: t('system.user.table.column.status'),
       key: 'status',
       type: 'select',
       props: {
-        placeholder: '请选择状态',
+        placeholder: t('system.user.placeholder.status'),
         options: statusOptions.value
       }
     },
@@ -92,8 +94,8 @@
       type: 'radiogroup',
       props: {
         options: [
-          { label: '男', value: '1' },
-          { label: '女', value: '2' }
+          { label: t('system.user.gender.male'), value: '1' },
+          { label: t('system.user.gender.female'), value: '2' }
         ]
       }
     }

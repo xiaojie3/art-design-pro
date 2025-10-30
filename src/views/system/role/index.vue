@@ -20,7 +20,9 @@
       >
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增角色</ElButton>
+            <ElButton @click="showDialog('add')" v-ripple>
+              {{ t('system.role.operation.add') }}
+            </ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -64,6 +66,8 @@
   import RoleEditDialog from './modules/role-edit-dialog.vue'
   import RolePermissionDialog from './modules/role-permission-dialog.vue'
   import { ElTag, ElMessageBox } from 'element-plus'
+  import { useI18n } from 'vue-i18n'
+  const { t } = useI18n()
 
   defineOptions({ name: 'Role' })
 
@@ -109,33 +113,33 @@
       columnsFactory: () => [
         {
           type: 'index',
-          label: '序号',
+          label: t('table.column.index'),
           width: 100
         },
         {
           prop: 'roleName',
-          label: '角色名称',
+          label: t('system.role.table.column.roleName'),
           minWidth: 120
         },
         {
           prop: 'roleCode',
-          label: '角色编码',
+          label: t('system.role.table.column.roleCode'),
           minWidth: 120
         },
         {
           prop: 'description',
-          label: '角色描述',
+          label: t('system.role.table.column.description'),
           minWidth: 150,
           showOverflowTooltip: true
         },
         {
           prop: 'enabled',
-          label: '角色状态',
+          label: t('system.role.table.column.enabled'),
           width: 100,
           formatter: (row) => {
             const statusConfig = row.enabled
-              ? { type: 'success', text: '启用' }
-              : { type: 'warning', text: '禁用' }
+              ? { type: 'success', text: t('system.role.enabled.success') }
+              : { type: 'warning', text: t('system.role.enabled.warning') }
             return h(
               ElTag,
               { type: statusConfig.type as 'success' | 'warning' },
@@ -145,13 +149,13 @@
         },
         {
           prop: 'createTime',
-          label: '创建日期',
+          label: t('table.column.createTime'),
           width: 180,
           sortable: true
         },
         {
           prop: 'operation',
-          label: '操作',
+          label: t('table.column.operation'),
           width: 80,
           fixed: 'right',
           formatter: (row) =>
@@ -160,17 +164,17 @@
                 list: [
                   {
                     key: 'permission',
-                    label: '菜单权限',
+                    label: t('system.role.operation.permission'),
                     icon: Setting
                   },
                   {
                     key: 'edit',
-                    label: '编辑角色',
+                    label: t('system.role.operation.edit'),
                     icon: Edit
                   },
                   {
                     key: 'delete',
-                    label: '删除角色',
+                    label: t('system.role.operation.delete'),
                     icon: Delete,
                     color: '#f56c6c'
                   }

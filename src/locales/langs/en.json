@@ -228,108 +228,6 @@
       "forbidden": "403",
       "notFound": "404",
       "serverError": "500"
-    },
-    "system": {
-      "title": "System Settings",
-      "user": "User Manage",
-      "role": "Role Manage",
-      "userCenter": "User Center",
-      "menu": "Menu Manage"
-    },
-    "devTools": {
-      "title": "Dev Tools",
-      "widgets": {
-        "title": "Widgets",
-        "iconList": "Icon List"
-      },
-      "examples": {
-        "title": "Examples",
-        "forms": "Forms"
-      }
-    },
-    "resources": {
-      "title": "Resource Management",
-      "school": {
-        "title": "School Management",
-        "label": {
-          "schoolCode": "School Code",
-          "chineseName": "Chinese Name",
-          "chineseAbbr": "Chinese Abbr",
-          "englishName": "English Name",
-          "englishAbbr": "English Abbr",
-          "address": "Address",
-          "intro": "Introduction"
-        },
-        "placeholder": {
-          "schoolCode": "Please enter school code",
-          "chineseName": "Please enter school name",
-          "chineseAbbr": "Please enter school abbreviation",
-          "englishName": "Please enter English name",
-          "englishAbbr": "Please enter English abbreviation",
-          "address": "Please enter address",
-          "intro": "Please enter introduction"
-        }
-      },
-      "campus": {
-        "title": "Campus Management",
-        "placeholder": {
-          "campusCode": "Please enter campus code",
-          "chineseName": "Please enter campus name",
-          "chineseAbbr": "Please enter campus abbreviation",
-          "englishName": "Please enter English name",
-          "englishAbbr": "Please enter English abbreviation",
-          "address": "Please enter address",
-          "intro": "Please enter introduction"
-        }
-      },
-      "college": {
-        "title": "College Management",
-        "placeholder": {
-          "collegeCode": "Please enter college code",
-          "chineseName": "Please enter college name",
-          "chineseAbbr": "Please enter college abbreviation",
-          "englishName": "Please enter English name",
-          "englishAbbr": "Please enter English abbreviation",
-          "address": "Please enter address",
-          "intro": "Please enter introduction"
-        }
-      },
-      "department": {
-        "title": "Department Management",
-        "placeholder": {
-          "departmentCode": "Please enter department code",
-          "chineseName": "Please enter department name",
-          "chineseAbbr": "Please enter department abbreviation",
-          "englishName": "Please enter English name",
-          "englishAbbr": "Please enter English abbreviation",
-          "address": "Please enter address",
-          "intro": "Please enter introduction"
-        }
-      },
-      "major": {
-        "title": "Major Management",
-        "placeholder": {
-          "majorCode": "Please enter major code",
-          "chineseName": "Please enter major name",
-          "chineseAbbr": "Please enter major abbreviation",
-          "englishName": "Please enter English name",
-          "englishAbbr": "Please enter English abbreviation",
-          "address": "Please enter address",
-          "intro": "Please enter introduction"
-        }
-      },
-      "class": {
-        "title": "Class Management",
-        "placeholder": {
-          "classCode": "Please enter class code",
-          "chineseName": "Please enter class name",
-          "chineseAbbr": "Please enter class abbreviation",
-          "englishName": "Please enter English name",
-          "englishAbbr": "Please enter English abbreviation",
-          "address": "Please enter address",
-          "intro": "Please enter introduction"
-        }
-      }
     }
   },
   "table": {
@@ -354,10 +252,191 @@
     "column": {
       "selection": "Select",
       "expand": "Expand",
-      "index": "Index"
+      "index": "Index",
+      "createTime": "Create Time",
+      "updateTime": "Update Time",
+      "operation": "Operation"
     },
     "zebra": "Zebra",
     "border": "Border",
     "headerBackground": "Header BG"
+  },
+  "system": {
+    "title": "System Settings",
+    "user": {
+      "title": "User Manage",
+      "placeholder": {
+        "userName": "Please enter user name",
+        "nickName": "Please enter nick name",
+        "deptName": "Please enter department",
+        "gender": "Please select gender",
+        "email": "Please enter email",
+        "phone": "Please enter phone",
+        "status": "Please select status",
+        "roleName": "Please enter role name"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "operation": {
+        "add": "Add User"
+      },
+      "table": {
+        "column": {
+          "avatar": "Avatar",
+          "userName": "User Name",
+          "nickName": "Nick Name",
+          "deptName": "Department",
+          "gender": "Gender",
+          "email": "Email",
+          "phone": "Phone",
+          "status": "Status",
+          "roleName": "Role Name"
+        }
+      },
+      "status": {
+        "normal": "Normal",
+        "disabled": "Disabled"
+      }
+    },
+    "role": {
+      "title": "Role Manage",
+      "placeholder": {
+        "roleName": "Please enter role name",
+        "roleCode": "Please enter role code",
+        "description": "Please enter description"
+      },
+      "table": {
+        "column": {
+          "roleName": "Role Name",
+          "roleCode": "Role Code",
+          "description": "Description",
+          "enabled": "Enabled"
+        }
+      },
+      "operation": {
+        "add": "Add Role",
+        "edit": "Edit Role",
+        "delete": "Delete Role",
+        "permission": "Menu Permission"
+      },
+      "enabled": {
+        "success": "Enabled",
+        "warning": "Disabled"
+      }
+    },
+    "userCenter": {
+      "title": "User Center"
+    },
+    "menu": {
+      "title": "Menu Manage"
+    }
+  },
+  "devTools": {
+    "title": "Dev Tools",
+    "widgets": {
+      "title": "Widgets",
+      "iconList": "Icon List"
+    },
+    "examples": {
+      "title": "Examples",
+      "forms": "Forms"
+    }
+  },
+  "resources": {
+    "title": "Resource Management",
+    "school": {
+      "title": "School Management",
+      "label": {
+        "schoolCode": "School Code",
+        "chineseName": "Chinese Name",
+        "chineseAbbr": "Chinese Abbr",
+        "englishName": "English Name",
+        "englishAbbr": "English Abbr",
+        "address": "Address",
+        "intro": "Introduction"
+      },
+      "placeholder": {
+        "schoolCode": "Please enter school code",
+        "chineseName": "Please enter school name",
+        "chineseAbbr": "Please enter school abbreviation",
+        "englishName": "Please enter English name",
+        "englishAbbr": "Please enter English abbreviation",
+        "address": "Please enter address",
+        "intro": "Please enter introduction"
+      }
+    },
+    "campus": {
+      "title": "Campus Management",
+      "placeholder": {
+        "campusCode": "Please enter campus code",
+        "chineseName": "Please enter campus name",
+        "chineseAbbr": "Please enter campus abbreviation",
+        "englishName": "Please enter English name",
+        "englishAbbr": "Please enter English abbreviation",
+        "address": "Please enter address",
+        "intro": "Please enter introduction"
+      }
+    },
+    "college": {
+      "title": "College Management",
+      "placeholder": {
+        "collegeCode": "Please enter college code",
+        "chineseName": "Please enter college name",
+        "chineseAbbr": "Please enter college abbreviation",
+        "englishName": "Please enter English name",
+        "englishAbbr": "Please enter English abbreviation",
+        "address": "Please enter address",
+        "intro": "Please enter introduction"
+      },
+      "table": {
+        "column": {
+          "collegeCode": "College Code",
+          "chineseName": "Chinese Name",
+          "chineseAbbr": "Chinese Abbr",
+          "englishName": "English Name",
+          "englishAbbr": "English Abbr",
+          "address": "Address",
+          "intro": "Introduction"
+        }
+      }
+    },
+    "department": {
+      "title": "Department Management",
+      "placeholder": {
+        "departmentCode": "Please enter department code",
+        "chineseName": "Please enter department name",
+        "chineseAbbr": "Please enter department abbreviation",
+        "englishName": "Please enter English name",
+        "englishAbbr": "Please enter English abbreviation",
+        "address": "Please enter address",
+        "intro": "Please enter introduction"
+      }
+    },
+    "major": {
+      "title": "Major Management",
+      "placeholder": {
+        "majorCode": "Please enter major code",
+        "chineseName": "Please enter major name",
+        "chineseAbbr": "Please enter major abbreviation",
+        "englishName": "Please enter English name",
+        "englishAbbr": "Please enter English abbreviation",
+        "address": "Please enter address",
+        "intro": "Please enter introduction"
+      }
+    },
+    "class": {
+      "title": "Class Management",
+      "placeholder": {
+        "classCode": "Please enter class code",
+        "chineseName": "Please enter class name",
+        "chineseAbbr": "Please enter class abbreviation",
+        "englishName": "Please enter English name",
+        "englishAbbr": "Please enter English abbreviation",
+        "address": "Please enter address",
+        "intro": "Please enter introduction"
+      }
+    }
   }
 }

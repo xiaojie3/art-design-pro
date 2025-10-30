@@ -5,7 +5,7 @@ export const devToolsRoutes: AppRouteRecord = {
   name: 'DevTools',
   component: '/index/index',
   meta: {
-    title: 'menus.devTools.title',
+    title: 'devTools.title',
     icon: '&#xe816;',
     roles: ['R_SUPER']
   },
@@ -15,7 +15,7 @@ export const devToolsRoutes: AppRouteRecord = {
       name: 'Widgets',
       component: '',
       meta: {
-        title: 'menus.devTools.widgets.title'
+        title: 'devTools.widgets.title'
       },
       children: [
         {
@@ -23,7 +23,7 @@ export const devToolsRoutes: AppRouteRecord = {
           name: 'IconList',
           component: '/dev-tools/widgets/icon-list',
           meta: {
-            title: 'menus.devTools.widgets.iconList'
+            title: 'devTools.widgets.iconList'
           }
         }
       ]
@@ -33,7 +33,7 @@ export const devToolsRoutes: AppRouteRecord = {
       name: 'Examples',
       component: '',
       meta: {
-        title: 'menus.devTools.examples.title'
+        title: 'devTools.examples.title'
       },
       children: [
         {
@@ -41,7 +41,7 @@ export const devToolsRoutes: AppRouteRecord = {
           name: 'Forms',
           component: '/dev-tools/examples/forms',
           meta: {
-            title: 'menus.devTools.examples.forms',
+            title: 'devTools.examples.forms',
             keepAlive: true
           }
         }

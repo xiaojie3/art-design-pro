@@ -80,35 +80,35 @@
     schoolCode: [
       {
         required: true,
-        message: t('menus.resources.school.placeholder.schoolCode'),
+        message: t('resources.school.placeholder.schoolCode'),
         trigger: 'blur'
       }
     ],
     chineseName: [
       {
         required: true,
-        message: t('menus.resources.school.placeholder.chineseName'),
+        message: t('resources.school.placeholder.chineseName'),
         trigger: 'blur'
       }
     ],
     chineseAbbr: [
       {
         required: true,
-        message: t('menus.resources.school.placeholder.chineseAbbr'),
+        message: t('resources.school.placeholder.chineseAbbr'),
         trigger: 'blur'
       }
     ],
     englishName: [
       {
         required: true,
-        message: t('menus.resources.school.placeholder.englishName'),
+        message: t('resources.school.placeholder.englishName'),
         trigger: 'blur'
       }
     ],
     englishAbbr: [
       {
         required: true,
-        message: t('menus.resources.school.placeholder.englishAbbr'),
+        message: t('resources.school.placeholder.englishAbbr'),
         trigger: 'blur'
       }
     ]
@@ -139,49 +139,49 @@
   // 基础表单项配置
   const baseFormItems = {
     schoolCode: createFormItem({
-      label: $t('menus.resources.school.label.schoolCode'),
+      label: $t('resources.school.label.schoolCode'),
       key: 'schoolCode',
       type: 'input',
-      placeholder: $t('menus.resources.school.placeholder.schoolCode'),
+      placeholder: $t('resources.school.placeholder.schoolCode'),
       clearable: true
     }),
     chineseName: createFormItem({
-      label: $t('menus.resources.school.label.chineseName'),
+      label: $t('resources.school.label.chineseName'),
       key: 'chineseName',
       type: 'input',
-      placeholder: $t('menus.resources.school.placeholder.chineseName')
+      placeholder: $t('resources.school.placeholder.chineseName')
     }),
     chineseAbbr: createFormItem({
-      label: $t('menus.resources.school.label.chineseAbbr'),
+      label: $t('resources.school.label.chineseAbbr'),
       key: 'chineseAbbr',
       type: 'input',
-      placeholder: $t('menus.resources.school.placeholder.chineseAbbr')
+      placeholder: $t('resources.school.placeholder.chineseAbbr')
     }),
     englishName: createFormItem({
-      label: $t('menus.resources.school.label.englishName'),
+      label: $t('resources.school.label.englishName'),
       key: 'englishName',
       type: 'input',
-      placeholder: $t('menus.resources.school.placeholder.englishName')
+      placeholder: $t('resources.school.placeholder.englishName')
     }),
     englishAbbr: createFormItem({
-      label: $t('menus.resources.school.label.englishAbbr'),
+      label: $t('resources.school.label.englishAbbr'),
       key: 'englishAbbr',
       type: 'input',
-      placeholder: $t('menus.resources.school.placeholder.englishAbbr')
+      placeholder: $t('resources.school.placeholder.englishAbbr')
     }),
     address: createFormItem({
-      label: $t('menus.resources.school.label.address'),
+      label: $t('resources.school.label.address'),
       key: 'address',
       type: 'input',
-      placeholder: $t('menus.resources.school.placeholder.address')
+      placeholder: $t('resources.school.placeholder.address')
     }),
     intro: createFormItem({
-      label: $t('menus.resources.school.label.intro'),
+      label: $t('resources.school.label.intro'),
       key: 'intro',
       type: 'input',
       span: 24,
       props: {
-        placeholder: $t('menus.resources.school.placeholder.intro'),
+        placeholder: $t('resources.school.placeholder.intro'),
         type: 'textarea',
         rows: 4
       }
