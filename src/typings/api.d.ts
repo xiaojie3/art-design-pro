@@ -109,6 +109,20 @@ declare namespace Api {
     >
   }
   namespace ResourceManage {
+    /** 学校列表 */
+    type SchoolList = Api.Common.PaginatedResponse<SchoolListItem>
+    /** 学校列表项 */
+    interface SchoolListItem {
+      id: string
+      schoolCode: string
+      schoolName: string
+      chineseAbbr: string
+      englishName: string
+      englishAbbr: string
+      address: string
+      intro: string
+      createTime: string
+    }
     /** 校区列表 */
     type CampusList = Api.Common.PaginatedResponse<CampusListItem>
 

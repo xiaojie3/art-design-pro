@@ -1,12 +1,5 @@
 <template>
   <div class="role-page art-full-height">
-    <RoleSearch
-      v-show="showSearchBar"
-      v-model="searchForm"
-      @search="handleSearch"
-      @reset="resetSearchParams"
-    ></RoleSearch>
-
     <ElCard
       class="art-table-card"
       shadow="never"
@@ -53,7 +46,7 @@
   import { ButtonMoreItem } from '@/components/core/forms/art-button-more/index.vue'
   import { Edit, Delete } from '@element-plus/icons-vue'
   import { useTable } from '@/composables/useTable'
-  import { fetchFindCampusPage } from '@/api/resource-manage'
+  import { fetchFindCampusPage, fetchDeleteCampus } from '@/api/resource-manage'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
   import EditDialog from './modules/edit-dialog.vue'
   import { ElMessageBox } from 'element-plus'
@@ -63,16 +56,6 @@
   defineOptions({ name: 'Campus' })
 
   type CampusListItem = Api.ResourceManage.CampusListItem
-
-  // 搜索表单
-  const searchForm = ref({
-    chineseName: undefined,
-    englishName: undefined,
-    address: undefined,
-    principal: undefined,
-    contact: undefined,
-    intro: undefined
-  })
 
   const showSearchBar = ref(false)
 
@@ -85,9 +68,6 @@
     data,
     loading,
     pagination,
-    getData,
-    searchParams,
-    resetSearchParams,
     handleSizeChange,
     handleCurrentChange,
     refreshData
@@ -162,20 +142,6 @@
     currentData.value = row
   }
 
-  /**
-   * 搜索处理
-   * @param params 搜索参数
-   */
-  const handleSearch = (params: Record<string, any>) => {
-    // 处理日期区间参数，把 daterange 转换为 startTime 和 endTime
-    const { daterange, ...filtersParams } = params
-    const [startTime, endTime] = Array.isArray(daterange) ? daterange : [null, null]
-
-    // 搜索参数赋值
-    Object.assign(searchParams, { ...filtersParams, startTime, endTime })
-    getData()
-  }
-
   const buttonMoreClick = (item: ButtonMoreItem, row: CampusListItem) => {
     switch (item.key) {
       case 'edit':
@@ -193,8 +159,9 @@
       cancelButtonText: '取消',
       type: 'warning'
     })
-      .then(() => {
+      .then(async () => {
         // TODO: 调用删除接口
+        await fetchDeleteCampus(row.id)
         ElMessage.success('删除成功')
         refreshData()
       })

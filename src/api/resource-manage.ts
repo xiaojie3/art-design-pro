@@ -1,5 +1,16 @@
 import request from '@/utils/http'
-
+// 获取学校列表
+export function fetchGetSchoolList() {
+  return request.get<Api.ResourceManage.SchoolList>({
+    url: '/api/resource/school'
+  })
+}
+// 获取学校信息
+export function fetchGetSchool() {
+  return request.get<Api.ResourceManage.CampusListItem>({
+    url: '/api/resource/school/1'
+  })
+}
 // 获取校区列表
 export function fetchFindCampusPage(params: Api.ResourceManage.CampusSearchParams) {
   return request.post<Api.ResourceManage.CampusList>({
@@ -22,10 +33,9 @@ export function fetchEditCampus(params: Api.ResourceManage.CampusListItem) {
   })
 }
 // 删除校区
-export function fetchDeleteCampus(params: Api.ResourceManage.CampusListItem) {
+export function fetchDeleteCampus(id: string) {
   return request.del<void>({
-    url: '/api/resource/campus',
-    params
+    url: `/api/resource/campus/${id}`
   })
 }
 // 获取学院列表

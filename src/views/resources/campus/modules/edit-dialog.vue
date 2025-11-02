@@ -7,11 +7,27 @@
     @close="handleClose"
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
-      <ElFormItem label="校区名称" prop="campusName">
-        <ElInput v-model="form.campusName" placeholder="请输入校区名称" />
+      <ElFormItem label="所属学校" prop="schoolId">
+        <ElSelect v-model="form.schoolId" placeholder="请选择学校">
+          <ElOption
+            v-for="school in schoolList"
+            :key="school.id"
+            :label="'[' + school.schoolCode + ']' + school.schoolName"
+            :value="school.id"
+          />
+        </ElSelect>
       </ElFormItem>
       <ElFormItem label="校区编码" prop="campusCode">
         <ElInput v-model="form.campusCode" placeholder="请输入校区编码" />
+      </ElFormItem>
+      <ElFormItem label="校区名称" prop="campusName">
+        <ElInput v-model="form.campusName" placeholder="请输入校区名称" />
+      </ElFormItem>
+      <ElFormItem label="校区英文名称" prop="englishName">
+        <ElInput v-model="form.englishName" placeholder="请输入校区英文名称" />
+      </ElFormItem>
+      <ElFormItem label="地址" prop="address">
+        <ElInput v-model="form.address" placeholder="请输入地址" />
       </ElFormItem>
     </ElForm>
     <template #footer>
@@ -25,9 +41,11 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-  import { fetchAddCampus, fetchEditCampus } from '@/api/resource-manage'
+  import { fetchAddCampus, fetchEditCampus, fetchGetSchoolList } from '@/api/resource-manage'
+  import { ElMessage } from 'element-plus'
 
   type CampusListItem = Api.ResourceManage.CampusListItem
+  type SchoolListItem = Api.ResourceManage.SchoolListItem
 
   interface Props {
     modelValue: boolean
@@ -59,9 +77,15 @@
   })
 
   /**
+   * 学校列表数据
+   */
+  const schoolList = ref<Array<SchoolListItem>>([])
+
+  /**
    * 表单验证规则
    */
   const rules = reactive<FormRules>({
+    schoolId: [{ required: true, message: '请选择所属学校', trigger: 'change' }],
     campusName: [
       { required: true, message: '请输入校区名称', trigger: 'blur' },
       { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
@@ -109,12 +133,17 @@
     },
     { deep: true }
   )
-
   /**
    * 初始化表单数据
    * 根据弹窗类型填充表单或重置表单
    */
-  const initForm = () => {
+  const initForm = async () => {
+    // 加载学校列表
+    const result = await fetchGetSchoolList()
+    // 直接使用 result，不再假设它有 data 属性
+    schoolList.value = Array.isArray(result) ? result : []
+    // 如果学校列表不为空且表单未设置学校，则默认选择第一个学校
+    const defaultSchoolId = schoolList.value[0]?.id || ''
     if (props.dialogType === 'edit' && props.campusData) {
       Object.assign(form, props.campusData)
     } else {
@@ -122,7 +151,7 @@
         id: '',
         campusCode: '',
         campusName: '',
-        schoolId: '',
+        schoolId: defaultSchoolId,
         englishName: '',
         address: '',
         principal: '',
