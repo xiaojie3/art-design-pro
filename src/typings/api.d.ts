@@ -117,12 +117,13 @@ declare namespace Api {
       id: string
       campusCode: string
       schoolId: string
-      chineseName: string
+      campusName: string
       englishName: string
       address: string
       principal: string
-      contact: string
+      phone: string
       intro: string
+      createTime: string
     }
 
     /** 校区搜索参数 */
@@ -131,11 +132,11 @@ declare namespace Api {
         CampusListItem,
         | 'id'
         | 'campusCode'
-        | 'chineseName'
+        | 'campusName'
         | 'englishName'
         | 'address'
         | 'principal'
-        | 'contact'
+        | 'phone'
         | 'intro'
       > &
         Api.Common.CommonSearchParams

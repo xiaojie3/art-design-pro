@@ -1,28 +1,17 @@
 <template>
   <ElDialog
     v-model="visible"
-    :title="dialogType === 'add' ? '新增角色' : '编辑角色'"
+    :title="dialogType === 'add' ? '新增校区' : '编辑校区'"
     width="30%"
     align-center
     @close="handleClose"
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
-      <ElFormItem label="角色名称" prop="roleName">
-        <ElInput v-model="form.roleName" placeholder="请输入角色名称" />
+      <ElFormItem label="校区名称" prop="campusName">
+        <ElInput v-model="form.campusName" placeholder="请输入校区名称" />
       </ElFormItem>
-      <ElFormItem label="角色编码" prop="roleCode">
-        <ElInput v-model="form.roleCode" placeholder="请输入角色编码" />
-      </ElFormItem>
-      <ElFormItem label="描述" prop="description">
-        <ElInput
-          v-model="form.description"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入角色描述"
-        />
-      </ElFormItem>
-      <ElFormItem label="启用">
-        <ElSwitch v-model="form.enabled" />
+      <ElFormItem label="校区编码" prop="campusCode">
+        <ElInput v-model="form.campusCode" placeholder="请输入校区编码" />
       </ElFormItem>
     </ElForm>
     <template #footer>
@@ -36,14 +25,14 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-  import { fetchAddRole, fetchUpdateRole } from '@/api/system-manage'
+  import { fetchAddCampus, fetchEditCampus } from '@/api/resource-manage'
 
-  type RoleListItem = Api.SystemManage.RoleListItem
+  type CampusListItem = Api.ResourceManage.CampusListItem
 
   interface Props {
     modelValue: boolean
     dialogType: 'add' | 'edit'
-    roleData?: RoleListItem
+    campusData?: CampusListItem
   }
 
   interface Emits {
@@ -54,7 +43,7 @@
   const props = withDefaults(defineProps<Props>(), {
     modelValue: false,
     dialogType: 'add',
-    roleData: undefined
+    campusData: undefined
   })
 
   const emit = defineEmits<Emits>()
@@ -73,27 +62,31 @@
    * 表单验证规则
    */
   const rules = reactive<FormRules>({
-    roleName: [
-      { required: true, message: '请输入角色名称', trigger: 'blur' },
+    campusName: [
+      { required: true, message: '请输入校区名称', trigger: 'blur' },
       { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
     ],
-    roleCode: [
-      { required: true, message: '请输入角色编码', trigger: 'blur' },
+    campusCode: [
+      { required: true, message: '请输入校区编码', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
     ],
-    description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }]
+    description: [{ required: true, message: '请输入校区描述', trigger: 'blur' }]
   })
 
   /**
    * 表单数据
    */
-  const form = reactive<RoleListItem>({
+  const form = reactive<CampusListItem>({
     id: '',
-    roleCode: '',
-    roleName: '',
-    description: '',
-    createTime: '',
-    enabled: true
+    campusCode: '',
+    campusName: '',
+    schoolId: '',
+    englishName: '',
+    address: '',
+    principal: '',
+    phone: '',
+    intro: '',
+    createTime: ''
   })
 
   /**
@@ -110,7 +103,7 @@
    * 监听角色数据变化，更新表单
    */
   watch(
-    () => props.roleData,
+    () => props.campusData,
     (newData) => {
       if (newData && props.modelValue) initForm()
     },
@@ -122,16 +115,20 @@
    * 根据弹窗类型填充表单或重置表单
    */
   const initForm = () => {
-    if (props.dialogType === 'edit' && props.roleData) {
-      Object.assign(form, props.roleData)
+    if (props.dialogType === 'edit' && props.campusData) {
+      Object.assign(form, props.campusData)
     } else {
       Object.assign(form, {
-        roleId: 0,
-        roleName: '',
-        roleCode: '',
-        description: '',
-        createTime: '',
-        enabled: true
+        id: '',
+        campusCode: '',
+        campusName: '',
+        schoolId: '',
+        englishName: '',
+        address: '',
+        principal: '',
+        phone: '',
+        intro: '',
+        createTime: ''
       })
     }
   }
@@ -155,9 +152,9 @@
       await formRef.value.validate()
       // TODO: 调用新增/编辑接口
       if (props.dialogType === 'add') {
-        await fetchAddRole(form)
+        await fetchAddCampus(form)
       } else {
-        await fetchUpdateRole(form)
+        await fetchEditCampus(form)
       }
       const message = props.dialogType === 'add' ? '新增成功' : '修改成功'
       ElMessage.success(message)

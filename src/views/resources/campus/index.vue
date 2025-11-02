@@ -38,6 +38,14 @@
       >
       </ArtTable>
     </ElCard>
+
+    <!-- 编辑弹窗 -->
+    <EditDialog
+      v-model="dialogVisible"
+      :dialog-type="dialogType"
+      :campus-data="currentData"
+      @success="refreshData"
+    />
   </div>
 </template>
 
@@ -47,6 +55,7 @@
   import { useTable } from '@/composables/useTable'
   import { fetchFindCampusPage } from '@/api/resource-manage'
   import ArtButtonMore from '@/components/core/forms/art-button-more/index.vue'
+  import EditDialog from './modules/edit-dialog.vue'
   import { ElMessageBox } from 'element-plus'
   import { useI18n } from 'vue-i18n'
   const { t } = useI18n()
@@ -86,10 +95,6 @@
     // 核心配置
     core: {
       apiFn: fetchFindCampusPage,
-      apiParams: {
-        current: 1,
-        size: 20
-      },
       // 排除 apiParams 中的属性
       excludeParams: ['daterange'],
       columnsFactory: () => [
@@ -99,7 +104,7 @@
           width: 100
         },
         {
-          prop: 'chineseName',
+          prop: 'campusName',
           label: t('resources.campus.table.column.chineseName'),
           minWidth: 120
         },
@@ -183,7 +188,7 @@
   }
 
   const deleteRole = (row: CampusListItem) => {
-    ElMessageBox.confirm(`确定删除校区"${row.chineseName}"吗？此操作不可恢复！`, '删除确认', {
+    ElMessageBox.confirm(`确定删除校区"${row.campusName}"吗？此操作不可恢复！`, '删除确认', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
