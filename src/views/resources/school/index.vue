@@ -22,24 +22,13 @@
 
 <script setup lang="ts">
   import { ref } from 'vue'
-  import request from '@/utils/http'
   import { $t } from '@/locales'
   import { useI18n } from 'vue-i18n'
+  import { fetchGetSchool, fetchEditSchool } from '@/api/resource-manage'
   interface Emits {
     (e: 'update:modelValue', value: Record<string, any>): void
     (e: 'search', params: Record<string, any>): void
     (e: 'reset'): void
-  }
-
-  interface FormData {
-    id?: string
-    schoolCode?: string
-    chineseName?: string
-    chineseAbbr?: string
-    englishName?: string
-    englishAbbr?: string
-    address?: string
-    intro?: string
   }
 
   const emit = defineEmits<Emits>()
@@ -49,24 +38,23 @@
   /**
    * 表单数据
    */
-  const formData = ref<FormData>({
-    id: undefined,
-    schoolCode: undefined,
-    chineseName: undefined,
-    chineseAbbr: undefined,
-    englishName: undefined,
-    englishAbbr: undefined,
-    address: undefined,
-    intro: undefined
+  const formData = reactive<Api.ResourceManage.SchoolListItem>({
+    id: '',
+    schoolCode: '',
+    schoolName: '',
+    schoolAbbr: '',
+    englishName: '',
+    englishAbbr: '',
+    address: '',
+    intro: '',
+    createTime: ''
   })
 
   // 加载初始数据的函数
   const loadInitialData = async () => {
-    const responseData = await request.get<FormData>({
-      url: '/api/school'
-    })
+    const responseData = await fetchGetSchool()
     // 后端返回的数据结构与 FormData 一致，直接赋值
-    formData.value = { ...responseData } // 用扩展运算符避免直接修改响应对象
+    Object.assign(formData, responseData) // 使用 Object.assign 逐个属性赋值，避免重新赋值常量
   }
   // 组件挂载后执行加载
   onMounted(() => {
@@ -84,17 +72,17 @@
         trigger: 'blur'
       }
     ],
-    chineseName: [
+    schoolName: [
       {
         required: true,
-        message: t('resources.school.placeholder.chineseName'),
+        message: t('resources.school.placeholder.schoolName'),
         trigger: 'blur'
       }
     ],
-    chineseAbbr: [
+    schoolAbbr: [
       {
         required: true,
-        message: t('resources.school.placeholder.chineseAbbr'),
+        message: t('resources.school.placeholder.schoolAbbr'),
         trigger: 'blur'
       }
     ],
@@ -145,17 +133,17 @@
       placeholder: $t('resources.school.placeholder.schoolCode'),
       clearable: true
     }),
-    chineseName: createFormItem({
-      label: $t('resources.school.label.chineseName'),
-      key: 'chineseName',
+    schoolName: createFormItem({
+      label: $t('resources.school.label.schoolName'),
+      key: 'schoolName',
       type: 'input',
-      placeholder: $t('resources.school.placeholder.chineseName')
+      placeholder: $t('resources.school.placeholder.schoolName')
     }),
-    chineseAbbr: createFormItem({
-      label: $t('resources.school.label.chineseAbbr'),
-      key: 'chineseAbbr',
+    schoolAbbr: createFormItem({
+      label: $t('resources.school.label.schoolAbbr'),
+      key: 'schoolAbbr',
       type: 'input',
-      placeholder: $t('resources.school.placeholder.chineseAbbr')
+      placeholder: $t('resources.school.placeholder.schoolAbbr')
     }),
     englishName: createFormItem({
       label: $t('resources.school.label.englishName'),
@@ -191,8 +179,8 @@
   // 表单配置
   const formItems = computed(() => [
     baseFormItems.schoolCode,
-    baseFormItems.chineseName,
-    baseFormItems.chineseAbbr,
+    baseFormItems.schoolName,
+    baseFormItems.schoolAbbr,
     baseFormItems.englishName,
     baseFormItems.englishAbbr,
     baseFormItems.address,
@@ -213,11 +201,7 @@
     await formRef.value.validate()
 
     // 2. 调用后端接口（示例：POST 请求）
-    const responseData = await request.post<FormData>({
-      url: '/api/school',
-      params: formData.value,
-      showSuccessMessage: true // 显示成功消息
-    })
+    const responseData = await fetchEditSchool(formData)
 
     // 可以在这里更新组件状态或触发其他逻辑
     emit('search', responseData) // 将接口返回数据传给父组件

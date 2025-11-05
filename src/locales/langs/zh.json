@@ -350,8 +350,8 @@
       "title": "学校管理",
       "label": {
         "schoolCode": "学校代码",
-        "chineseName": "学校名称",
-        "chineseAbbr": "学校简称",
+        "schoolName": "学校名称",
+        "schoolAbbr": "学校简称",
         "englishName": "英文名称",
         "englishAbbr": "英文简称",
         "address": "地址",
@@ -359,8 +359,8 @@
       },
       "placeholder": {
         "schoolCode": "请输入学校代码",
-        "chineseName": "请输入学校名称",
-        "chineseAbbr": "请输入学校简称",
+        "schoolName": "请输入学校名称",
+        "schoolAbbr": "请输入学校简称",
         "englishName": "请输入英文名称",
         "englishAbbr": "请输入英文简称",
         "address": "请输入地址",

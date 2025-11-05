@@ -7,8 +7,16 @@ export function fetchGetSchoolList() {
 }
 // 获取学校信息
 export function fetchGetSchool() {
-  return request.get<Api.ResourceManage.CampusListItem>({
+  return request.get<Api.ResourceManage.SchoolListItem>({
     url: '/api/resource/school/1'
+  })
+}
+// 编辑学校信息
+export function fetchEditSchool(params: Api.ResourceManage.SchoolListItem) {
+  return request.put<Api.ResourceManage.SchoolListItem>({
+    url: '/api/resource/school',
+    showSuccessMessage: true,
+    params
   })
 }
 // 获取校区列表

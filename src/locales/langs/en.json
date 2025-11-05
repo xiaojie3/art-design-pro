@@ -399,8 +399,8 @@
       "title": "College Management",
       "placeholder": {
         "collegeCode": "Please enter college code",
-        "chineseName": "Please enter college name",
-        "chineseAbbr": "Please enter college abbreviation",
+        "schoolName": "Please enter school name",
+        "schoolAbbr": "Please enter school abbreviation",
         "englishName": "Please enter English name",
         "englishAbbr": "Please enter English abbreviation",
         "address": "Please enter address",
@@ -409,8 +409,8 @@
       "table": {
         "column": {
           "collegeCode": "College Code",
-          "chineseName": "Chinese Name",
-          "chineseAbbr": "Chinese Abbr",
+          "schoolName": "School Name",
+          "schoolAbbr": "School Abbr",
           "englishName": "English Name",
           "englishAbbr": "English Abbr",
           "address": "Address",

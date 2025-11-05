@@ -116,7 +116,7 @@ declare namespace Api {
       id: string
       schoolCode: string
       schoolName: string
-      chineseAbbr: string
+      schoolAbbr: string
       englishName: string
       englishAbbr: string
       address: string
