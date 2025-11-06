@@ -350,8 +350,8 @@
       "title": "School Management",
       "label": {
         "schoolCode": "School Code",
-        "chineseName": "Chinese Name",
-        "chineseAbbr": "Chinese Abbr",
+        "schoolName": "School Name",
+        "schoolAbbr": "School Abbr",
         "englishName": "English Name",
         "englishAbbr": "English Abbr",
         "address": "Address",
@@ -359,8 +359,8 @@
       },
       "placeholder": {
         "schoolCode": "Please enter school code",
-        "chineseName": "Please enter school name",
-        "chineseAbbr": "Please enter school abbreviation",
+        "schoolName": "Please enter school name",
+        "schoolAbbr": "Please enter school abbreviation",
         "englishName": "Please enter English name",
         "englishAbbr": "Please enter English abbreviation",
         "address": "Please enter address",
