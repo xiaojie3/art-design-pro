@@ -3,6 +3,7 @@ import { useUserStore } from '@/store/modules/user'
 import { ApiStatus } from './status'
 import { HttpError, handleError, showError, showSuccess } from './error'
 import { $t } from '@/locales'
+import { fetchRefreshToken } from '@/api/auth'
 
 /** 请求配置常量 */
 const REQUEST_TIMEOUT = 15000
@@ -63,16 +64,66 @@ axiosInstance.interceptors.request.use(
   }
 )
 
-/** 响应拦截器 */
+/**
+ * 响应拦截器
+ */
 axiosInstance.interceptors.response.use(
+  // 2xx 范围内的状态码都会触发此函数
   (response: AxiosResponse<Http.BaseResponse>) => {
     const { code, msg } = response.data
-    if (code === ApiStatus.success) return response
+
+    // 如果是业务上的成功，直接返回响应
+    if (code === ApiStatus.success) {
+      return response
+    }
+
+    // 如果是业务上的认证失败（Token 过期或无效）
     if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)
+
+    // 处理其他业务错误
     throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
   },
-  (error) => {
-    if (error.response?.status === ApiStatus.unauthorized) handleUnauthorizedError()
+
+  // 超出 2xx 范围的状态码都会触发此函数
+  async (error) => {
+    const originalRequest = error.config
+
+    // 统一处理 401 错误（包括 HTTP 401 和业务码 401）
+    if (
+      error.response?.status === ApiStatus.unauthorized ||
+      (error.response?.data as Http.BaseResponse)?.code === ApiStatus.unauthorized
+    ) {
+      // 防止重复刷新
+      if (!originalRequest?._retry) {
+        originalRequest._retry = true
+
+        const userStore = useUserStore()
+        const refreshToken = userStore.refreshToken
+
+        // 如果没有 Refresh Token，直接登出
+        if (!refreshToken) {
+          logOut()
+          return Promise.reject(error)
+        }
+
+        try {
+          // 尝试刷新 Token
+          const res = await fetchRefreshToken(refreshToken)
+          // 保存新的 Access Token
+          userStore.setToken(res.token)
+
+          // 如果刷新成功，重试原始请求
+          return retryRequest(originalRequest)
+        } catch (refreshError) {
+          // 刷新 Token 失败（可能是 Refresh Token 过期或无效）
+          console.error('Failed to refresh token:', refreshError)
+          logOut() // 强制登出
+          return Promise.reject(refreshError)
+        }
+      }
+    }
+
+    // 处理其他网络错误（如 404, 500 等）
     return Promise.reject(handleError(error))
   }
 )
