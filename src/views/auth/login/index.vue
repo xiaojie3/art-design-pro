@@ -104,7 +104,8 @@
   import { getCssVar } from '@/utils/ui'
   import { useI18n } from 'vue-i18n'
   import { HttpError } from '@/utils/http/error'
-  import { fetchLogin, fetchGetUserInfo } from '@/api/auth'
+  import { fetchLogin } from '@/api/auth'
+  import { fetchGetUserInfo } from '@/api/system-manage'
   import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
 
   defineOptions({ name: 'Login' })

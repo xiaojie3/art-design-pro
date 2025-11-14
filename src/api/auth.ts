@@ -13,17 +13,25 @@ export function fetchLogin(params: Api.Auth.LoginParams) {
     // showErrorMessage: false // 不显示错误消息
   })
 }
-
 /**
- * 获取用户信息
- * @returns 用户信息
+ * 退出登录
+ * @returns 退出登录响应
  */
-export function fetchGetUserInfo() {
-  return request.get<Api.Auth.UserInfo>({
-    url: '/api/user/info'
-    // 自定义请求头
-    // headers: {
-    //   'X-Custom-Header': 'your-custom-value'
-    // }
+export function fetchLogout() {
+  return request.post<void>({
+    url: '/api/auth/logout'
+  })
+}
+/**
+ * 刷新令牌
+ * @param refreshToken 刷新令牌
+ * @returns 刷新令牌响应
+ */
+export function fetchRefreshToken(refreshToken: string) {
+  return request.post<Api.Auth.LoginResponse>({
+    url: '/api/auth/refresh-token',
+    params: {
+      refreshToken
+    }
   })
 }

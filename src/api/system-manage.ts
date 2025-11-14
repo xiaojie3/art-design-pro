@@ -1,6 +1,19 @@
 import request from '@/utils/http'
 import { AppRouteRecord } from '@/types/router'
 
+/**
+ * 获取用户信息
+ * @returns 用户信息
+ */
+export function fetchGetUserInfo() {
+  return request.post<Api.Auth.UserInfo>({
+    url: '/api/system/user/info'
+    // 自定义请求头
+    // headers: {
+    //   'X-Custom-Header': 'your-custom-value'
+    // }
+  })
+}
 // 获取用户列表
 export function fetchFindUserPage(params: Api.SystemManage.UserSearchParams) {
   return request.post<Api.SystemManage.UserList>({
