@@ -2,45 +2,28 @@
   <ElDialog
     v-model="dialogVisible"
     :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
-    width="30%"
+    width="60%"
     align-center
   >
-    <ElForm ref="formRef" :model="formData" :rules="rules" label-width="80px">
-      <ElFormItem label="用户名" prop="username">
-        <ElInput v-model="formData.username" placeholder="请输入用户名" />
-      </ElFormItem>
-      <ElFormItem label="手机号" prop="phone">
-        <ElInput v-model="formData.phone" placeholder="请输入手机号" />
-      </ElFormItem>
-      <ElFormItem label="性别" prop="gender">
-        <ElSelect v-model="formData.gender">
-          <ElOption label="男" value="男" />
-          <ElOption label="女" value="女" />
-        </ElSelect>
-      </ElFormItem>
-      <ElFormItem label="角色" prop="role">
-        <ElSelect v-model="formData.role" multiple>
-          <ElOption
-            v-for="role in roleList"
-            :key="role.roleCode"
-            :value="role.roleCode"
-            :label="role.roleName"
-          />
-        </ElSelect>
-      </ElFormItem>
-    </ElForm>
-    <template #footer>
-      <div class="dialog-footer">
-        <ElButton @click="dialogVisible = false">取消</ElButton>
-        <ElButton type="primary" @click="handleSubmit">提交</ElButton>
-      </div>
-    </template>
+    <ArtForm
+      ref="formRef"
+      v-model="formData"
+      :items="formItems"
+      :rules="formRules"
+      :span="12"
+      :defaultExpanded="true"
+      @submit="handleSubmit"
+    >
+    </ArtForm>
   </ElDialog>
 </template>
 
 <script setup lang="ts">
-  import { ROLE_LIST_DATA } from '@/mock/temp/formData'
-  import type { FormInstance, FormRules } from 'element-plus'
+  // 移除mock数据导入，改为导入API
+  import { fetchRoleCascaderOptionsList } from '@/api/system-manage'
+  import type { FormInstance } from 'element-plus'
+  import { ElMessage } from 'element-plus'
+  import { ref, computed, reactive, watch } from 'vue'
 
   interface Props {
     visible: boolean
@@ -52,12 +35,9 @@
     (e: 'update:visible', value: boolean): void
     (e: 'submit'): void
   }
-
+  const roleOptions = ref<Api.Common.CascaderOptionsItem[]>([])
   const props = defineProps<Props>()
   const emit = defineEmits<Emits>()
-
-  // 角色列表数据
-  const roleList = ref(ROLE_LIST_DATA)
 
   // 对话框显示控制
   const dialogVisible = computed({
@@ -74,12 +54,116 @@
   const formData = reactive({
     username: '',
     phone: '',
-    gender: '男',
-    role: [] as string[]
+    gender: '1',
+    role: []
   })
 
+  /**
+   * 表单项配置类型
+   */
+  interface FormItemConfig {
+    label: string
+    key: string
+    type: string
+    placeholder?: string
+    props?: Record<string, any>
+    [key: string]: any
+  }
+
+  /**
+   * 创建表单项的工厂函数
+   */
+  const createFormItem = (config: FormItemConfig) => config
+
+  /**
+   * 性别选项
+   */
+  interface OptionItem {
+    label: string
+    value: string
+    disabled?: boolean
+  }
+  const GENDER_OPTIONS: OptionItem[] = [
+    { label: '男', value: '1' },
+    { label: '女', value: '2' }
+  ]
+
+  // 基础表单项配置
+  const baseFormItems = {
+    account: createFormItem({
+      label: '账号',
+      key: 'account',
+      type: 'input',
+      placeholder: '请输入账号',
+      clearable: true
+    }),
+    password: createFormItem({
+      label: '密码',
+      key: 'password',
+      type: 'input',
+      placeholder: '请输入密码',
+      clearable: true
+    }),
+    username: createFormItem({
+      label: '用户名',
+      key: 'username',
+      type: 'input',
+      placeholder: '请输入用户名',
+      clearable: true
+    }),
+    phone: createFormItem({
+      label: '手机号',
+      key: 'phone',
+      type: 'input',
+      props: { placeholder: '请输入手机号', maxlength: '11' }
+    }),
+    email: createFormItem({
+      label: '邮箱',
+      key: 'email',
+      type: 'input',
+      props: { placeholder: '请输入邮箱', maxlength: '50' }
+    }),
+    gender: createFormItem({
+      label: '性别',
+      key: 'gender',
+      type: 'radiogroup',
+      props: {
+        options: GENDER_OPTIONS
+      }
+    })
+  }
+
+  const formItems = computed(() => [
+    baseFormItems.account,
+    baseFormItems.password,
+    baseFormItems.username,
+    baseFormItems.phone,
+    baseFormItems.email,
+    baseFormItems.gender,
+    // 级联选择
+    {
+      label: '角色',
+      key: 'roles',
+      type: 'cascader',
+      span: 24,
+      props: {
+        placeholder: '请选择角色',
+        clearable: true,
+        style: { width: '100%' },
+        collapseTags: true,
+        maxCollapseTags: 4,
+        props: { multiple: true },
+        options: roleOptions.value
+      }
+    }
+  ])
+
   // 表单验证规则
-  const rules: FormRules = {
+  const formRules = {
+    account: [
+      { required: true, message: '请输入账号', trigger: 'blur' },
+      { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
+    ],
     username: [
       { required: true, message: '请输入用户名', trigger: 'blur' },
       { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
@@ -89,7 +173,7 @@
       { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
     ],
     gender: [{ required: true, message: '请选择性别', trigger: 'blur' }],
-    role: [{ required: true, message: '请选择角色', trigger: 'blur' }]
+    roles: [{ required: true, message: '请选择角色', trigger: 'blur' }]
   }
 
   /**
@@ -101,11 +185,23 @@
     const row = props.userData
 
     Object.assign(formData, {
-      username: isEdit && row ? row.userName || '' : '',
-      phone: isEdit && row ? row.userPhone || '' : '',
-      gender: isEdit && row ? row.userGender || '男' : '男',
-      role: isEdit && row ? (Array.isArray(row.userRoles) ? row.userRoles : []) : []
+      account: isEdit && row ? row.account || '' : '',
+      password: isEdit && row ? row.password || '' : '',
+      username: isEdit && row ? row.username || '' : '',
+      phone: isEdit && row ? row.phone || '' : '',
+      email: isEdit && row ? row.email || '' : '',
+      gender: isEdit && row ? row.gender || '1' : '1',
+      role: isEdit && row ? (Array.isArray(row.roles) ? row.roles : []) : []
     })
+  }
+
+  const loadRoleOptions = async () => {
+    const data = await fetchRoleCascaderOptionsList()
+    roleOptions.value = data.map((item) => ({
+      label: item.label || '',
+      value: item.value || '',
+      children: item.children || []
+    }))
   }
 
   /**
@@ -116,10 +212,9 @@
     () => [props.visible, props.type, props.userData],
     ([visible]) => {
       if (visible) {
+        // 每次对话框打开时重新获取角色列表
+        loadRoleOptions()
         initFormData()
-        nextTick(() => {
-          formRef.value?.clearValidate()
-        })
       }
     },
     { immediate: true }

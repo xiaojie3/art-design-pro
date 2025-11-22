@@ -54,13 +54,13 @@
         <ElEmpty v-else :description="emptyText" :image-size="120" />
       </template>
     </ElTable>
-
     <div
       class="pagination custom-pagination"
       v-if="showPagination"
       :class="mergedPaginationOptions?.align"
       ref="paginationRef"
     >
+      <ElInput style="width: 80px" placeholder="" />
       <ElPagination
         v-bind="mergedPaginationOptions"
         :total="pagination?.total"
@@ -170,7 +170,7 @@
   // 默认分页常量
   const DEFAULT_PAGINATION_OPTIONS: PaginationOptions = {
     pageSizes: [10, 20, 30, 50, 100],
-    align: 'center',
+    align: 'right',
     background: true,
     layout: layout.value,
     hideOnSinglePage: false,

@@ -71,7 +71,7 @@ axiosInstance.interceptors.request.use(
       request.headers.set('Content-Type', 'application/json')
       request.data = JSON.stringify(request.data)
     }
-
+    request.headers.set('X-UserId', '1')
     return request
   },
   (error) => {

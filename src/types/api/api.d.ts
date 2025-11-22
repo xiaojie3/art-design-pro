@@ -58,6 +58,18 @@ declare namespace Api {
 
     /** 启用状态 */
     type EnableStatus = '1' | '2'
+
+    /** 字典项 */
+    interface DicItem {
+      name: string
+      code: string
+    }
+
+    interface CascaderOptionsItem {
+      value: string
+      label: string
+      children?: CascaderOptionsItem[]
+    }
   }
 
   /** 认证类型 */
@@ -88,19 +100,19 @@ declare namespace Api {
   /** 系统管理类型 */
   namespace SystemManage {
     /** 用户列表 */
-    type UserList = Api.Common.PaginatedResponse<UserListItem>
+    type UserPage = Api.Common.PaginatedResponse<UserListItem>
 
     /** 用户列表项 */
     interface UserListItem {
-      id: number
-      avatar: string
-      status: string
-      userName: string
-      userGender: string
-      nickName: string
-      userPhone: string
-      userEmail: string
-      userRoles: string[]
+      id: string
+      account: string
+      password: string
+      username: string
+      email: string
+      gender: DicItem
+      phone: string
+      status: DicItem
+      roles: string
       createBy: string
       createTime: string
       updateBy: string
