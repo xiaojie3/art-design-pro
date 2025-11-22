@@ -54,21 +54,71 @@
         <ElEmpty v-else :description="emptyText" :image-size="120" />
       </template>
     </ElTable>
-    <div
-      class="pagination custom-pagination"
-      v-if="showPagination"
-      :class="mergedPaginationOptions?.align"
-      ref="paginationRef"
-    >
-      <ElPagination
-        v-bind="mergedPaginationOptions"
-        :total="pagination?.total"
-        :disabled="loading"
-        :page-size="pagination?.size"
-        :current-page="pagination?.current"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+    <div class="pagination custom-pagination" v-if="showPagination" ref="paginationRef">
+      <!-- 批量修改区域 - 居左 -->
+      <div class="batch-edit-container" v-if="enableBatchAction">
+        <label>批量修改：</label>
+        <ElSelect v-model="selectedField" placeholder="请选择字段">
+          <ElOption
+            v-for="option in fieldOptions"
+            :key="option.key"
+            :label="option.label"
+            :value="option.value"
+          />
+        </ElSelect>
+        <!-- 动态渲染输入组件 -->
+        <template v-if="currentFieldOption">
+          <!-- 下拉选择器 -->
+          <ElSelect
+            v-if="currentFieldOption.type === 'select'"
+            v-model="selectedValue"
+            placeholder="请选择"
+          >
+            <ElOption
+              v-for="option in currentFieldOption.options"
+              :key="option.key"
+              :label="option.label"
+              :value="option.value"
+            />
+          </ElSelect>
+          <!-- 文本输入框 -->
+          <ElInput
+            v-else-if="currentFieldOption.type === 'input'"
+            v-model="selectedValue"
+            placeholder="请输入"
+            clearable
+          />
+          <!-- 日期选择器 -->
+          <ElDatePicker
+            v-else-if="currentFieldOption.type === 'date'"
+            v-model="selectedValue"
+            type="date"
+            placeholder="选择日期"
+            style="width: 170px"
+          />
+          <!-- 日期时间选择器 -->
+          <ElDatePicker
+            v-else-if="currentFieldOption.type === 'datetime'"
+            v-model="selectedValue"
+            type="datetime"
+            placeholder="选择日期时间"
+            style="width: 210px"
+          />
+        </template>
+        <ElButton type="primary" :disabled="!selectedValue">修改</ElButton>
+      </div>
+      <!-- 分页区域 - 居右 -->
+      <div class="pagination-container">
+        <ElPagination
+          v-bind="mergedPaginationOptions"
+          :total="pagination?.total"
+          :disabled="loading"
+          :page-size="pagination?.size"
+          :current-page="pagination?.current"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +126,7 @@
 <script setup lang="ts">
   import { ref, computed, nextTick, watchEffect } from 'vue'
   import type { ElTable, TableProps } from 'element-plus'
+  import { ElSelect, ElOption, ElInput, ElDatePicker } from 'element-plus'
   import { storeToRefs } from 'pinia'
   import { ColumnOption } from '@/types'
   import { useTableStore } from '@/store/modules/table'
@@ -88,6 +139,68 @@
   const { width } = useWindowSize()
   const elTableRef = ref<InstanceType<typeof ElTable> | null>(null)
   const paginationRef = ref<HTMLElement>()
+  /**
+   * 字段选项接口，扩展支持字段类型
+   */
+  interface FieldOption {
+    key: string
+    label: string
+    value: string
+    type: 'select' | 'input' | 'date' | 'datetime'
+    options?: { key: string; label: string; value: string | number }[]
+  }
+
+  /**
+   * 支持不同输入类型的字段选项配置
+   */
+  const fieldOptions: FieldOption[] = [
+    {
+      key: 'isEnable',
+      label: '是否启用',
+      value: 'isEnable',
+      type: 'select',
+      options: [
+        { key: '1', label: '启用', value: '1' },
+        { key: '2', label: '禁用', value: '2' }
+      ]
+    },
+    {
+      key: 'userName',
+      label: '用户名',
+      value: 'userName',
+      type: 'input'
+    },
+    {
+      key: 'createTime',
+      label: '创建时间',
+      value: 'createTime',
+      type: 'date'
+    },
+    {
+      key: 'updateTime',
+      label: '更新时间',
+      value: 'updateTime',
+      type: 'datetime'
+    }
+  ]
+
+  const selectedField = ref('isEnable') // 默认选中的字段
+  const selectedValue = ref('') // 选中的值
+
+  /**
+   * 获取当前选中字段的配置信息
+   */
+  const currentFieldOption = computed(() => {
+    return fieldOptions.find((option) => option.value === selectedField.value)
+  })
+
+  // 监听字段切换，清空已选值
+  watchEffect(() => {
+    // 只有在字段改变时才清空值
+    if (selectedField.value) {
+      selectedValue.value = ''
+    }
+  })
   const tableHeaderRef = ref<HTMLElement>()
   const tableStore = useTableStore()
   const { isBorder, isZebra, tableSize, isFullScreen, isHeaderBackground } = storeToRefs(tableStore)
@@ -136,6 +249,8 @@
     emptyText?: string
     /** 是否开启 ArtTableHeader，解决表格高度自适应问题 */
     showTableHeader?: boolean
+    /** 是否启用批量操作 */
+    enableBatchAction?: boolean
   }
 
   const props = withDefaults(defineProps<ArtTableProps>(), {
@@ -169,7 +284,7 @@
   // 默认分页常量
   const DEFAULT_PAGINATION_OPTIONS: PaginationOptions = {
     pageSizes: [10, 20, 30, 50, 100],
-    align: 'center',
+    align: 'right',
     background: true,
     layout: layout.value,
     hideOnSinglePage: false,
@@ -250,6 +365,8 @@
 
   // 是否显示分页器
   const showPagination = computed(() => props.pagination && !isEmpty.value)
+  // 是否启用批量操作
+  const enableBatchAction = computed(() => props.enableBatchAction && !isEmpty.value)
 
   // 清理列属性，移除插槽相关的自定义属性，确保它们不会被 ElTableColumn 错误解释
   const cleanColumnProps = (col: ColumnOption) => {
@@ -338,4 +455,29 @@
 
 <style lang="scss" scoped>
   @use './style';
+
+  .custom-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .batch-edit-container {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+
+  .batch-edit-container label {
+    white-space: nowrap;
+  }
+
+  .batch-edit-container .el-select {
+    margin-right: 2px;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: flex-end;
+  }
 </style>

@@ -19,16 +19,17 @@
       </ArtTableHeader>
 
       <!-- 表格 -->
-      <ArtTable
+      <UserTable
         :loading="loading"
         :data="data"
         :columns="columns"
         :pagination="pagination"
+        :enableBatchAction="true"
         @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
       >
-      </ArtTable>
+      </UserTable>
 
       <!-- 用户弹窗 -->
       <UserDialog
@@ -47,6 +48,7 @@
   import { fetchGetUserPage } from '@/api/system-manage'
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
+  import UserTable from './modules/user-table/index.vue'
   import { ElTag, ElMessageBox } from 'element-plus'
   import { DialogType } from '@/types'
 
