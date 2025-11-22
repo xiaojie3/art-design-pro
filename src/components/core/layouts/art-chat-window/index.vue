@@ -109,7 +109,7 @@
   // 常量定义
   const MOBILE_BREAKPOINT = 640
   const SCROLL_DELAY = 100
-  const BOT_NAME = 'Art Bot'
+  const BOT_NAME = 'Bot'
   const USER_NAME = 'Ricky'
 
   // 响应式布局
