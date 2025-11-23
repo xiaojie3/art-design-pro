@@ -54,7 +54,7 @@
         <ElEmpty v-else :description="emptyText" :image-size="120" />
       </template>
     </ElTable>
-    <div class="pagination custom-pagination" v-if="showPagination" ref="paginationRef">
+    <div class="bottom-container" v-if="showPagination" ref="paginationRef">
       <!-- 批量修改区域 - 居左 -->
       <div class="batch-edit-container" v-if="enableBatchAction">
         <label>批量修改：</label>
@@ -165,9 +165,9 @@
       ]
     },
     {
-      key: 'userName',
+      key: 'username',
       label: '用户名',
-      value: 'userName',
+      value: 'username',
       type: 'input'
     },
     {
@@ -456,7 +456,7 @@
 <style lang="scss" scoped>
   @use './style';
 
-  .custom-pagination {
+  .bottom-container {
     display: flex;
     align-items: center;
     justify-content: space-between;

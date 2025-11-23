@@ -331,6 +331,7 @@
     try {
       await formRef.value.validate()
       emit('submit', { ...form })
+      console.log(formRef.value)
       ElMessage.success(`${isEdit.value ? '编辑' : '新增'}成功`)
       handleCancel()
     } catch {

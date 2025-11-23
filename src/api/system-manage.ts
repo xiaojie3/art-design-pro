@@ -24,9 +24,16 @@ export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
   })
 }
 
-// 获取菜单列表
+// 获取用户菜单列表
+export function fetchGetUserMenuList() {
+  return request.get<AppRouteRecord[]>({
+    url: '/api/system/user/menu-tree'
+  })
+}
+
+// 获取全部菜单列表
 export function fetchGetMenuList() {
   return request.get<AppRouteRecord[]>({
-    url: '/api/v3/system/menus/simple'
+    url: '/api/system/menu/tree'
   })
 }

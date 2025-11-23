@@ -182,7 +182,7 @@
     {
       prop: 'date',
       label: '编辑时间',
-      formatter: () => '2022-3-12 12:00:00'
+      formatter: (row: AppRouteRecord) => row.meta?.updateTime || row.meta?.createTime || ''
     },
     {
       prop: 'status',
