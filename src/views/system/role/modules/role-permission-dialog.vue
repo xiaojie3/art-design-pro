@@ -12,7 +12,7 @@
         ref="treeRef"
         :data="processedMenuList"
         show-checkbox
-        node-key="name"
+        node-key="id"
         :default-expand-all="isExpandAll"
         :default-checked-keys="[1, 2, 3]"
         :props="defaultProps"
@@ -148,7 +148,7 @@
         console.log('设置权限:', props.roleData)
         fetchGetRoleMenuList(props.roleData.id).then((res) => {
           if (res) {
-            treeRef.value?.setCheckedKeys(res.map((item) => item.name))
+            treeRef.value?.setCheckedKeys(res.map((item) => item.id))
           }
         })
       }
@@ -211,11 +211,11 @@
    * @param nodes 节点列表
    * @returns 所有节点的 key 数组
    */
-  const getAllNodeKeys = (nodes: MenuNode[]): string[] => {
-    const keys: string[] = []
+  const getAllNodeKeys = (nodes: MenuNode[]): (string | number)[] => {
+    const keys: (string | number)[] = []
     const traverse = (nodeList: MenuNode[]): void => {
       nodeList.forEach((node) => {
-        if (node.name) keys.push(node.name)
+        if (node.id !== undefined) keys.push(node.id)
         if (node.children?.length) traverse(node.children)
       })
     }
