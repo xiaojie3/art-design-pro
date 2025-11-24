@@ -43,6 +43,7 @@
 <script setup lang="ts">
   import { useMenuStore } from '@/store/modules/menu'
   import { formatMenuTitle } from '@/utils/router'
+  import { fetchGetRoleMenuList } from '@/api/system-manage'
 
   type RoleListItem = Api.SystemManage.RoleListItem
 
@@ -145,6 +146,11 @@
       if (newVal && props.roleData) {
         // TODO: 根据角色加载对应的权限数据
         console.log('设置权限:', props.roleData)
+        fetchGetRoleMenuList(props.roleData.id).then((res) => {
+          if (res) {
+            treeRef.value?.setCheckedKeys(res.map((item) => item.name))
+          }
+        })
       }
     }
   )

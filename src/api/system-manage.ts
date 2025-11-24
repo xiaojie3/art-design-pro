@@ -37,10 +37,17 @@ export function fetchDeleteRole(params: string[]) {
     params
   })
 }
+// 获取角色菜单列表
+export function fetchGetRoleMenuList(roleId: string) {
+  return request.get<AppRouteRecord[]>({
+    url: '/api/system/menu/tree/role',
+    params: { roleId }
+  })
+}
 // 获取用户菜单列表
 export function fetchGetUserMenuList() {
   return request.get<AppRouteRecord[]>({
-    url: '/api/system/user/menu-tree'
+    url: '/api/system/menu/tree/user'
   })
 }
 
