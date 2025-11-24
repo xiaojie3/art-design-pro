@@ -43,7 +43,7 @@
 <script setup lang="ts">
   import { useMenuStore } from '@/store/modules/menu'
   import { formatMenuTitle } from '@/utils/router'
-  import { fetchGetRoleMenuList } from '@/api/system-manage'
+  import { fetchGetRoleMenuList, fetchSaveRoleMenu } from '@/api/system-manage'
 
   type RoleListItem = Api.SystemManage.RoleListItem
 
@@ -87,6 +87,7 @@
     meta?: {
       title?: string
       authList?: Array<{
+        id: string
         authMark: string
         title: string
         checked?: boolean
@@ -107,7 +108,7 @@
       // 如果有 authList，将其转换为子节点
       if (node.meta?.authList?.length) {
         const authNodes = node.meta.authList.map((auth) => ({
-          id: `${node.id}_${auth.authMark}`,
+          id: `${node.id}_${auth.id}`,
           name: `${node.name}_${auth.authMark}`,
           label: auth.title,
           authMark: auth.authMark,
@@ -241,7 +242,7 @@
    * 输出选中的权限数据到控制台
    * 用于调试和查看当前选中的权限配置
    */
-  const outputSelectedData = () => {
+  const outputSelectedData = async () => {
     const tree = treeRef.value
     if (!tree) return
 
@@ -253,8 +254,11 @@
       totalChecked: tree.getCheckedKeys().length,
       totalHalfChecked: tree.getHalfCheckedKeys().length
     }
-
     console.log('=== 选中的权限数据 ===', selectedData)
     ElMessage.success(`已输出选中数据到控制台，共选中 ${selectedData.totalChecked} 个节点`)
+    await fetchSaveRoleMenu({
+      roleId: props.roleData?.id,
+      menuIds: selectedData.checkedKeys
+    })
   }
 </script>

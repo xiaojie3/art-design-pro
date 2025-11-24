@@ -30,6 +30,13 @@ export function fetchSaveRole(params: Api.SystemManage.RoleListItem) {
     params
   })
 }
+// 保存角色菜单
+export function fetchSaveRoleMenu(params: Api.SystemManage.RoleMenu) {
+  return request.post<Api.SystemManage.RoleList>({
+    url: '/api/system/menu/role/save',
+    params
+  })
+}
 // 删除角色
 export function fetchDeleteRole(params: string[]) {
   return request.post<void>({

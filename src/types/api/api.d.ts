@@ -143,5 +143,11 @@ declare namespace Api {
       Pick<RoleListItem, 'id' | 'name' | 'code' | 'description' | 'isEnabled'> &
         Api.Common.CommonSearchParams
     >
+
+    /** 角色菜单 */
+    interface RoleMenu {
+      roleId: string | undefined
+      menuIds: string[]
+    }
   }
 }
