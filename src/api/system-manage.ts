@@ -18,12 +18,25 @@ export function fetchRoleCascaderOptionsList() {
 
 // 获取角色列表
 export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
-  return request.get<Api.SystemManage.RoleList>({
-    url: '/api/role/list',
+  return request.post<Api.SystemManage.RoleList>({
+    url: '/api/system/role/query',
     params
   })
 }
-
+// 保存角色
+export function fetchSaveRole(params: Api.SystemManage.RoleListItem) {
+  return request.post<Api.SystemManage.RoleList>({
+    url: '/api/system/role/save',
+    params
+  })
+}
+// 删除角色
+export function fetchDeleteRole(params: string[]) {
+  return request.post<void>({
+    url: '/api/system/role/delete',
+    params
+  })
+}
 // 获取用户菜单列表
 export function fetchGetUserMenuList() {
   return request.get<AppRouteRecord[]>({

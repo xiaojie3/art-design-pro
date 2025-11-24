@@ -107,18 +107,14 @@
       // 排除 apiParams 中的属性
       excludeParams: ['daterange'],
       columnsFactory: () => [
+        { type: 'index', width: 60, label: '序号' },
         {
-          prop: 'roleId',
-          label: '角色ID',
-          width: 100
-        },
-        {
-          prop: 'roleName',
+          prop: 'name',
           label: '角色名称',
           minWidth: 120
         },
         {
-          prop: 'roleCode',
+          prop: 'code',
           label: '角色编码',
           minWidth: 120
         },
@@ -129,11 +125,11 @@
           showOverflowTooltip: true
         },
         {
-          prop: 'enabled',
+          prop: 'isEnabled',
           label: '角色状态',
           width: 100,
           formatter: (row) => {
-            const statusConfig = row.enabled
+            const statusConfig = row.isEnabled
               ? { type: 'success', text: '启用' }
               : { type: 'warning', text: '禁用' }
             return h(
@@ -161,6 +157,7 @@
                   {
                     key: 'permission',
                     label: '菜单权限',
+                    auth: 'system:role:permission',
                     icon: 'ri:user-3-line'
                   },
                   {
@@ -225,7 +222,7 @@
   }
 
   const deleteRole = (row: RoleListItem) => {
-    ElMessageBox.confirm(`确定删除角色"${row.roleName}"吗？此操作不可恢复！`, '删除确认', {
+    ElMessageBox.confirm(`确定删除角色"${row.name}"吗？此操作不可恢复！`, '删除确认', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'

@@ -7,11 +7,11 @@
     @close="handleClose"
   >
     <ElForm ref="formRef" :model="form" :rules="rules" label-width="120px">
-      <ElFormItem label="角色名称" prop="roleName">
-        <ElInput v-model="form.roleName" placeholder="请输入角色名称" />
+      <ElFormItem label="角色名称" prop="name">
+        <ElInput v-model="form.name" placeholder="请输入角色名称" />
       </ElFormItem>
-      <ElFormItem label="角色编码" prop="roleCode">
-        <ElInput v-model="form.roleCode" placeholder="请输入角色编码" />
+      <ElFormItem label="角色编码" prop="code">
+        <ElInput v-model="form.code" placeholder="请输入角色编码" />
       </ElFormItem>
       <ElFormItem label="描述" prop="description">
         <ElInput
@@ -22,7 +22,7 @@
         />
       </ElFormItem>
       <ElFormItem label="启用">
-        <ElSwitch v-model="form.enabled" />
+        <ElSwitch v-model="form.isEnabled" />
       </ElFormItem>
     </ElForm>
     <template #footer>
@@ -34,6 +34,7 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
+  import { fetchSaveRole } from '@/api/system-manage'
 
   type RoleListItem = Api.SystemManage.RoleListItem
 
@@ -70,11 +71,11 @@
    * 表单验证规则
    */
   const rules = reactive<FormRules>({
-    roleName: [
+    name: [
       { required: true, message: '请输入角色名称', trigger: 'blur' },
       { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
     ],
-    roleCode: [
+    code: [
       { required: true, message: '请输入角色编码', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
     ],
@@ -85,12 +86,12 @@
    * 表单数据
    */
   const form = reactive<RoleListItem>({
-    roleId: 0,
-    roleName: '',
-    roleCode: '',
+    id: '',
+    name: '',
+    code: '',
     description: '',
     createTime: '',
-    enabled: true
+    isEnabled: 1
   })
 
   /**
@@ -123,12 +124,11 @@
       Object.assign(form, props.roleData)
     } else {
       Object.assign(form, {
-        roleId: 0,
-        roleName: '',
-        roleCode: '',
+        name: '',
+        code: '',
         description: '',
         createTime: '',
-        enabled: true
+        isEnabled: 1
       })
     }
   }
@@ -152,6 +152,7 @@
       await formRef.value.validate()
       // TODO: 调用新增/编辑接口
       const message = props.dialogType === 'add' ? '新增成功' : '修改成功'
+      await fetchSaveRole(form)
       ElMessage.success(message)
       emit('success')
       handleClose()

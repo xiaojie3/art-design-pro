@@ -7,6 +7,7 @@ import '@styles/core/tailwind.css'                  // tailwind
 import '@styles/index.scss'                         // 样式
 import { setupGlobDirectives } from './directives'
 import { setupErrorHandle } from './utils/sys/error-handle'
+import "@utils/ui/iconify-loader";
 
 document.addEventListener(
   'touchstart',
