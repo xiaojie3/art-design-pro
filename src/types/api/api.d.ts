@@ -147,7 +147,8 @@ declare namespace Api {
     /** 角色菜单 */
     interface RoleMenu {
       roleId: string | undefined
-      menuIds: string[]
+      checkedKeys: string[]
+      halfCheckedKeys: string[]
     }
   }
 }

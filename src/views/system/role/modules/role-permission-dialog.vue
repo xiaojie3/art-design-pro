@@ -43,7 +43,7 @@
 <script setup lang="ts">
   import { useMenuStore } from '@/store/modules/menu'
   import { formatMenuTitle } from '@/utils/router'
-  import { fetchGetRoleMenuList, fetchSaveRoleMenu } from '@/api/system-manage'
+  import { fetchGetRoleMenu, fetchSaveRoleMenu } from '@/api/system-manage'
 
   type RoleListItem = Api.SystemManage.RoleListItem
 
@@ -108,7 +108,7 @@
       // 如果有 authList，将其转换为子节点
       if (node.meta?.authList?.length) {
         const authNodes = node.meta.authList.map((auth) => ({
-          id: `${node.id}_${auth.id}`,
+          id: `${auth.id}`,
           name: `${node.name}_${auth.authMark}`,
           label: auth.title,
           authMark: auth.authMark,
@@ -147,9 +147,9 @@
       if (newVal && props.roleData) {
         // TODO: 根据角色加载对应的权限数据
         console.log('设置权限:', props.roleData)
-        fetchGetRoleMenuList(props.roleData.id).then((res) => {
+        fetchGetRoleMenu(props.roleData.id).then((res) => {
           if (res) {
-            treeRef.value?.setCheckedKeys(res.map((item) => item.id))
+            treeRef.value?.setCheckedKeys(res.map((item) => item))
           }
         })
       }
@@ -167,8 +167,16 @@
   /**
    * 保存权限配置
    */
-  const savePermission = () => {
-    // TODO: 调用保存权限接口
+  const savePermission = async () => {
+    const tree = treeRef.value
+    if (!tree) return
+    const checkedKeys = tree.getCheckedKeys()
+    const halfCheckedKeys = tree.getHalfCheckedKeys()
+    await fetchSaveRoleMenu({
+      roleId: props.roleData?.id,
+      checkedKeys: checkedKeys,
+      halfCheckedKeys: halfCheckedKeys
+    })
     ElMessage.success('权限保存成功')
     emit('success')
     handleClose()
@@ -245,7 +253,6 @@
   const outputSelectedData = async () => {
     const tree = treeRef.value
     if (!tree) return
-
     const selectedData = {
       checkedKeys: tree.getCheckedKeys(),
       halfCheckedKeys: tree.getHalfCheckedKeys(),
@@ -256,9 +263,5 @@
     }
     console.log('=== 选中的权限数据 ===', selectedData)
     ElMessage.success(`已输出选中数据到控制台，共选中 ${selectedData.totalChecked} 个节点`)
-    await fetchSaveRoleMenu({
-      roleId: props.roleData?.id,
-      menuIds: selectedData.checkedKeys
-    })
   }
 </script>
