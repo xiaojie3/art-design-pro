@@ -267,72 +267,81 @@
   },
   "system": {
     "title": "系统管理",
-    "user": {
-      "title": "用户管理",
-      "placeholder": {
-        "account": "请输入账号",
-        "username": "请输入用户名",
-        "gender": "请选择性别",
-        "email": "请输入邮箱",
-        "phone": "请输入手机号",
-        "status": "请选择状态",
-        "roleName": "请输入角色名称"
-      },
-      "table": {
-        "column": {
-          "avatar": "头像",
-          "account": "账号",
-          "username": "用户名",
-          "gender": "性别",
-          "email": "邮箱",
-          "phone": "手机号",
-          "status": "状态",
-          "roleName": "角色名称"
-        }
-      },
-      "operation": {
-        "add": "新增用户"
-      },
-      "gender": {
-        "male": "男",
-        "female": "女"
-      },
-      "status": {
-        "normal": "正常",
-        "disabled": "禁用"
-      }
-    },
-    "role": {
-      "title": "角色管理",
-      "placeholder": {
-        "roleName": "请输入角色名称",
-        "roleCode": "请输入角色编码",
-        "description": "请输入描述"
-      },
-      "table": {
-        "column": {
-          "roleName": "角色名称",
-          "roleCode": "角色编码",
-          "description": "描述",
-          "enabled": "状态"
-        }
-      },
-      "operation": {
-        "add": "新增角色",
-        "edit": "编辑角色",
-        "delete": "删除角色",
-        "permission": "菜单权限"
-      },
-      "enabled": {
-        "success": "启用",
-        "warning": "禁用"
-      }
-    },
     "userCenter": {
       "title": "个人中心"
     },
-    "menu": {
-      "title": "菜单管理"
+    "userPermissions": {
+      "title": "用户权限管理",
+      "user": {
+        "title": "用户管理",
+        "placeholder": {
+          "account": "请输入账号",
+          "username": "请输入用户名",
+          "gender": "请选择性别",
+          "email": "请输入邮箱",
+          "phone": "请输入手机号",
+          "status": "请选择状态",
+          "roleName": "请输入角色名称"
+        },
+        "table": {
+          "column": {
+            "avatar": "头像",
+            "account": "账号",
+            "username": "用户名",
+            "gender": "性别",
+            "email": "邮箱",
+            "phone": "手机号",
+            "status": "状态",
+            "roleName": "角色名称"
+          }
+        },
+        "operation": {
+          "add": "新增用户"
+        },
+        "gender": {
+          "male": "男",
+          "female": "女"
+        },
+        "status": {
+          "normal": "正常",
+          "disabled": "禁用"
+        }
+      },
+      "role": {
+        "title": "角色管理",
+        "placeholder": {
+          "roleName": "请输入角色名称",
+          "roleCode": "请输入角色编码",
+          "description": "请输入描述"
+        },
+        "table": {
+          "column": {
+            "roleName": "角色名称",
+            "roleCode": "角色编码",
+            "description": "描述",
+            "enabled": "状态"
+          }
+        },
+        "operation": {
+          "add": "新增角色",
+          "edit": "编辑角色",
+          "delete": "删除角色",
+          "permission": "菜单权限"
+        },
+        "enabled": {
+          "success": "启用",
+          "warning": "禁用"
+        }
+      },
+      "menu": {
+        "title": "菜单管理"
+      }
+    },
+    "basicParameters": {
+      "title": "基本参数管理",
+      "dict": {
+        "title": "字典管理"
+      }
     }
   },
   "devTools": {
@@ -348,117 +357,120 @@
   },
   "resources": {
     "title": "资源管理",
-    "school": {
-      "title": "学校管理",
-      "label": {
-        "schoolCode": "学校代码",
-        "schoolName": "学校名称",
-        "schoolAbbr": "学校简称",
-        "englishName": "英文名称",
-        "englishAbbr": "英文简称",
-        "address": "地址",
-        "intro": "介绍"
-      },
-      "placeholder": {
-        "schoolCode": "请输入学校代码",
-        "schoolName": "请输入学校名称",
-        "schoolAbbr": "请输入学校简称",
-        "englishName": "请输入英文名称",
-        "englishAbbr": "请输入英文简称",
-        "address": "请输入地址",
-        "intro": "请输入介绍"
-      }
-    },
-    "campus": {
-      "title": "校区管理",
-      "placeholder": {
-        "campusCode": "请输入校区代码",
-        "chineseName": "请输入校区名称",
-        "chineseAbbr": "请输入校区简称",
-        "englishName": "请输入英文名称",
-        "englishAbbr": "请输入英文简称",
-        "address": "请输入地址",
-        "intro": "请输入介绍"
-      },
-      "table": {
-        "column": {
-          "campusCode": "校区代码",
-          "chineseName": "校区名称",
-          "chineseAbbr": "校区简称",
+    "public": {
+      "title": "公共资源",
+      "school": {
+        "title": "学校管理",
+        "label": {
+          "schoolCode": "学校代码",
+          "schoolName": "学校名称",
+          "schoolAbbr": "学校简称",
           "englishName": "英文名称",
           "englishAbbr": "英文简称",
           "address": "地址",
           "intro": "介绍"
+        },
+        "placeholder": {
+          "schoolCode": "请输入学校代码",
+          "schoolName": "请输入学校名称",
+          "schoolAbbr": "请输入学校简称",
+          "englishName": "请输入英文名称",
+          "englishAbbr": "请输入英文简称",
+          "address": "请输入地址",
+          "intro": "请输入介绍"
         }
       },
-      "operation": {
-        "add": "新增校区",
-        "edit": "编辑校区",
-        "delete": "删除校区"
-      }
-    },
-    "college": {
-      "title": "学院管理",
-      "placeholder": {
-        "collegeCode": "请输入学院代码",
-        "chineseName": "请输入学院名称",
-        "chineseAbbr": "请输入学院简称",
-        "englishName": "请输入英文名称",
-        "englishAbbr": "请输入英文简称",
-        "address": "请输入地址",
-        "intro": "请输入介绍"
-      },
-      "table": {
-        "column": {
-          "collegeCode": "学院代码",
-          "chineseName": "学院名称",
-          "chineseAbbr": "学院简称",
-          "englishName": "英文名称",
-          "englishAbbr": "英文简称",
-          "address": "地址",
-          "intro": "介绍"
+      "campus": {
+        "title": "校区管理",
+        "placeholder": {
+          "campusCode": "请输入校区代码",
+          "chineseName": "请输入校区名称",
+          "chineseAbbr": "请输入校区简称",
+          "englishName": "请输入英文名称",
+          "englishAbbr": "请输入英文简称",
+          "address": "请输入地址",
+          "intro": "请输入介绍"
+        },
+        "table": {
+          "column": {
+            "campusCode": "校区代码",
+            "chineseName": "校区名称",
+            "chineseAbbr": "校区简称",
+            "englishName": "英文名称",
+            "englishAbbr": "英文简称",
+            "address": "地址",
+            "intro": "介绍"
+          }
+        },
+        "operation": {
+          "add": "新增校区",
+          "edit": "编辑校区",
+          "delete": "删除校区"
         }
       },
-      "operation": {
-        "add": "新增学院",
-        "edit": "编辑学院",
-        "delete": "删除学院"
-      }
-    },
-    "department": {
-      "title": "部门管理",
-      "placeholder": {
-        "departmentCode": "请输入部门代码",
-        "chineseName": "请输入部门名称",
-        "chineseAbbr": "请输入部门简称",
-        "englishName": "请输入英文名称",
-        "englishAbbr": "请输入英文简称",
-        "address": "请输入地址",
-        "intro": "请输入介绍"
-      }
-    },
-    "major": {
-      "title": "专业管理",
-      "placeholder": {
-        "majorCode": "请输入专业代码",
-        "chineseName": "请输入专业名称",
-        "chineseAbbr": "请输入专业简称",
-        "englishName": "请输入英文名称",
-        "englishAbbr": "请输入英文简称",
-        "address": "请输入地址",
-        "intro": "请输入介绍"
-      }
-    },
-    "class": {
-      "title": "班级管理",
-      "placeholder": {
-        "classCode": "请输入班级代码",
-        "chineseName": "请输入班级名称",
-        "chineseAbbr": "请输入班级简称",
-        "englishName": "请输入英文名称",
-        "englishAbbr": "请输入英文简称",
-        "address": "请输入地址",
-        "intro": "请输入介绍"
+      "college": {
+        "title": "学院管理",
+        "placeholder": {
+          "collegeCode": "请输入学院代码",
+          "chineseName": "请输入学院名称",
+          "chineseAbbr": "请输入学院简称",
+          "englishName": "请输入英文名称",
+          "englishAbbr": "请输入英文简称",
+          "address": "请输入地址",
+          "intro": "请输入介绍"
+        },
+        "table": {
+          "column": {
+            "collegeCode": "学院代码",
+            "chineseName": "学院名称",
+            "chineseAbbr": "学院简称",
+            "englishName": "英文名称",
+            "englishAbbr": "英文简称",
+            "address": "地址",
+            "intro": "介绍"
+          }
+        },
+        "operation": {
+          "add": "新增学院",
+          "edit": "编辑学院",
+          "delete": "删除学院"
+        }
+      },
+      "department": {
+        "title": "部门管理",
+        "placeholder": {
+          "departmentCode": "请输入部门代码",
+          "chineseName": "请输入部门名称",
+          "chineseAbbr": "请输入部门简称",
+          "englishName": "请输入英文名称",
+          "englishAbbr": "请输入英文简称",
+          "address": "请输入地址",
+          "intro": "请输入介绍"
+        }
+      },
+      "major": {
+        "title": "专业管理",
+        "placeholder": {
+          "majorCode": "请输入专业代码",
+          "chineseName": "请输入专业名称",
+          "chineseAbbr": "请输入专业简称",
+          "englishName": "请输入英文名称",
+          "englishAbbr": "请输入英文简称",
+          "address": "请输入地址",
+          "intro": "请输入介绍"
+        }
+      },
+      "class": {
+        "title": "班级管理",
+        "placeholder": {
+          "classCode": "请输入班级代码",
+          "chineseName": "请输入班级名称",
+          "chineseAbbr": "请输入班级简称",
+          "englishName": "请输入英文名称",
+          "englishAbbr": "请输入英文简称",
+          "address": "请输入地址",
+          "intro": "请输入介绍"
+        }
       }
     }
   }

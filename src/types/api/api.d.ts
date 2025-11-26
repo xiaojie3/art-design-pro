@@ -150,5 +150,14 @@ declare namespace Api {
       checkedKeys: string[]
       halfCheckedKeys: string[]
     }
+
+    interface DictListItem {
+      id: string
+      type: string
+      code: string
+      label: string
+      isEnabled: number
+      sort: number
+    }
   }
 }
