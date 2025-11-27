@@ -103,6 +103,7 @@
     editData?: AppRouteRecord | any
     type?: 'menu' | 'button'
     lockType?: boolean
+    parentId?: string
   }
 
   interface Emits {
@@ -113,7 +114,8 @@
   const props = withDefaults(defineProps<Props>(), {
     visible: false,
     type: 'menu',
-    lockType: false
+    lockType: false,
+    parentId: '0'
   })
 
   const emit = defineEmits<Emits>()
@@ -283,6 +285,7 @@
    */
   const resetForm = (): void => {
     formRef.value?.reset()
+    form.id = ''
     form.menuType = 'menu'
   }
 
@@ -290,12 +293,13 @@
    * 加载表单数据（编辑模式）
    */
   const loadFormData = (): void => {
-    if (!props.editData) return
-
+    console.log(1)
     isEdit.value = true
-
+    const row = props.editData
+    if (!row) {
+      return
+    }
     if (form.menuType === 'menu') {
-      const row = props.editData
       form.id = row.id || 0
       form.name = formatMenuTitle(row.meta?.title || '')
       form.path = row.path || ''
@@ -316,9 +320,8 @@
       form.activePath = row.meta?.activePath || ''
       form.roles = row.meta?.roles || []
       form.isFullPage = row.meta?.isFullPage ?? false
-      form.parentId = row.parentId || '0'
     } else {
-      const row = props.editData
+      form.id = row.id || 0
       form.authName = row.title || ''
       form.authLabel = row.authMark || ''
       form.authIcon = row.icon || ''
@@ -366,10 +369,10 @@
     (newVal) => {
       if (newVal) {
         form.menuType = props.type
+        console.log(props)
+        form.parentId = props.parentId
         nextTick(() => {
-          if (props.editData) {
-            loadFormData()
-          }
+          loadFormData()
         })
       }
     }

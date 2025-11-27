@@ -72,7 +72,7 @@
   const dialogType = ref<'menu' | 'button'>('menu')
   const editData = ref<AppRouteRecord | any>(null)
   const lockMenuType = ref(false)
-  const parentId = ref('0')
+  const parentId = ref('')
 
   // 搜索相关
   const initialSearchState = {
@@ -216,7 +216,7 @@
         return h('div', buttonStyle, [
           h(ArtButtonTable, {
             type: 'add',
-            onClick: () => handleAddAuth(),
+            onClick: () => handleAddAuth(row),
             title: '新增权限'
           }),
           h(ArtButtonTable, {
@@ -362,16 +362,18 @@
     editData.value = null
     lockMenuType.value = true
     dialogVisible.value = true
+    parentId.value = '0'
   }
 
   /**
    * 添加权限按钮
    */
-  const handleAddAuth = (): void => {
+  const handleAddAuth = (row: AppRouteRecord): void => {
     dialogType.value = 'menu'
     editData.value = null
     lockMenuType.value = false
     dialogVisible.value = true
+    parentId.value = row.id || '0'
   }
 
   /**
