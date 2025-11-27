@@ -1,21 +1,49 @@
 import request from '@/utils/http'
 
-export function fetchGetDictListByType(type: string) {
-  return request.get<Api.SystemManage.DictItem[]>({
-    url: '/api/system/dicts/' + type
+export function fetchGetDictPage(params: Api.SystemManage.DictSearchParams) {
+  return request.get<Api.SystemManage.DictList>({
+    url: '/api/system/dict/query',
+    params
   })
 }
 
-export function fetchGetDictTypes() {
-  return request.get<Api.SystemManage.DictTypeItem[]>({
-    url: '/api/system/dict-type'
+export function fetchSaveDict(data: Api.SystemManage.DictItem) {
+  return request.post<Api.SystemManage.DictItem>({
+    url: '/api/system/dict',
+    data
   })
 }
 
-export function fetchSaveDictType(data: Api.SystemManage.DictTypeItem) {
+export function fetchUpdateDict(params: Api.SystemManage.DictItem) {
+  return request.put<Api.SystemManage.DictItem>({
+    url: '/api/system/dict',
+    params
+  })
+}
+
+export function fetchDeleteDictItem(id: string) {
+  return request.del({
+    url: '/api/system/dict/' + id
+  })
+}
+
+export function fetchGetDictTypePage() {
+  return request.get<Api.SystemManage.DictTypeList>({
+    url: '/api/system/dict-type/query'
+  })
+}
+
+export function fetchSaveDictType(params: Api.SystemManage.DictTypeItem) {
   return request.post<Api.SystemManage.DictTypeItem>({
     url: '/api/system/dict-type',
-    data
+    params
+  })
+}
+
+export function fetchUpdateDictType(params: Api.SystemManage.DictTypeItem) {
+  return request.put<Api.SystemManage.DictTypeItem>({
+    url: '/api/system/dict-type',
+    params
   })
 }
 
@@ -25,15 +53,8 @@ export function fetchDeleteDictType(type: string) {
   })
 }
 
-export function fetchSaveDictItem(data: Api.SystemManage.DictItem) {
-  return request.post<Api.SystemManage.DictItem>({
-    url: '/api/system/dicts',
-    data
-  })
-}
-
-export function fetchDeleteDictItem(id: string) {
-  return request.del({
-    url: '/api/system/dicts/' + id
+export function fetchGetDictTypeList() {
+  return request.get<Api.SystemManage.DictTypeItem[]>({
+    url: '/api/system/dict-type'
   })
 }

@@ -1,202 +1,246 @@
+<!-- 左树右表示例页面 -->
 <template>
-  <div class="bg-gray-50 min-h-screen">
-    <!-- 字典管理主体 -->
-    <div class="flex gap-4">
-      <!-- 左侧字典列表 -->
-      <div class="w-1/3 bg-white rounded-lg shadow-sm p-4">
-        <h3 class="font-semibold mb-3">字典列表</h3>
-        <!-- 搜索框 -->
-        <ElInput
-          v-modEl="dictSearch"
-          placeholder="搜索字典名称或编码"
-          class="mb-3"
-          suffix-icon="ElIcon-search"
-        />
-        <!-- 操作按钮 -->
-        <div class="flex gap-2 mb-4">
-          <ElButton type="primary" size="small"
-            ><ArtSvgIcon icon="ri:add-line" class="mr-1.5" />新增</ElButton
-          >
-          <ElButton size="small"><ArtSvgIcon icon="ri:restart-line" class="mr-1.5" />重置</ElButton>
-        </div>
-        <!-- 字典列表项 -->
-        <div class="space-y-3">
-          <div
-            v-for="item in dictList"
-            :key="item.code"
-            class="border border-gray-200 rounded p-3 hover:shadow-md transition-shadow"
-            :class="activeDict.code === item.code ? 'border-blue-400 bg-blue-50' : ''"
-            @click="activeDict = item"
-          >
-            <div class="font-medium">{{ item.name }}</div>
-            <div class="flex gap-1 mt-1 justify-between">
-              <div class="text-sm text-gray-500">{{ item.code }}</div>
-              <div>
-                <ElButton size="mini" icon="ElIcon-edit" type="primary" circle />
-                <ElButton size="mini" icon="ElIcon-dElete" type="danger" circle />
-              </div>
-            </div>
-            <div class="flex items-center justify-between mt-2">
-              <ElTag size="small">一般字典</ElTag>
-              <div class="text-xs text-gray-400">{{ item.date }}</div>
-            </div>
-          </div>
-        </div>
-        <!-- 加载更多 -->
-        <div class="text-center text-blue-500 text-sm mt-3 cursor-pointer"> 加载更多 (5/21) </div>
+  <div class="art-full-height">
+    <div class="box-border flex gap-4 h-full max-md:block max-md:gap-0 max-md:h-auto">
+      <div class="flex-shrink-0 w-58 h-full max-md:w-full max-md:h-auto max-md:mb-5">
+        <ElCard class="tree-card art-card-xs flex flex-col h-full mt-0" shadow="never">
+          <template #header>
+            <b>分类树</b>
+          </template>
+          <ElScrollbar>
+            <ElTree
+              :data="treeData"
+              :props="treeProps"
+              node-key="id"
+              default-expand-all
+              highlight-current
+              @node-click="handleNodeClick"
+            />
+          </ElScrollbar>
+        </ElCard>
       </div>
 
-      <!-- 右侧字典配置 -->
-      <div class="w-2/3 bg-white rounded-lg shadow-sm p-4">
-        <div class="flex justify-between items-center mb-4">
-          <div>
-            <h3 class="font-semibold"> {{ activeDict.name }} - 字典配置 </h3>
-            <div class="text-sm text-gray-500">编码: {{ activeDict.code }}</div>
-          </div>
-          <ElButton type="primary" size="small" icon="ElIcon-refresh">刷新缓存</ElButton>
-        </div>
-
-        <!-- 查询栏 -->
-        <div class="flex flex-wrap gap-2 mb-4">
-          <ElInput v-modEl="itemSearch.labEl" placeholder="请输入字典标签" class="w-[180px]" />
-          <ElInput v-modEl="itemSearch.value" placeholder="请输入字典值" class="w-[180px]" />
-          <ElSElect v-modEl="itemSearch.status" placeholder="请选择字典状态" class="w-[180px]">
-            <ElOption labEl="正常" value="正常" />
-            <ElOption labEl="禁用" value="禁用" />
-          </ElSElect>
-          <ElButton type="primary" size="small" icon="ElIcon-search">查询</ElButton>
-          <ElButton size="small" icon="ElIcon-refresh">重置</ElButton>
-        </div>
-
-        <!-- 新增按钮 -->
-        <ElButton type="primary" size="small" icon="ElIcon-plus" class="mb-4">新增</ElButton>
-
-        <!-- 字典项表格 -->
-        <ElTable :data="dictItems" class="w-full">
-          <ElTableColumn prop="labEl" labEl="标签" />
-          <ElTableColumn prop="value" labEl="值" />
-          <ElTableColumn prop="style" labEl="样式">
-            <template #default="scope">
-              <ElTag :type="getTagType(scope.row.style)">{{ scope.row.style }}</ElTag>
+      <div class="flex flex-col grow">
+        <ElCard class="flex flex-col flex-1 min-h-0 art-table-card" shadow="never">
+          <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+            <template #left>
+              <ElSpace wrap>
+                <ElButton @click="showButtons = !showButtons" v-ripple type="primary" plain
+                  >{{ showButtons ? '收起' : '展开' }}按钮组</ElButton
+                >
+                <ElButton v-show="showButtons" v-ripple v-for="value in 12" :key="value"
+                  >表格自适应</ElButton
+                >
+              </ElSpace>
             </template>
-          </ElTableColumn>
-          <ElTableColumn prop="status" labEl="状态">
-            <template #default="scope">
-              <ElSwitch v-modEl="scope.row.status" active-value="正常" inactive-value="禁用" />
+          </ArtTableHeader>
+
+          <ArtTable
+            rowKey="id"
+            :loading="loading"
+            :data="data"
+            :columns="columns"
+            :pagination="pagination"
+            @pagination:size-change="handleSizeChange"
+            @pagination:current-change="handleCurrentChange"
+          >
+            <template #isEnabled="{ row }">
+              <ElSwitch v-model="row.isEnabled" @change="handleToggleEnabled(row)" />
             </template>
-          </ElTableColumn>
-          <ElTableColumn prop="sort" labEl="排序" />
-          <ElTableColumn prop="remark" labEl="备注" />
-          <ElTableColumn labEl="操作" width="100">
-            <template #default>
-              <div class="flex gap-2">
-                <ElButton type="primary" size="mini" icon="ElIcon-edit">编辑</ElButton>
-                <ElButton type="danger" size="mini" icon="ElIcon-dElete">删除</ElButton>
-              </div>
-            </template>
-          </ElTableColumn>
-        </ElTable>
+          </ArtTable>
+        </ElCard>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-  // 字典搜索关键词
-  const dictSearch = ref('')
+<script setup lang="ts">
+  import { useTable } from '@/hooks/core/useTable'
+  import { fetchGetDictPage, fetchUpdateDict } from '@/api/system/dict'
 
-  // 字典列表数据
-  const dictList = ref([
+  defineOptions({ name: 'TreeTable' })
+
+  const showButtons = ref(false)
+
+  // 树形数据 - 组织架构示例
+  const treeData = ref([
     {
-      name: '消息队列消息订阅类型',
-      code: 'sys_subscription_type',
-      date: '2025-10-17',
-      status: '正常'
+      id: 1,
+      label: '技术部',
+      children: [
+        {
+          id: 11,
+          label: '前端开发组',
+          children: [
+            { id: 111, label: 'React 团队' },
+            { id: 112, label: 'Vue 团队' },
+            { id: 113, label: '移动端团队' }
+          ]
+        },
+        {
+          id: 12,
+          label: '后端开发组',
+          children: [
+            { id: 121, label: 'Java 团队' },
+            { id: 122, label: 'Node.js 团队' },
+            { id: 123, label: 'Python 团队' }
+          ]
+        },
+        {
+          id: 13,
+          label: '测试组',
+          children: [
+            { id: 131, label: '功能测试' },
+            { id: 132, label: '自动化测试' },
+            { id: 133, label: '性能测试' }
+          ]
+        },
+        {
+          id: 14,
+          label: '运维组',
+          children: [
+            { id: 141, label: '系统运维' },
+            { id: 142, label: 'DevOps' }
+          ]
+        }
+      ]
     },
     {
-      name: '消息队列生产者访问模式',
-      code: 'sys_access_mode',
-      date: '2025-10-17',
-      status: '正常'
+      id: 2,
+      label: '产品部',
+      children: [
+        {
+          id: 21,
+          label: '产品设计组',
+          children: [
+            { id: 211, label: 'UI 设计' },
+            { id: 212, label: 'UX 设计' },
+            { id: 213, label: '交互设计' }
+          ]
+        },
+        {
+          id: 22,
+          label: '产品运营组',
+          children: [
+            { id: 221, label: '用户运营' },
+            { id: 222, label: '内容运营' },
+            { id: 223, label: '活动运营' }
+          ]
+        },
+        { id: 23, label: '数据分析组' }
+      ]
     },
     {
-      name: '邮件模板类型',
-      code: 'sys_email_template_type',
-      date: '2025-10-11',
-      status: '正常'
+      id: 3,
+      label: '市场部',
+      children: [
+        { id: 31, label: '品牌推广组' },
+        { id: 32, label: '渠道拓展组' },
+        {
+          id: 33,
+          label: '销售组',
+          children: [
+            { id: 331, label: '企业客户' },
+            { id: 332, label: '个人客户' }
+          ]
+        }
+      ]
     },
     {
-      name: '定时任务开关',
-      code: 'sys_schedule',
-      date: '2025-09-09',
-      status: '正常'
+      id: 4,
+      label: '行政部',
+      children: [
+        { id: 41, label: '人力资源组' },
+        { id: 42, label: '财务组' },
+        { id: 43, label: '行政后勤组' }
+      ]
     },
     {
-      name: '上传方式',
-      code: 'sys_attachment_upload_mode',
-      date: '2025-02-21',
-      status: '正常'
+      id: 5,
+      label: '客服部',
+      children: [
+        { id: 51, label: '售前咨询' },
+        { id: 52, label: '售后支持' },
+        { id: 53, label: '客户成功' }
+      ]
     }
   ])
 
-  // 激活的字典
-  const activeDict = ref(dictList.value[0])
+  const treeProps = {
+    children: 'children',
+    label: 'label'
+  }
 
-  // 字典项搜索条件
-  const itemSearch = ref({
-    labEl: '',
-    value: '',
-    status: ''
+  const handleNodeClick = (data: any) => {
+    console.log('选中节点:', data)
+    // 可以根据选中的节点更新右侧表格数据
+  }
+
+  const {
+    data,
+    columns,
+    columnChecks,
+    loading,
+    pagination,
+    refreshData,
+    handleSizeChange,
+    handleCurrentChange,
+    searchParams,
+    getData
+  } = useTable({
+    core: {
+      apiFn: fetchGetDictPage,
+      apiParams: {
+        type: ''
+      },
+      columnsFactory: () => [
+        {
+          prop: 'type',
+          label: '字典类型'
+        },
+        {
+          prop: 'code',
+          label: '字典值'
+        },
+        {
+          prop: 'label',
+          label: '字典标签'
+        },
+        {
+          prop: 'isEnabled',
+          label: '是否启用',
+          useSlot: true,
+          slotName: 'isEnabled'
+        },
+        {
+          prop: 'sort',
+          label: '排序'
+        }
+      ]
+    }
   })
 
-  // 字典项数据
-  const dictItems = ref([
-    {
-      labEl: '独占模式',
-      value: 'Exclusive',
-      style: '主要',
-      status: '正常',
-      sort: 1,
-      remark: ''
-    },
-    {
-      labEl: '共享模式',
-      value: 'Shared',
-      style: '成功',
-      status: '正常',
-      sort: 2,
-      remark: ''
-    },
-    {
-      labEl: '故障转移模式',
-      value: 'Failover',
-      style: '警告',
-      status: '正常',
-      sort: 3,
-      remark: ''
-    },
-    {
-      labEl: '键共享模式',
-      value: 'Key_Shared',
-      style: '错误',
-      status: '正常',
-      sort: 4,
-      remark: ''
-    }
-  ])
+  // 搜索功能
+  const handleSearch = () => {
+    Object.assign(searchParams, {
+      type: 'gender'
+    })
+    getData()
+  }
 
-  // 根据样式获取Tag类型
-  const getTagType = (style) => {
-    const map = {
-      主要: 'primary',
-      成功: 'success',
-      警告: 'warning',
-      错误: 'danger'
-    }
-    return map[style] || ''
+  onMounted(() => {
+    handleSearch()
+  })
+
+  const handleToggleEnabled = async (row: Api.SystemManage.DictItem) => {
+    await fetchUpdateDict({ ...row })
   }
 </script>
 
 <style scoped>
-  /* 可根据需要补充自定义样式 */
+  .tree-card :deep(.el-card__body) {
+    flex: 1;
+    min-height: 0;
+    padding: 10px 2px 10px 10px;
+  }
 </style>

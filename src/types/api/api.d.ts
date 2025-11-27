@@ -151,14 +151,22 @@ declare namespace Api {
       halfCheckedKeys: string[]
     }
 
+    type DictList = Api.Common.PaginatedResponse<DictItem>
+
     interface DictItem {
       id: string
       type: string
       code: string
       label: string
-      isEnabled: number
+      isEnabled: boolean
       sort: number
     }
+
+    type DictSearchParams = Partial<
+      Pick<DictItem, 'id' | 'type' | 'code' | 'label' | 'isEnabled'> & Api.Common.CommonSearchParams
+    >
+
+    type DictTypeList = Api.Common.PaginatedResponse<DictTypeItem>
 
     interface DictTypeItem {
       id: string
