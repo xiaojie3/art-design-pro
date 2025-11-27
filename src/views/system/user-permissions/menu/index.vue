@@ -43,6 +43,7 @@
         :type="dialogType"
         :editData="editData"
         :lockType="lockMenuType"
+        :parentId="parentId"
         @submit="handleSubmit"
       />
     </ElCard>
@@ -56,6 +57,7 @@
   import type { AppRouteRecord } from '@/types/router'
   import MenuDialog from './modules/menu-dialog.vue'
   import { fetchGetMenuList } from '@/api/system-manage'
+  import { fetchDeleteMenu } from '@/api/system/menu'
   import { ElTag, ElMessageBox } from 'element-plus'
 
   defineOptions({ name: 'Menus' })
@@ -70,6 +72,7 @@
   const dialogType = ref<'menu' | 'button'>('menu')
   const editData = ref<AppRouteRecord | any>(null)
   const lockMenuType = ref(false)
+  const parentId = ref('0')
 
   // 搜索相关
   const initialSearchState = {
@@ -222,7 +225,7 @@
           }),
           h(ArtButtonTable, {
             type: 'delete',
-            onClick: () => handleDeleteMenu()
+            onClick: () => handleDeleteMenu(row)
           })
         ])
       }
@@ -399,36 +402,27 @@
   /**
    * 菜单表单数据类型
    */
-  interface MenuFormData {
-    name: string
-    path: string
-    component?: string
-    icon?: string
-    roles?: string[]
-    sort?: number
-    [key: string]: any
-  }
-
+  type MenuFormData = Api.SystemManage.MenuFormData
   /**
    * 提交表单数据
    * @param formData 表单数据
    */
-  const handleSubmit = (formData: MenuFormData): void => {
+  const handleSubmit = async (formData: MenuFormData): Promise<void> => {
     console.log('提交数据:', formData)
-    // TODO: 调用API保存数据
     getMenuList()
   }
 
   /**
    * 删除菜单
    */
-  const handleDeleteMenu = async (): Promise<void> => {
+  const handleDeleteMenu = async (row: AppRouteRecord): Promise<void> => {
     try {
       await ElMessageBox.confirm('确定要删除该菜单吗？删除后无法恢复', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
+      await fetchDeleteMenu(row.id || '')
       ElMessage.success('删除成功')
       getMenuList()
     } catch (error) {

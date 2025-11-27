@@ -168,5 +168,15 @@ declare namespace Api {
       description: string
       createTime: string
     }
+
+    interface MenuFormData {
+      name: string
+      path: string
+      component?: string
+      icon?: string
+      roles?: string[]
+      sort?: number
+      [key: string]: any
+    }
   }
 }

@@ -45,6 +45,7 @@
   import type { FormItem } from '@/components/core/forms/art-form/index.vue'
   import ArtForm from '@/components/core/forms/art-form/index.vue'
   import { useWindowSize } from '@vueuse/core'
+  import { fetchSaveMenu } from '@/api/system/menu'
 
   const { width } = useWindowSize()
 
@@ -70,7 +71,7 @@
   }
 
   interface MenuFormData {
-    id: number
+    id: string
     name: string
     path: string
     label: string
@@ -94,6 +95,7 @@
     authLabel: string
     authIcon: string
     authSort: number
+    parentId: string
   }
 
   interface Props {
@@ -121,7 +123,7 @@
 
   const form = reactive<MenuFormData & { menuType: 'menu' | 'button' }>({
     menuType: 'menu',
-    id: 0,
+    id: '',
     name: '',
     path: '',
     label: '',
@@ -144,7 +146,8 @@
     authName: '',
     authLabel: '',
     authIcon: '',
-    authSort: 1
+    authSort: 1,
+    parentId: '0'
   })
 
   const rules = reactive<FormRules>({
@@ -313,6 +316,7 @@
       form.activePath = row.meta?.activePath || ''
       form.roles = row.meta?.roles || []
       form.isFullPage = row.meta?.isFullPage ?? false
+      form.parentId = row.parentId || '0'
     } else {
       const row = props.editData
       form.authName = row.title || ''
@@ -331,7 +335,7 @@
     try {
       await formRef.value.validate()
       emit('submit', { ...form })
-      console.log(formRef.value)
+      await fetchSaveMenu(form)
       ElMessage.success(`${isEdit.value ? '编辑' : '新增'}成功`)
       handleCancel()
     } catch {
