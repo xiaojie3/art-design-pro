@@ -72,7 +72,9 @@
           <div class="action-buttons-wrapper" :style="actionButtonsStyle">
             <div class="form-buttons">
               <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
-                {{ t('table.searchBar.reset') }}
+                <ArtSvgIcon icon="ri:reset-left-line" class="mr-1" />{{
+                  t('table.searchBar.reset')
+                }}
               </ElButton>
               <ElButton
                 v-if="showSearch"
@@ -81,7 +83,7 @@
                 @click="handleSearch"
                 v-ripple
                 :disabled="disabledSearch"
-              >
+                ><ArtSvgIcon icon="ri:search-line" class="mr-1" />
                 {{ t('table.searchBar.search') }}
               </ElButton>
             </div>
