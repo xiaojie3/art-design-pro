@@ -1,210 +1,166 @@
-<!-- 左树右表示例页面 -->
+<!-- 菜单管理页面 -->
 <template>
   <div class="art-full-height">
-    <div class="box-border flex gap-4 h-full max-md:block max-md:gap-0 max-md:h-auto">
-      <div class="flex-shrink-0 w-58 h-full max-md:w-full max-md:h-auto max-md:mb-5">
-        <ElCard class="tree-card art-card-xs flex flex-col h-full mt-0" shadow="never">
-          <template #header>
-            <b>分类树</b>
-          </template>
-          <ElScrollbar>
-            <ElTree
-              :data="treeData"
-              :props="treeProps"
-              node-key="id"
-              default-expand-all
-              highlight-current
-              @node-click="handleNodeClick"
-            />
-          </ElScrollbar>
-        </ElCard>
-      </div>
-
-      <div class="flex flex-col grow">
-        <ElCard class="flex flex-col flex-1 min-h-0 art-table-card" shadow="never">
-          <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
-            <template #left>
-              <ElSpace wrap>
-                <ElButton @click="showButtons = !showButtons" v-ripple type="primary" plain
-                  >{{ showButtons ? '收起' : '展开' }}按钮组</ElButton
-                >
-                <ElButton v-show="showButtons" v-ripple v-for="value in 12" :key="value"
-                  >表格自适应</ElButton
-                >
-              </ElSpace>
-            </template>
-          </ArtTableHeader>
-
-          <ArtTable
-            rowKey="id"
-            :loading="loading"
-            :data="data"
-            :columns="columns"
-            :pagination="pagination"
-            @pagination:size-change="handleSizeChange"
-            @pagination:current-change="handleCurrentChange"
+    <!-- 搜索栏 -->
+    <ArtSearchBar
+      v-model="formFilters"
+      :items="formItems"
+      :showExpand="false"
+      @reset="resetSearchParams"
+      @search="handleSearch"
+    />
+    <ElCard class="art-table-card" shadow="never">
+      <!-- 表格头部 -->
+      <ArtTableHeader
+        :showZebra="false"
+        :loading="loading"
+        v-model:columns="columnChecks"
+        @refresh="refreshData"
+      >
+        <template #left>
+          <ElButton v-auth="'add'" @click="handleAddDictType" v-ripple
+            ><ArtSvgIcon icon="ri:add-line" class="mr-1" />添加</ElButton
           >
-            <template #isEnabled="{ row }">
-              <ElSwitch v-model="row.isEnabled" @change="handleToggleEnabled(row)" />
-            </template>
-          </ArtTable>
-        </ElCard>
-      </div>
-    </div>
+        </template>
+      </ArtTableHeader>
+
+      <ArtTable
+        ref="tableRef"
+        rowKey="id"
+        :loading="loading"
+        :columns="columns"
+        :data="data"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+        :stripe="false"
+        :tree-props="treeProps"
+        :default-expand-all="false"
+        ><template #isEnabled="{ row }">
+          <ElSwitch v-if="!row.name" v-model="row.isEnabled" @change="handleToggleEnabled(row)" />
+        </template>
+      </ArtTable>
+
+      <!-- 字典类型弹窗 -->
+      <DictTypeDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :editData="editDictTypeData"
+        @submit="refreshData"
+      />
+
+      <!-- 字典弹窗 -->
+      <DictDataDialog
+        v-model:visible="dictDataDialogVisible"
+        :type="dialogType"
+        :editData="editDictData"
+        @submit="refreshData"
+      />
+    </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
+  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { fetchGetDictPage, fetchUpdateDict } from '@/api/system/dict'
+  import DictTypeDialog from './modules/dict-type-dialog.vue'
+  import DictDataDialog from './modules/dict-data-dialog.vue'
+  import {
+    fetchGetDictTypePage,
+    fetchDeleteDictData,
+    fetchDeleteDictType,
+    fetchUpdateDictData
+  } from '@/api/system/dict'
+  import { ElMessage, ElMessageBox } from 'element-plus'
 
-  defineOptions({ name: 'TreeTable' })
+  defineOptions({ name: 'Menus' })
 
-  const showButtons = ref(false)
+  type DictDataItem = Api.SystemManage.DictDataItem
+  type DictTypeItem = Api.SystemManage.DictTypeItem
 
-  // 树形数据 - 组织架构示例
-  const treeData = ref([
+  // 状态管理
+  const tableRef = ref()
+
+  // 弹窗相关
+  const dialogVisible = ref(false)
+  const dictDataDialogVisible = ref(false)
+  const dialogType = ref<'add' | 'edit'>('add')
+  const editDictData = ref<DictDataItem | any>(null)
+  const editDictTypeData = ref<DictTypeItem | any>(null)
+
+  const treeProps = reactive({
+    children: 'dictDataList'
+  })
+
+  // 搜索相关
+  const initialSearchState = {
+    name: '',
+    type: ''
+  }
+
+  const formFilters = reactive({ ...initialSearchState })
+
+  const formItems = computed(() => [
     {
-      id: 1,
-      label: '技术部',
-      children: [
-        {
-          id: 11,
-          label: '前端开发组',
-          children: [
-            { id: 111, label: 'React 团队' },
-            { id: 112, label: 'Vue 团队' },
-            { id: 113, label: '移动端团队' }
-          ]
-        },
-        {
-          id: 12,
-          label: '后端开发组',
-          children: [
-            { id: 121, label: 'Java 团队' },
-            { id: 122, label: 'Node.js 团队' },
-            { id: 123, label: 'Python 团队' }
-          ]
-        },
-        {
-          id: 13,
-          label: '测试组',
-          children: [
-            { id: 131, label: '功能测试' },
-            { id: 132, label: '自动化测试' },
-            { id: 133, label: '性能测试' }
-          ]
-        },
-        {
-          id: 14,
-          label: '运维组',
-          children: [
-            { id: 141, label: '系统运维' },
-            { id: 142, label: 'DevOps' }
-          ]
-        }
-      ]
+      label: '字典名称',
+      key: 'name',
+      type: 'input',
+      props: { clearable: true }
     },
     {
-      id: 2,
-      label: '产品部',
-      children: [
-        {
-          id: 21,
-          label: '产品设计组',
-          children: [
-            { id: 211, label: 'UI 设计' },
-            { id: 212, label: 'UX 设计' },
-            { id: 213, label: '交互设计' }
-          ]
-        },
-        {
-          id: 22,
-          label: '产品运营组',
-          children: [
-            { id: 221, label: '用户运营' },
-            { id: 222, label: '内容运营' },
-            { id: 223, label: '活动运营' }
-          ]
-        },
-        { id: 23, label: '数据分析组' }
-      ]
-    },
-    {
-      id: 3,
-      label: '市场部',
-      children: [
-        { id: 31, label: '品牌推广组' },
-        { id: 32, label: '渠道拓展组' },
-        {
-          id: 33,
-          label: '销售组',
-          children: [
-            { id: 331, label: '企业客户' },
-            { id: 332, label: '个人客户' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 4,
-      label: '行政部',
-      children: [
-        { id: 41, label: '人力资源组' },
-        { id: 42, label: '财务组' },
-        { id: 43, label: '行政后勤组' }
-      ]
-    },
-    {
-      id: 5,
-      label: '客服部',
-      children: [
-        { id: 51, label: '售前咨询' },
-        { id: 52, label: '售后支持' },
-        { id: 53, label: '客户成功' }
-      ]
+      label: '字典类型',
+      key: 'type',
+      type: 'input',
+      props: { clearable: true }
     }
   ])
 
-  const treeProps = {
-    children: 'children',
-    label: 'label'
-  }
-
-  const handleNodeClick = (data: any) => {
-    console.log('选中节点:', data)
-    // 可以根据选中的节点更新右侧表格数据
-  }
-
   const {
-    data,
     columns,
     columnChecks,
+    data,
     loading,
     pagination,
-    refreshData,
+    getData,
+    searchParams,
+    resetSearchParams,
     handleSizeChange,
     handleCurrentChange,
-    searchParams,
-    getData
+    refreshData
   } = useTable({
+    // 核心配置
     core: {
-      apiFn: fetchGetDictPage,
+      apiFn: fetchGetDictTypePage,
       apiParams: {
-        type: ''
+        current: 1,
+        size: 20,
+        ...initialSearchState
       },
+      // 自定义分页字段映射，未设置时将使用全局配置 tableConfig.ts 中的 paginationKey
+      // paginationKey: {
+      //   current: 'pageNum',
+      //   size: 'pageSize'
+      // },
       columnsFactory: () => [
+        {
+          prop: 'name',
+          label: '字典名称'
+        },
         {
           prop: 'type',
           label: '字典类型'
         },
         {
+          prop: 'module',
+          label: '所属模块'
+        },
+        {
           prop: 'code',
-          label: '字典值'
+          label: '字典代码'
         },
         {
           prop: 'label',
-          label: '字典标签'
+          label: '字典标题'
         },
         {
           prop: 'isEnabled',
@@ -214,33 +170,118 @@
         },
         {
           prop: 'sort',
-          label: '排序'
+          label: '排序',
+          formatter: (row) => {
+            if (!row.name) {
+              return row.sort || '-'
+            }
+          }
+        },
+        {
+          prop: 'operation',
+          label: '操作',
+          width: 180,
+          align: 'right',
+          formatter: (row) => {
+            const buttonStyle = { style: 'text-align: right' }
+            if (row.name) {
+              return h('div', buttonStyle, [
+                h(ArtButtonTable, {
+                  type: 'add',
+                  onClick: () => handleAddDictData(row),
+                  title: '新增字典项'
+                }),
+                h(ArtButtonTable, {
+                  type: 'edit',
+                  onClick: () => handleEditDictType(row)
+                }),
+                h(ArtButtonTable, {
+                  type: 'delete',
+                  onClick: () => handleDeleteDictType(row)
+                })
+              ])
+            }
+            return h('div', buttonStyle, [
+              h(ArtButtonTable, {
+                type: 'edit',
+                onClick: () => handleEditDictData(row)
+              }),
+              h(ArtButtonTable, {
+                type: 'delete',
+                onClick: () => handleDeleteDictData(row)
+              })
+            ])
+          }
         }
       ]
     }
   })
 
-  // 搜索功能
-  const handleSearch = () => {
-    Object.assign(searchParams, {
-      type: 'gender'
-    })
+  const handleToggleEnabled = async (row: DictDataItem) => {
+    await fetchUpdateDictData(row)
+    ElMessage.success('状态更新成功')
+  }
+
+  const handleSearch = (): void => {
+    console.log(formItems)
+    // 搜索参数赋值
+    Object.assign(searchParams, formItems)
     getData()
   }
 
-  onMounted(() => {
-    handleSearch()
-  })
+  const handleAddDictType = (): void => {
+    editDictTypeData.value = null
+    dialogType.value = 'add'
+    dialogVisible.value = true
+  }
 
-  const handleToggleEnabled = async (row: Api.SystemManage.DictItem) => {
-    await fetchUpdateDict({ ...row })
+  const handleAddDictData = (row: DictDataItem): void => {
+    editDictData.value = row
+    dialogType.value = 'add'
+    dictDataDialogVisible.value = true
+  }
+
+  const handleEditDictType = (row: DictTypeItem): void => {
+    editDictTypeData.value = row
+    dialogType.value = 'edit'
+    dialogVisible.value = true
+  }
+
+  const handleEditDictData = (row: DictDataItem): void => {
+    editDictData.value = row
+    dialogType.value = 'edit'
+    dictDataDialogVisible.value = true
+  }
+
+  const handleDeleteDictType = async (row: DictTypeItem): Promise<void> => {
+    ElMessageBox.confirm(`确定删除吗？此操作不可恢复！`, '删除确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        await fetchDeleteDictType(row.id)
+        ElMessage.success('删除成功')
+        refreshData()
+      })
+      .catch(() => {
+        ElMessage.info('已取消删除')
+      })
+  }
+
+  const handleDeleteDictData = async (row: DictDataItem): Promise<void> => {
+    ElMessageBox.confirm(`确定删除吗？此操作不可恢复！`, '删除确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        await fetchDeleteDictData(row.id)
+        ElMessage.success('删除成功')
+        refreshData()
+      })
+      .catch(() => {
+        ElMessage.info('已取消删除')
+      })
   }
 </script>
-
-<style scoped>
-  .tree-card :deep(.el-card__body) {
-    flex: 1;
-    min-height: 0;
-    padding: 10px 2px 10px 10px;
-  }
-</style>
