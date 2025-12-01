@@ -75,7 +75,7 @@
           >
             <div class="flex gap-2 md:justify-center">
               <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
-                {{ t('table.form.reset') }}
+                <ArtSvgIcon icon="ri:reset-left-line" class="mr-1" />{{ t('table.form.reset') }}
               </ElButton>
               <ElButton
                 v-if="showSubmit"
@@ -84,7 +84,7 @@
                 @click="handleSubmit"
                 v-ripple
                 :disabled="disabledSubmit"
-              >
+                ><ArtSvgIcon icon="ri:check-line" class="mr-1" />
                 {{ t('table.form.submit') }}
               </ElButton>
             </div>

@@ -153,7 +153,7 @@ declare namespace Api {
 
     type DictList = Api.Common.PaginatedResponse<DictItem>
 
-    interface DictItem {
+    interface DictDataItem {
       id: string
       type: string
       code: string
@@ -162,7 +162,7 @@ declare namespace Api {
       sort: number
     }
 
-    type DictSearchParams = Partial<
+    type DictDataSearchParams = Partial<
       Pick<DictItem, 'id' | 'type' | 'code' | 'label' | 'isEnabled'> & Api.Common.CommonSearchParams
     >
 
@@ -173,8 +173,13 @@ declare namespace Api {
       type: string
       name: string
       module: string
+      dictDataList?: DictDataItem[]
       description: string
       createTime: string
+      code: string
+      label: string
+      isEnabled: boolean
+      sort: number
     }
 
     interface MenuFormData {

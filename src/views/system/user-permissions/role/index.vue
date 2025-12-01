@@ -157,7 +157,7 @@
                   {
                     key: 'permission',
                     label: '菜单权限',
-                    auth: 'system:role:permission',
+                    auth: 'permission',
                     icon: 'ri:user-3-line'
                   },
                   {

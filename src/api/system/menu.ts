@@ -11,6 +11,7 @@ export function fetchSaveMenu(params: Api.SystemManage.MenuFormData) {
 
 export function fetchDeleteMenu(id: string) {
   return request.del({
-    url: `/api/system/menu/${id}`
+    url: `/api/system/menu`,
+    params: { id }
   })
 }

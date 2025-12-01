@@ -1,29 +1,30 @@
 import request from '@/utils/http'
 
-export function fetchGetDictPage(params: Api.SystemManage.DictSearchParams) {
+export function fetchGetDictDataPage(params: Api.SystemManage.DictDataSearchParams) {
   return request.get<Api.SystemManage.DictList>({
     url: '/api/system/dict/query',
     params
   })
 }
 
-export function fetchSaveDict(data: Api.SystemManage.DictItem) {
-  return request.post<Api.SystemManage.DictItem>({
-    url: '/api/system/dict',
-    data
-  })
-}
-
-export function fetchUpdateDict(params: Api.SystemManage.DictItem) {
-  return request.put<Api.SystemManage.DictItem>({
+export function fetchSaveDictData(params: Api.SystemManage.DictDataItem) {
+  return request.post<Api.SystemManage.DictDataItem>({
     url: '/api/system/dict',
     params
   })
 }
 
-export function fetchDeleteDictItem(id: string) {
+export function fetchUpdateDictData(params: Api.SystemManage.DictDataItem) {
+  return request.put<Api.SystemManage.DictDataItem>({
+    url: '/api/system/dict',
+    params
+  })
+}
+
+export function fetchDeleteDictData(id: string) {
   return request.del({
-    url: '/api/system/dict/' + id
+    url: '/api/system/dict',
+    params: { id }
   })
 }
 
@@ -40,16 +41,10 @@ export function fetchSaveDictType(params: Api.SystemManage.DictTypeItem) {
   })
 }
 
-export function fetchUpdateDictType(params: Api.SystemManage.DictTypeItem) {
-  return request.put<Api.SystemManage.DictTypeItem>({
-    url: '/api/system/dict-type',
-    params
-  })
-}
-
-export function fetchDeleteDictType(type: string) {
+export function fetchDeleteDictType(id: string) {
   return request.del<void>({
-    url: '/api/system/dict-type/' + type
+    url: '/api/system/dict-type',
+    params: { id }
   })
 }
 
