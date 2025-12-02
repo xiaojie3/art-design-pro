@@ -65,6 +65,12 @@ declare namespace Api {
       code: string
     }
 
+    interface OptionItem {
+      label: string
+      value: string
+      disabled?: boolean
+    }
+
     interface CascaderOptionsItem {
       value: string
       label: string
@@ -190,6 +196,92 @@ declare namespace Api {
       roles?: string[]
       sort?: number
       [key: string]: any
+    }
+
+    interface DictMap {
+      [key: string]: OptionItem[]
+    }
+  }
+  /** 资源管理类型 */
+  namespace ResourcesManage {
+    /** 学校列表 */
+    type SchoolList = Api.Common.PaginatedResponse<SchoolListItem>
+    /** 学校列表项 */
+    interface SchoolListItem {
+      id: string
+      schoolCode: string
+      schoolName: string
+      schoolAbbr: string
+      englishName: string
+      englishAbbr: string
+      address: string
+      intro: string
+      createTime: string
+    }
+    /** 校区列表 */
+    type CampusList = Api.Common.PaginatedResponse<CampusListItem>
+
+    /** 校区列表项 */
+    interface CampusListItem {
+      id: string
+      campusCode: string
+      schoolId: string
+      campusName: string
+      englishName: string
+      address: string
+      principal: string
+      phone: string
+      intro: string
+      createTime: string
+    }
+
+    /** 校区搜索参数 */
+    type CampusSearchParams = Partial<
+      Pick<
+        CampusListItem,
+        | 'id'
+        | 'campusCode'
+        | 'campusName'
+        | 'englishName'
+        | 'address'
+        | 'principal'
+        | 'phone'
+        | 'intro'
+      > &
+        Api.Common.CommonSearchParams
+    >
+
+    /** 学院列表 */
+    type CollegeList = Api.Common.PaginatedResponse<CollegeListItem>
+
+    /** 学院列表项 */
+    interface CollegeListItem {
+      id: string
+      collegeCode: string
+      campusId: string
+      collegeName: string
+      chineseAbbr: string
+      englishName: string
+      dean: string
+      contact: string
+      intro: string
+    }
+
+    /** 学院搜索参数 */
+    type CollegeSearchParams = Partial<
+      Pick<CollegeListItem, 'id' | 'collegeName' | 'englishName' | 'dean' | 'contact' | 'intro'> &
+        Api.Common.CommonSearchParams
+    >
+  }
+  namespace FileManage {
+    /** 上传文件参数 */
+    interface UploadFileParams {
+      file: File
+      directoryId: string
+    }
+    /** 上传文件响应 */
+    interface UploadFileResponse {
+      id: string
     }
   }
 }

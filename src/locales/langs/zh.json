@@ -367,6 +367,7 @@
           "schoolAbbr": "学校简称",
           "englishName": "英文名称",
           "englishAbbr": "英文简称",
+          "province": "省份",
           "address": "地址",
           "intro": "介绍"
         },
@@ -376,6 +377,7 @@
           "schoolAbbr": "请输入学校简称",
           "englishName": "请输入英文名称",
           "englishAbbr": "请输入英文简称",
+          "province": "请选择省份",
           "address": "请输入地址",
           "intro": "请输入介绍"
         }
