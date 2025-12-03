@@ -188,6 +188,7 @@
    */
   const getLevelOptions = async (): Promise<void> => {
     levelOptions.value = await fetchLevelOptions()
+    console.log('levelOptions.value', levelOptions.value)
     if (levelOptions.value.length) {
       ElMessage.success('成功获取到数据')
     }

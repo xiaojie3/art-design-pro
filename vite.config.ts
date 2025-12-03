@@ -33,6 +33,11 @@ export default ({ mode }: { mode: string }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '') // 关键：去除 /api 前缀
         },
+        '/api/resource': {
+          target: 'http://localhost:8083',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '') // 关键：去除 /api 前缀
+        },
         '/api': {
           target: VITE_API_PROXY_URL,
           changeOrigin: true

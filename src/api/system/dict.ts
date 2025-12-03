@@ -7,6 +7,13 @@ export function fetchGetDictDataPage(params: Api.SystemManage.DictDataSearchPara
   })
 }
 
+export function fetchGetDictData(types: string[]) {
+  return request.get<Api.SystemManage.DictMap>({
+    url: '/api/system/dict',
+    params: { types }
+  })
+}
+
 export function fetchSaveDictData(params: Api.SystemManage.DictDataItem) {
   return request.post<Api.SystemManage.DictDataItem>({
     url: '/api/system/dict',
