@@ -10,7 +10,7 @@
       v-model="formData"
       :items="formItems"
       :rules="formRules"
-      :span="12"
+      :span="24"
       :defaultExpanded="true"
       @submit="handleSubmit"
     >
@@ -21,6 +21,7 @@
 <script setup lang="ts">
   // 移除mock数据导入，改为导入API
   import { fetchRoleCascaderOptionsList } from '@/api/system-manage'
+  import { fetchSaveUser } from '@/api/system/user'
   import type { FormInstance } from 'element-plus'
   import { ElMessage } from 'element-plus'
   import { ref, computed, reactive, watch } from 'vue'
@@ -51,11 +52,15 @@
   const formRef = ref<FormInstance>()
 
   // 表单数据
-  const formData = reactive({
+  const formData = reactive<Api.SystemManage.UserSaveParams>({
+    account: '',
+    password: '',
     username: '',
+    email: '',
     phone: '',
     gender: '1',
-    role: []
+    roles: [],
+    status: '1'
   })
 
   /**
@@ -94,6 +99,7 @@
       label: '账号',
       key: 'account',
       type: 'input',
+      span: 12,
       placeholder: '请输入账号',
       clearable: true
     }),
@@ -101,6 +107,7 @@
       label: '密码',
       key: 'password',
       type: 'input',
+      span: 12,
       placeholder: '请输入密码',
       clearable: true
     }),
@@ -108,6 +115,7 @@
       label: '用户名',
       key: 'username',
       type: 'input',
+      span: 12,
       placeholder: '请输入用户名',
       clearable: true
     }),
@@ -115,18 +123,21 @@
       label: '手机号',
       key: 'phone',
       type: 'input',
+      span: 12,
       props: { placeholder: '请输入手机号', maxlength: '11' }
     }),
     email: createFormItem({
       label: '邮箱',
       key: 'email',
       type: 'input',
+      span: 12,
       props: { placeholder: '请输入邮箱', maxlength: '50' }
     }),
     gender: createFormItem({
       label: '性别',
       key: 'gender',
       type: 'radiogroup',
+      span: 12,
       props: {
         options: GENDER_OPTIONS
       }
@@ -227,8 +238,9 @@
   const handleSubmit = async () => {
     if (!formRef.value) return
 
-    await formRef.value.validate((valid) => {
+    await formRef.value.validate(async (valid) => {
       if (valid) {
+        await fetchSaveUser(formData)
         ElMessage.success(dialogType.value === 'add' ? '添加成功' : '更新成功')
         dialogVisible.value = false
         emit('submit')

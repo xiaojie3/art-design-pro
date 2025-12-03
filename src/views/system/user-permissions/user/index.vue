@@ -45,7 +45,7 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { fetchGetUserPage } from '@/api/system-manage'
+  import { fetchGetUserPage, fetchDeleteUser } from '@/api/system/user'
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
   import UserTable from './modules/user-table/index.vue'
@@ -119,14 +119,13 @@
       // },
       columnsFactory: () => [
         { type: 'selection' }, // 勾选列
-        { type: 'index', width: 60, label: '序号' }, // 序号
+        { type: 'index', label: '序号' }, // 序号
         {
           prop: 'account',
-          label: '账号',
-          width: 280
+          label: '账号'
           // visible: false, // 默认是否显示列
         },
-        { prop: 'username', label: '姓名', width: 280 },
+        { prop: 'username', label: '姓名' },
         {
           prop: 'gender',
           label: '性别',
@@ -151,7 +150,6 @@
         {
           prop: 'operation',
           label: '操作',
-          width: 120,
           fixed: 'right', // 固定列
           formatter: (row) =>
             h('div', [
@@ -201,7 +199,9 @@
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
-    }).then(() => {
+    }).then(async () => {
+      await fetchDeleteUser(row.id)
+      refreshData()
       ElMessage.success('注销成功')
     })
   }

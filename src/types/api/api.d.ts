@@ -125,6 +125,17 @@ declare namespace Api {
         Api.Common.CommonSearchParams
     >
 
+    interface UserSaveParams {
+      account: string
+      password: string
+      username: string
+      email: string
+      gender: string
+      phone: string
+      status: string
+      roles: string[]
+    }
+
     /** 角色列表 */
     type RoleList = Api.Common.PaginatedResponse<RoleListItem>
 

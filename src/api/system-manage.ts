@@ -1,14 +1,6 @@
 import request from '@/utils/http'
 import { AppRouteRecord } from '@/types/router'
 
-// 获取用户列表
-export function fetchGetUserPage(params: Api.SystemManage.UserSearchParams) {
-  return request.post<Api.SystemManage.UserPage>({
-    url: '/api/system/user/query',
-    params
-  })
-}
-
 // 角色级联选择器选项
 export function fetchRoleCascaderOptionsList() {
   return request.get<Api.Common.CascaderOptionsItem[]>({
