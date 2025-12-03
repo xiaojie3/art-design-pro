@@ -1,6 +1,6 @@
 <!-- 表单示例 -->
 <template>
-  <div class="pb-5">
+  <div class="pb-5 art-full-height">
     <ElCard shadow="never" class="art-card-xs">
       <ArtForm
         ref="formRef"
@@ -26,6 +26,7 @@
   import { useI18n } from 'vue-i18n'
   import { fetchGetDictData } from '@/api/system/dict'
   import { fetchGetSchool, fetchEditSchool } from '@/api/resources/school'
+  import { ElMessage } from 'element-plus'
   interface Emits {
     (e: 'update:modelValue', value: Record<string, any>): void
     (e: 'search', params: Record<string, any>): void
@@ -97,7 +98,7 @@
     ]
   }))
 
-  const labelWidth = ref(100)
+  const labelWidth = ref(80)
   const labelPosition = ref<'right' | 'left' | 'top'>('right')
   const span = ref(6)
   const gutter = ref(12)
@@ -155,11 +156,7 @@
     province: createFormItem({
       label: $t('resources.public.school.label.province'),
       key: 'province',
-      type: 'select',
-      props: {
-        placeholder: t('resources.public.school.placeholder.province'),
-        options: provinceOptions.value
-      }
+      type: 'select'
     }),
     address: createFormItem({
       label: $t('resources.public.school.label.address'),
@@ -192,6 +189,8 @@
     {
       ...baseFormItems.province,
       props: {
+        clearable: true,
+        filterable: true,
         placeholder: t('resources.public.school.placeholder.province'),
         options: provinceOptions.value
       }
@@ -204,11 +203,10 @@
    * 处理表单重置事件
    */
   const handleReset = (): void => {
-    console.log('重置表单')
     emit('reset')
+    ElMessage.success('重置成功')
   }
 
-  // 处理表单提交
   /**
    * 处理表单提交事件
    */
@@ -216,6 +214,6 @@
     await formRef.value.validate()
     await fetchEditSchool(formData.value)
     emit('search', formData.value)
-    console.log('表单数据', formData.value)
+    ElMessage.success('更新成功')
   }
 </script>

@@ -68,7 +68,7 @@
             </slot>
           </ElFormItem>
         </ElCol>
-        <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="max-w-full flex-1">
+        <ElCol :xs="24" :sm="24" :md="24" :lg="24" :xl="24" class="max-w-full flex-1">
           <div
             class="mb-3 flex-c flex-wrap justify-end md:flex-row md:items-stretch md:gap-2"
             :style="actionButtonsStyle"
