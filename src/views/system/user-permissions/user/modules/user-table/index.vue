@@ -54,47 +54,43 @@
         <ElEmpty v-else :description="emptyText" :image-size="120" />
       </template>
     </ElTable>
-    <div class="bottom-container" v-if="showPagination" ref="paginationRef">
+    <div class="bottom-container mt-3">
       <!-- 批量修改区域 - 居左 -->
       <div class="batch-edit-container" v-if="enableBatchAction">
         <label>批量修改：</label>
-        <ElSelect v-model="selectedField" placeholder="请选择字段">
-          <ElOption
-            v-for="option in fieldOptions"
-            :key="option.key"
-            :label="option.label"
-            :value="option.value"
-          />
-        </ElSelect>
-        <!-- 动态渲染输入组件 -->
-        <template v-if="currentFieldOption">
-          <!-- 下拉选择器 -->
-          <ElSelect
-            v-if="currentFieldOption.type === 'select'"
-            v-model="selectedValue"
-            placeholder="请选择"
-          >
+        <div class="w-30">
+          <ElSelect v-model="selectedField" placeholder="请选择字段">
             <ElOption
-              v-for="option in currentFieldOption.options"
+              v-for="option in fieldOptions"
               :key="option.key"
               :label="option.label"
               :value="option.value"
             />
           </ElSelect>
+        </div>
+        <!-- 动态渲染输入组件 -->
+        <template v-if="currentFieldOption">
+          <!-- 下拉选择器 -->
+          <div v-if="currentFieldOption.type === 'select'" class="w-30">
+            <ElSelect v-model="selectedValue" placeholder="请选择">
+              <ElOption
+                v-for="option in currentFieldOption.options"
+                :key="option.key"
+                :label="option.label"
+                :value="option.value"
+              />
+            </ElSelect>
+          </div>
           <!-- 文本输入框 -->
-          <ElInput
-            v-else-if="currentFieldOption.type === 'input'"
-            v-model="selectedValue"
-            placeholder="请输入"
-            clearable
-          />
+          <div v-else-if="currentFieldOption.type === 'input'" class="w-30"
+            ><ElInput v-model="selectedValue" placeholder="请输入" clearable
+          /></div>
           <!-- 日期选择器 -->
           <ElDatePicker
             v-else-if="currentFieldOption.type === 'date'"
             v-model="selectedValue"
             type="date"
             placeholder="选择日期"
-            style="width: 170px"
           />
           <!-- 日期时间选择器 -->
           <ElDatePicker
@@ -102,13 +98,12 @@
             v-model="selectedValue"
             type="datetime"
             placeholder="选择日期时间"
-            style="width: 210px"
           />
         </template>
         <ElButton type="primary" :disabled="!selectedValue">修改</ElButton>
       </div>
       <!-- 分页区域 - 居右 -->
-      <div class="pagination-container">
+      <div class="pagination-container" v-if="showPagination" ref="paginationRef">
         <ElPagination
           v-bind="mergedPaginationOptions"
           :total="pagination?.total"
@@ -464,11 +459,14 @@
 
   .batch-edit-container {
     display: flex;
-    gap: 2px;
-    align-items: center;
   }
 
   .batch-edit-container label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: normal;
+    color: #606266;
     white-space: nowrap;
   }
 
@@ -478,6 +476,5 @@
 
   .pagination-container {
     display: flex;
-    justify-content: flex-end;
   }
 </style>

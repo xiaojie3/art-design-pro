@@ -51,6 +51,7 @@
   import UserTable from './modules/user-table/index.vue'
   import { ElTag, ElMessageBox } from 'element-plus'
   import { DialogType } from '@/types'
+  import dayjs from 'dayjs'
 
   defineOptions({ name: 'User' })
 
@@ -145,7 +146,8 @@
         {
           prop: 'createTime',
           label: '创建日期',
-          sortable: true
+          sortable: true,
+          formatter: (row) => (row.createTime ? dayjs(row.createTime).format('YYYY-MM-DD') : '')
         },
         {
           prop: 'operation',
