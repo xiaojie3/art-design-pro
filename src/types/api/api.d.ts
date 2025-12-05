@@ -263,15 +263,15 @@ declare namespace Api {
     >
 
     /** 学院列表 */
-    type CollegeList = Api.Common.PaginatedResponse<CollegeListItem>
+    type CollegePage = Api.Common.PaginatedResponse<CollegeItem>
 
     /** 学院列表项 */
-    interface CollegeListItem {
+    interface CollegeItem {
       id: string
       collegeCode: string
       campusId: string
       collegeName: string
-      chineseAbbr: string
+      collegeAbbr: string
       englishName: string
       dean: string
       contact: string
@@ -280,7 +280,7 @@ declare namespace Api {
 
     /** 学院搜索参数 */
     type CollegeSearchParams = Partial<
-      Pick<CollegeListItem, 'id' | 'collegeName' | 'englishName' | 'dean' | 'contact' | 'intro'> &
+      Pick<CollegeItem, 'id' | 'collegeName' | 'englishName' | 'dean' | 'contact' | 'intro'> &
         Api.Common.CommonSearchParams
     >
   }

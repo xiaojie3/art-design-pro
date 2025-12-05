@@ -26,54 +26,53 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { fetchGetCampusPage, fetchDeleteCampus } from '@/api/resources/campus'
-  import { fetchGetSchoolList } from '@/api/resources/school'
+  import { fetchGetCollegePage, fetchDeleteCollege } from '@/api/resources/college'
+  import { fetchGetCampusList } from '@/api/resources/campus'
   import EditDialog from './modules/edit-dialog.vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
   import { onMounted } from 'vue'
 
-  defineOptions({ name: 'Campus' })
+  defineOptions({ name: 'College' })
 
-  type Item = Api.ResourcesManage.CampusItem
+  type Item = Api.ResourcesManage.CollegeItem
 
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const editData = ref<Partial<Item>>({})
-  const schoolList = ref<Api.ResourcesManage.SchoolItem[]>([])
+  const campusList = ref<Api.ResourcesManage.CampusItem[]>([])
 
-  // 获取学校列表数据
-  const getSchoolList = async () => {
+  // 获取校区列表数据
+  const getCampusList = async () => {
     try {
-      schoolList.value = await fetchGetSchoolList()
+      campusList.value = await fetchGetCampusList()
     } catch (error) {
-      console.error('获取学校列表失败:', error)
-      ElMessage.error('获取学校列表失败')
+      console.error('获取校区列表失败:', error)
+      ElMessage.error('获取校区列表失败')
     }
   }
 
-  // 组件加载时获取学校列表
+  // 组件加载时获取校区列表
   onMounted(() => {
-    getSchoolList()
+    getCampusList()
   })
 
   const { columns, columnChecks, data, loading, refreshData } = useTable({
     // 核心配置
     core: {
-      apiFn: fetchGetCampusPage,
+      apiFn: fetchGetCollegePage,
       columnsFactory: () => [
         { type: 'index', label: '序号' },
         {
-          prop: 'schoolName',
-          label: '学校名称',
+          prop: 'campusName',
+          label: '校区名称',
           formatter: (row) => {
-            return getSchoolName(row.schoolId)
+            return campusList.value.find((item) => item.id === row.campusId)?.campusName || ''
           }
         },
-        { prop: 'campusCode', label: '校区编码' },
-        { prop: 'campusName', label: '校区名称' },
-        { prop: 'address', label: '地址' },
+        { prop: 'collegeCode', label: '学院编码' },
+        { prop: 'collegeName', label: '学院名称' },
         {
           prop: 'operation',
           label: '操作',
@@ -86,17 +85,13 @@
               }),
               h(ArtButtonTable, {
                 type: 'delete',
-                onClick: () => deleteCampus(row)
+                onClick: () => deleteCollege(row)
               })
             ])
         }
       ]
     }
   })
-
-  const getSchoolName = (schoolId: string) => {
-    return schoolList.value.find((item) => item.id === schoolId)?.schoolName || ''
-  }
 
   /**
    * 显示用户弹窗
@@ -112,13 +107,13 @@
   /**
    * 删除校区
    */
-  const deleteCampus = (row: Item): void => {
-    ElMessageBox.confirm(`确定要删除${row.campusName}吗？`, '删除校区', {
+  const deleteCollege = (row: Item): void => {
+    ElMessageBox.confirm(`确定要删除${row.collegeName}吗？`, '删除校区', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
     }).then(async () => {
-      await fetchDeleteCampus([row.id])
+      await fetchDeleteCollege([row.id])
       refreshData()
       ElMessage.success('删除成功')
     })
