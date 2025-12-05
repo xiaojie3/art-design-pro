@@ -356,11 +356,11 @@
     }
   },
   "resources": {
-    "title": "资源管理",
+    "title": "资源",
     "public": {
       "title": "公共资源",
       "school": {
-        "title": "学校管理",
+        "title": "学校",
         "label": {
           "schoolCode": "学校代码",
           "schoolName": "学校名称",
@@ -383,7 +383,7 @@
         }
       },
       "campus": {
-        "title": "校区管理",
+        "title": "校区",
         "placeholder": {
           "campusCode": "请输入校区代码",
           "chineseName": "请输入校区名称",
@@ -410,26 +410,30 @@
           "delete": "删除校区"
         }
       },
-      "college": {
-        "title": "学院管理",
+      "unit": {
+        "title": "单位",
         "placeholder": {
-          "collegeCode": "请输入学院代码",
-          "chineseName": "请输入学院名称",
-          "chineseAbbr": "请输入学院简称",
+          "unitCode": "请输入单位代码",
+          "chineseName": "请输入单位名称",
+          "chineseAbbr": "请输入单位简称",
+          "unitType": "请选择单位类型",
+          "unitCategory": "请选择单位分类",
           "englishName": "请输入英文名称",
           "englishAbbr": "请输入英文简称",
           "address": "请输入地址",
-          "intro": "请输入介绍"
+          "remark": "请输入备注"
         },
         "table": {
           "column": {
-            "collegeCode": "学院代码",
-            "chineseName": "学院名称",
-            "chineseAbbr": "学院简称",
+            "unitCode": "单位代码",
+            "chineseName": "单位名称",
+            "chineseAbbr": "单位简称",
+            "unitType": "单位类型",
+            "unitCategory": "单位分类",
             "englishName": "英文名称",
             "englishAbbr": "英文简称",
             "address": "地址",
-            "intro": "介绍"
+            "remark": "备注"
           }
         },
         "operation": {

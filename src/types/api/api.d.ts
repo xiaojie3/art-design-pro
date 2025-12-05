@@ -76,6 +76,12 @@ declare namespace Api {
       label: string
       children?: CascaderOptionsItem[]
     }
+
+    interface TreeItem {
+      id: string
+      label: string
+      children?: TreeItem[]
+    }
   }
 
   /** 认证类型 */
@@ -281,6 +287,45 @@ declare namespace Api {
     /** 学院搜索参数 */
     type CollegeSearchParams = Partial<
       Pick<CollegeItem, 'id' | 'collegeName' | 'englishName' | 'dean' | 'contact' | 'intro'> &
+        Api.Common.CommonSearchParams
+    >
+
+    type UnitPage = Api.Common.PaginatedResponse<UnitItem>
+
+    interface UnitItem {
+      id: string
+      unitCode: string
+      unitName: string
+      unitAbbr: string
+      englishName: string
+      englishAbbr: string
+      parentId: string
+      isResearchSection: boolean
+      unitType: string
+      unitCategory: string
+      address: string
+      partySecretary: string
+      adminPrincipal: string
+    }
+
+    /** 单位搜索参数 */
+    type UnitSearchParams = Partial<
+      Pick<
+        UnitItem,
+        | 'id'
+        | 'unitCode'
+        | 'unitName'
+        | 'unitAbbr'
+        | 'englishName'
+        | 'englishAbbr'
+        | 'parentId'
+        | 'isResearchSection'
+        | 'unitType'
+        | 'unitCategory'
+        | 'address'
+        | 'partySecretary'
+        | 'adminPrincipal'
+      > &
         Api.Common.CommonSearchParams
     >
   }
