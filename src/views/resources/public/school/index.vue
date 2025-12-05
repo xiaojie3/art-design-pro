@@ -45,7 +45,7 @@
   /**
    * 表单数据 - 从baseFormItems动态生成
    */
-  const formData = ref<Api.ResourcesManage.SchoolListItem>({
+  const formData = ref<Api.ResourcesManage.SchoolItem>({
     id: '',
     schoolCode: '',
     schoolName: '',

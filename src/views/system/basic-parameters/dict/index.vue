@@ -19,7 +19,7 @@
       >
         <template #left>
           <ElButton v-auth="'add'" @click="handleAddDictType" v-ripple
-            ><ArtSvgIcon icon="ri:add-line" class="mr-1" />添加</ElButton
+            ><ArtSvgIcon icon="ri:add-line" class="mr-1" />新增</ElButton
           >
         </template>
       </ArtTableHeader>

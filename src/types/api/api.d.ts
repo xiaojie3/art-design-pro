@@ -301,6 +301,9 @@ declare namespace Api {
       englishAbbr: string
       parentId: string
       isResearchSection: boolean
+      isEnabled: boolean
+      isCourseOffered: boolean
+      isStudentManaged: boolean
       unitType: string
       unitCategory: string
       address: string

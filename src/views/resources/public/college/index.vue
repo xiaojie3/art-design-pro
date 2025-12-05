@@ -5,7 +5,9 @@
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增</ElButton>
+            <ElButton @click="showDialog('add')" v-ripple
+              ><ArtSvgIcon icon="ri:add-line" class="mr-1" />新增</ElButton
+            >
           </ElSpace>
         </template>
       </ArtTableHeader>

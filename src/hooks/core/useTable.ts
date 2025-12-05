@@ -205,7 +205,7 @@ function useTableImpl<TApiFn extends (params: any) => Promise<any>>(
     Object.assign(
       {
         [pageKey]: 1,
-        [sizeKey]: 10
+        [sizeKey]: 15
       },
       apiParams || {}
     ) as TParams
