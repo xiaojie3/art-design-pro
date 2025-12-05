@@ -216,9 +216,9 @@ declare namespace Api {
   /** 资源管理类型 */
   namespace ResourcesManage {
     /** 学校列表 */
-    type SchoolList = Api.Common.PaginatedResponse<SchoolListItem>
+    type SchoolPage = Api.Common.PaginatedResponse<SchoolListItem>
     /** 学校列表项 */
-    interface SchoolListItem {
+    interface SchoolItem {
       id: string
       schoolCode: string
       schoolName: string
@@ -230,10 +230,10 @@ declare namespace Api {
       createTime: string
     }
     /** 校区列表 */
-    type CampusList = Api.Common.PaginatedResponse<CampusListItem>
+    type CampusPage = Api.Common.PaginatedResponse<CampusItem>
 
     /** 校区列表项 */
-    interface CampusListItem {
+    interface CampusItem {
       id: string
       campusCode: string
       schoolId: string
@@ -249,7 +249,7 @@ declare namespace Api {
     /** 校区搜索参数 */
     type CampusSearchParams = Partial<
       Pick<
-        CampusListItem,
+        CampusItem,
         | 'id'
         | 'campusCode'
         | 'campusName'
