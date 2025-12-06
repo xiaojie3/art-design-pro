@@ -331,6 +331,27 @@ declare namespace Api {
       > &
         Api.Common.CommonSearchParams
     >
+    /** 专业列表 */
+    type MajorPage = Api.Common.PaginatedResponse<MajorItem>
+    /** 专业列表项 */
+    interface MajorItem {
+      id: string
+      majorCode: string
+      collegeId: string
+      majorName: string
+      majorAbbr: string
+      englishName: string
+      englishAbbr: string
+      educationLevel: string
+      degree: string
+      years: number
+      intro: string
+    }
+    /** 专业搜索参数 */
+    type MajorSearchParams = Partial<
+      Pick<MajorItem, 'id' | 'collegeId' | 'majorName' | 'englishName'> &
+        Api.Common.CommonSearchParams
+    >
   }
   namespace FileManage {
     /** 上传文件参数 */

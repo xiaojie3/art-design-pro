@@ -1,4 +1,9 @@
 import request from '@/utils/http'
+export function fetchGetCollegeTree() {
+  return request.get<Api.Common.TreeItem[]>({
+    url: '/api/res/college/tree'
+  })
+}
 // 获取学院列表
 export function fetchGetCollegePage(params: Api.ResourcesManage.CollegeSearchParams) {
   return request.get<Api.ResourcesManage.CollegePage>({
