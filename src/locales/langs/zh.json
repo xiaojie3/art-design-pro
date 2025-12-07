@@ -265,6 +265,9 @@
     "border": "边框",
     "headerBackground": "表头背景"
   },
+  "home": {
+    "title": "首页"
+  },
   "system": {
     "title": "系统管理",
     "userCenter": {
