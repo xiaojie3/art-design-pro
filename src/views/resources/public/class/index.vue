@@ -42,13 +42,10 @@
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
   import { fetchGetClassPage, fetchDeleteClass, fetchSaveClass } from '@/api/resources/class'
-  import { fetchGetCollegeList } from '@/api/resources/college'
-  import { fetchGetDictData } from '@/api/system/dict'
   import EditDialog from './modules/edit-dialog.vue'
   import Search from './modules/search.vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
-  import { onMounted } from 'vue'
 
   defineOptions({ name: 'Major' })
 
@@ -59,29 +56,7 @@
   const dialogVisible = ref(false)
   const editData = ref<Partial<Item>>({})
   const tableLayout = ref<'auto' | 'fixed'>('fixed')
-  const educationLevelOptions = ref<Api.Common.OptionItem[]>([])
-  const degreeOptions = ref<Api.Common.OptionItem[]>([])
-  const collegeList = ref<Api.Common.OptionItem[]>([])
-  const getDictOptions = async (): Promise<void> => {
-    const dictMap = await fetchGetDictData(['education_level', 'degree'])
-    educationLevelOptions.value = dictMap.education_level
-    degreeOptions.value = dictMap.degree || []
-  }
-  // 获取校区列表数据
-  const getCampusList = async () => {
-    try {
-      collegeList.value = await fetchGetCollegeList()
-    } catch (error) {
-      console.error('获取学院列表失败:', error)
-      ElMessage.error('获取学院列表失败')
-    }
-  }
 
-  // 组件加载时获取校区列表
-  onMounted(async () => {
-    await getCampusList()
-    await getDictOptions()
-  })
   const {
     columns,
     columnChecks,
@@ -102,8 +77,10 @@
         { type: 'index', label: '序号' },
         { prop: 'className', label: '班级名称', showOverflowTooltip: true },
         { prop: 'classAbbr', label: '班级简称' },
-        { prop: 'englishName', label: '英文名称', showOverflowTooltip: true },
-        { prop: 'englishAbbr', label: '英文简称' },
+        { prop: 'majorName', label: '专业名称', showOverflowTooltip: true },
+        { prop: 'collegeName', label: '学院名称', showOverflowTooltip: true },
+        { prop: 'teacherName', label: '班主任' },
+        { prop: 'classSize', label: '班级人数', formatter: (row) => row.classSize || 0 },
         {
           prop: 'operation',
           label: '操作',

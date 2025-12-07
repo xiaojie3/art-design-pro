@@ -49,12 +49,13 @@
       label: '学院',
       key: 'collegeId',
       type: 'select',
+      clearable: true,
       props: {
         placeholder: '请选择学院',
         options: collegeList.value,
         onChange: async (val: any) => {
-          console.log(val)
           majorList.value = await fetchGetMajorList({ collegeId: val })
+          formData.value.majorId = majorList.value[0]?.value
         }
       }
     },
@@ -62,10 +63,18 @@
       label: '专业',
       key: 'majorId',
       type: 'select',
+      clearable: true,
       props: {
         placeholder: '请选择专业',
         options: majorList.value
       }
+    },
+    {
+      label: '班级',
+      key: 'className',
+      type: 'input',
+      clearable: true,
+      placeholder: '请输入班级名称'
     }
   ])
 
@@ -78,6 +87,5 @@
   async function handleSearch() {
     await searchBarRef.value.validate()
     emit('search', formData.value)
-    console.log('表单数据', formData.value)
   }
 </script>

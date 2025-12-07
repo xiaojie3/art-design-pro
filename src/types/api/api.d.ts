@@ -363,10 +363,10 @@ declare namespace Api {
       classAbbr: string
       englishName: string
       englishAbbr: string
-      educationLevel: string
-      degree: string
-      years: number
-      intro: string
+      majorName: string
+      collegeName: string
+      teacherName: string
+      classSize: number
     }
     /** 班级搜索参数 */
     type ClassSearchParams = Partial<
