@@ -13,9 +13,10 @@ export function fetchGetMajorPage(params: Api.ResourcesManage.MajorSearchParams)
   })
 }
 // 获取学院列表
-export function fetchGetMajorList() {
-  return request.get<Api.ResourcesManage.MajorItem[]>({
-    url: '/api/res/major/list'
+export function fetchGetMajorList(params: Api.ResourcesManage.MajorSearchParams) {
+  return request.get<Api.Common.OptionItem[]>({
+    url: '/api/res/major/list',
+    params
   })
 }
 // 获取学院信息

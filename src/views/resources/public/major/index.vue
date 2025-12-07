@@ -92,7 +92,7 @@
   const tableLayout = ref<'auto' | 'fixed'>('fixed')
   const educationLevelOptions = ref<Api.Common.OptionItem[]>([])
   const degreeOptions = ref<Api.Common.OptionItem[]>([])
-  const collegeList = ref<Api.ResourcesManage.CollegeItem[]>([])
+  const collegeList = ref<Api.Common.OptionItem[]>([])
   const getDictOptions = async (): Promise<void> => {
     const dictMap = await fetchGetDictData(['education_level', 'degree'])
     educationLevelOptions.value = dictMap.education_level
@@ -138,7 +138,7 @@
           prop: 'collegeName',
           label: '学院名称',
           formatter: (row) =>
-            collegeList.value.find((college) => college.id === row.collegeId)?.collegeName || ''
+            collegeList.value.find((college) => college.value === row.collegeId)?.label || ''
         },
         {
           prop: 'education_level',

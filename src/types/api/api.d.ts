@@ -352,6 +352,27 @@ declare namespace Api {
       Pick<MajorItem, 'id' | 'collegeId' | 'majorName' | 'englishName'> &
         Api.Common.CommonSearchParams
     >
+    /** 班级列表 */
+    type ClassPage = Api.Common.PaginatedResponse<ClassItem>
+    /** 班级列表项 */
+    interface ClassItem {
+      id: string
+      classCode: string
+      majorId: string
+      className: string
+      classAbbr: string
+      englishName: string
+      englishAbbr: string
+      educationLevel: string
+      degree: string
+      years: number
+      intro: string
+    }
+    /** 班级搜索参数 */
+    type ClassSearchParams = Partial<
+      Pick<ClassItem, 'id' | 'majorId' | 'className' | 'englishName'> &
+        Api.Common.CommonSearchParams
+    >
   }
   namespace FileManage {
     /** 上传文件参数 */

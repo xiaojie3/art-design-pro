@@ -13,7 +13,7 @@ export function fetchGetCollegePage(params: Api.ResourcesManage.CollegeSearchPar
 }
 // 获取学院列表
 export function fetchGetCollegeList() {
-  return request.get<Api.ResourcesManage.CollegeItem[]>({
+  return request.get<Api.Common.OptionItem[]>({
     url: '/api/res/college/list'
   })
 }
