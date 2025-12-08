@@ -27,20 +27,10 @@ export default ({ mode }: { mode: string }) => {
     server: {
       port: Number(VITE_PORT),
       proxy: {
-        // 1. 先配置精确路径 /api/system，优先级更高
-        '/api/system': {
-          target: 'http://localhost:8082',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '') // 关键：去除 /api 前缀
-        },
-        '/api/res': {
-          target: 'http://localhost:8083',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, '') // 关键：去除 /api 前缀
-        },
         '/api': {
           target: VITE_API_PROXY_URL,
-          changeOrigin: true
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '') // 关键：去除 /api 前缀
         }
       },
       host: true

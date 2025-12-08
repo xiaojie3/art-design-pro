@@ -19,22 +19,10 @@
             style="margin-top: 25px"
           >
             <ElFormItem prop="account">
-              <ElSelect v-model="formData.account" @change="setupAccount">
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
-                >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
-            <ElFormItem prop="username">
               <ElInput
                 class="custom-height"
-                :placeholder="$t('login.placeholder.username')"
-                v-model.trim="formData.username"
+                :placeholder="$t('login.placeholder.account')"
+                v-model.trim="formData.account"
               />
             </ElFormItem>
             <ElFormItem prop="password">
@@ -51,8 +39,8 @@
             <!-- 推拽验证 -->
             <div class="relative pb-5 mt-6">
               <div
-                class="relative z-[2] overflow-hidden select-none rounded-lg border border-transparent tad-300"
-                :class="{ '!border-[#FF4E4F]': !isPassing && isClickPass }"
+                class="relative z-2 overflow-hidden select-none rounded-lg border border-transparent tad-300"
+                :class="{ 'border-[#FF4E4F]！': !isPassing && isClickPass }"
               >
                 <ArtDragVerify
                   ref="dragVerify"
@@ -66,7 +54,7 @@
                 />
               </div>
               <p
-                class="absolute top-0 z-[1] px-px mt-2 text-xs text-[#f56c6c] tad-300"
+                class="absolute top-0 z-1 px-px mt-2 text-xs text-[#f56c6c] tad-300"
                 :class="{ 'translate-y-10': !isPassing && isClickPass }"
               >
                 {{ $t('login.placeholder.slider') }}
@@ -138,30 +126,6 @@
     roles: string[]
   }
 
-  const accounts = computed<Account[]>(() => [
-    {
-      key: 'super',
-      label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
-      roles: ['R_SUPER']
-    },
-    {
-      key: 'admin',
-      label: t('login.roles.admin'),
-      userName: 'Admin',
-      password: '123456',
-      roles: ['R_ADMIN']
-    },
-    {
-      key: 'user',
-      label: t('login.roles.user'),
-      userName: 'User',
-      password: '123456',
-      roles: ['R_USER']
-    }
-  ])
-
   const dragVerify = ref()
 
   const userStore = useUserStore()
@@ -181,22 +145,20 @@
   })
 
   const rules = computed<FormRules>(() => ({
-    username: [{ required: true, message: t('login.placeholder.username'), trigger: 'blur' }],
+    account: [{ required: true, message: t('login.placeholder.account'), trigger: 'blur' }],
     password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }]
   }))
 
   const loading = ref(false)
 
   onMounted(() => {
-    setupAccount('super')
+    setupAccount()
   })
 
   // 设置账号
-  const setupAccount = (key: AccountKey) => {
-    const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-    formData.account = key
-    formData.username = selectedAccount?.userName ?? ''
-    formData.password = selectedAccount?.password ?? ''
+  const setupAccount = () => {
+    formData.account = 'admin'
+    formData.password = 'admin123'
   }
 
   // 登录
@@ -217,10 +179,10 @@
       loading.value = true
 
       // 登录请求
-      const { username, password } = formData
+      const { account, password } = formData
 
       const { token, refreshToken } = await fetchLogin({
-        userName: username,
+        account,
         password
       })
 
