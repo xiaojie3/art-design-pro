@@ -90,7 +90,7 @@
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const editData = ref<Partial<Item>>({})
-  const campusList = ref<Api.ResourcesManage.CampusItem[]>([])
+  const campusList = ref<Api.Common.OptionItem[]>([])
   const tableLayout = ref<'auto' | 'fixed'>('auto')
   const unitTypeOptions = ref<Api.Common.OptionItem[]>([])
   const unitCategoryOptions = ref<Api.Common.OptionItem[]>([])
