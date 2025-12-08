@@ -8,7 +8,7 @@ export function fetchGetCampusPage(params: Api.ResourcesManage.CampusSearchParam
 }
 // 获取校区列表
 export function fetchGetCampusList() {
-  return request.get<Api.ResourcesManage.CampusItem[]>({
+  return request.get<Api.Common.OptionItem[]>({
     url: '/api/res/campus/list'
   })
 }

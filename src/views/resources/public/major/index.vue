@@ -9,6 +9,7 @@
               :props="treeProps"
               node-key="id"
               @node-click="handleNodeClick"
+              default-expand-all
             />
           </ElScrollbar>
         </ElCard>
@@ -36,6 +37,7 @@
             @pagination:size-change="handleSizeChange"
             @pagination:current-change="handleCurrentChange"
             :columns="columns"
+            stripe
             ><template #isEnabled="{ row }">
               <ElSwitch
                 v-if="!row.name"
@@ -60,20 +62,15 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import {
-    fetchGetUnitPage,
-    fetchDeleteUnit,
-    fetchGetUnitTree,
-    fetchSaveUnit
-  } from '@/api/resources/unit'
-  import { fetchGetCampusList } from '@/api/resources/campus'
+  import { fetchGetMajorPage, fetchDeleteMajor, fetchSaveMajor } from '@/api/resources/major'
+  import { fetchGetCollegeTree, fetchGetCollegeList } from '@/api/resources/college'
   import { fetchGetDictData } from '@/api/system/dict'
   import EditDialog from './modules/edit-dialog.vue'
-  import { ElTag, ElMessageBox, ElMessage } from 'element-plus'
+  import { ElMessageBox, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
   import { onMounted } from 'vue'
 
-  defineOptions({ name: 'Unit' })
+  defineOptions({ name: 'Major' })
   const treeData = ref<Api.Common.TreeItem[]>([])
   const treeProps = {
     children: 'children',
@@ -81,52 +78,42 @@
   }
   const handleNodeClick = (data: any) => {
     console.log('选中节点:', data)
-    // 可以根据选中的节点更新右侧表格数据
+    searchParams.collegeId = data.id
+    refreshData()
+    searchParams.collegeId = ''
   }
 
-  type Item = Api.ResourcesManage.UnitItem
+  type Item = Api.ResourcesManage.MajorItem
 
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const editData = ref<Partial<Item>>({})
-  const campusList = ref<Api.ResourcesManage.CampusItem[]>([])
-  const tableLayout = ref<'auto' | 'fixed'>('auto')
-  const unitTypeOptions = ref<Api.Common.OptionItem[]>([])
-  const unitCategoryOptions = ref<Api.Common.OptionItem[]>([])
+  const tableLayout = ref<'auto' | 'fixed'>('fixed')
+  const educationLevelOptions = ref<Api.Common.OptionItem[]>([])
+  const degreeOptions = ref<Api.Common.OptionItem[]>([])
+  const collegeList = ref<Api.Common.OptionItem[]>([])
   const getDictOptions = async (): Promise<void> => {
-    const dictMap = await fetchGetDictData(['unit_type', 'unit_category'])
-    unitTypeOptions.value = dictMap.unit_type
-    unitCategoryOptions.value = dictMap.unit_category
+    const dictMap = await fetchGetDictData(['education_level', 'degree'])
+    educationLevelOptions.value = dictMap.education_level
+    degreeOptions.value = dictMap.degree || []
   }
   // 获取校区列表数据
   const getCampusList = async () => {
     try {
-      campusList.value = await fetchGetCampusList()
+      collegeList.value = await fetchGetCollegeList()
     } catch (error) {
-      console.error('获取校区列表失败:', error)
-      ElMessage.error('获取校区列表失败')
+      console.error('获取学院列表失败:', error)
+      ElMessage.error('获取学院列表失败')
     }
   }
 
   // 组件加载时获取校区列表
   onMounted(async () => {
     await getCampusList()
-    treeData.value = await fetchGetUnitTree()
+    treeData.value = await fetchGetCollegeTree()
     await getDictOptions()
   })
-  const IS_ENABLED_CONFIG = {
-    true: { type: 'success' as const, text: '是' },
-    false: { type: 'info' as const, text: '否' }
-  } as const
-  const getIsEnabledConfig = (isEnabled: boolean) => {
-    return (
-      IS_ENABLED_CONFIG[isEnabled as unknown as keyof typeof IS_ENABLED_CONFIG] || {
-        type: 'info' as const,
-        text: '未知'
-      }
-    )
-  }
   const {
     columns,
     columnChecks,
@@ -135,43 +122,41 @@
     pagination,
     handleSizeChange,
     handleCurrentChange,
+    searchParams,
     refreshData
   } = useTable({
     // 核心配置
     core: {
-      apiFn: fetchGetUnitPage,
+      apiFn: fetchGetMajorPage,
       columnsFactory: () => [
         { type: 'index', label: '序号' },
-        { prop: 'unitName', label: '单位名称' },
-        { prop: 'unitAbbr', label: '单位简称' },
+        { prop: 'majorName', label: '专业名称', showOverflowTooltip: true },
+        { prop: 'majorAbbr', label: '专业简称' },
+        { prop: 'englishName', label: '英文名称', showOverflowTooltip: true },
+        { prop: 'englishAbbr', label: '英文简称' },
         {
-          prop: 'isCourseOffered',
-          label: '开课单位',
-          formatter: (row) => (row.isCourseOffered ? '是' : '否')
-        },
-        {
-          prop: 'isStudentManaged',
-          label: '学生管理',
-          formatter: (row) => {
-            const statusConfig = getIsEnabledConfig(row.isStudentManaged)
-            return h(ElTag, { type: statusConfig.type }, () => statusConfig.text)
-          }
-        },
-        {
-          prop: 'unitType',
-          label: '单位类型',
+          prop: 'collegeName',
+          label: '学院名称',
           formatter: (row) =>
-            unitTypeOptions.value.find((item) => item.value === row.unitType)?.label || '-'
+            collegeList.value.find((college) => college.value === row.collegeId)?.label || ''
         },
         {
-          prop: 'unitCategory',
-          label: '单位分类',
+          prop: 'education_level',
+          label: '教育层次',
           formatter: (row) =>
-            unitCategoryOptions.value.find((item) => item.value === row.unitCategory)?.label || '-'
+            educationLevelOptions.value.find((item) => item.value === row.educationLevel)?.label ||
+            ''
         },
+        {
+          prop: 'degree',
+          label: '学位',
+          formatter: (row) =>
+            degreeOptions.value.find((item) => item.value === row.degree)?.label || ''
+        },
+        { prop: 'years', label: '学制' },
         {
           prop: 'isEnabled',
-          label: '单位状态',
+          label: '专业状态',
           useSlot: true,
           slotName: 'isEnabled'
         },
@@ -179,6 +164,7 @@
           prop: 'operation',
           label: '操作',
           fixed: 'right', // 固定列
+          width: 100,
           formatter: (row) =>
             h('div', [
               h(ArtButtonTable, {
@@ -210,12 +196,12 @@
    * 删除校区
    */
   const deleteUnit = (row: Item): void => {
-    ElMessageBox.confirm(`确定要删除${row.unitName}吗？`, '删除单位', {
+    ElMessageBox.confirm(`确定要删除${row.majorName}吗？`, '删除专业', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
     }).then(async () => {
-      await fetchDeleteUnit([row.id])
+      await fetchDeleteMajor([row.id])
       refreshData()
       ElMessage.success('删除成功')
     })
@@ -235,7 +221,7 @@
   }
 
   const handleToggleEnabled = async (row: Item) => {
-    await fetchSaveUnit(row)
+    await fetchSaveMajor(row)
     ElMessage.success('状态更新成功')
   }
 </script>

@@ -301,6 +301,9 @@ declare namespace Api {
       englishAbbr: string
       parentId: string
       isResearchSection: boolean
+      isEnabled: boolean
+      isCourseOffered: boolean
+      isStudentManaged: boolean
       unitType: string
       unitCategory: string
       address: string
@@ -326,6 +329,48 @@ declare namespace Api {
         | 'partySecretary'
         | 'adminPrincipal'
       > &
+        Api.Common.CommonSearchParams
+    >
+    /** 专业列表 */
+    type MajorPage = Api.Common.PaginatedResponse<MajorItem>
+    /** 专业列表项 */
+    interface MajorItem {
+      id: string
+      majorCode: string
+      collegeId: string
+      majorName: string
+      majorAbbr: string
+      englishName: string
+      englishAbbr: string
+      educationLevel: string
+      degree: string
+      years: number
+      intro: string
+    }
+    /** 专业搜索参数 */
+    type MajorSearchParams = Partial<
+      Pick<MajorItem, 'id' | 'collegeId' | 'majorName' | 'englishName'> &
+        Api.Common.CommonSearchParams
+    >
+    /** 班级列表 */
+    type ClassPage = Api.Common.PaginatedResponse<ClassItem>
+    /** 班级列表项 */
+    interface ClassItem {
+      id: string
+      classCode: string
+      majorId: string
+      className: string
+      classAbbr: string
+      englishName: string
+      englishAbbr: string
+      majorName: string
+      collegeName: string
+      teacherName: string
+      classSize: number
+    }
+    /** 班级搜索参数 */
+    type ClassSearchParams = Partial<
+      Pick<ClassItem, 'id' | 'majorId' | 'className' | 'englishName'> &
         Api.Common.CommonSearchParams
     >
   }

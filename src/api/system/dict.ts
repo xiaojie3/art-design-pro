@@ -7,10 +7,10 @@ export function fetchGetDictDataPage(params: Api.SystemManage.DictDataSearchPara
   })
 }
 
-export function fetchGetDictData(types: string[]) {
-  return request.get<Api.SystemManage.DictMap>({
-    url: '/api/system/dict',
-    params: { types }
+export function fetchGetDictData(params: string[]) {
+  return request.post<Api.SystemManage.DictMap>({
+    url: '/api/system/dict/list',
+    params
   })
 }
 

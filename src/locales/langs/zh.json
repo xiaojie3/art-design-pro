@@ -260,6 +260,9 @@
     "border": "边框",
     "headerBackground": "表头背景"
   },
+  "home": {
+    "title": "首页"
+  },
   "system": {
     "title": "系统管理",
     "userCenter": {
@@ -450,7 +453,7 @@
         }
       },
       "major": {
-        "title": "专业管理",
+        "title": "专业",
         "placeholder": {
           "majorCode": "请输入专业代码",
           "chineseName": "请输入专业名称",
@@ -462,7 +465,7 @@
         }
       },
       "class": {
-        "title": "班级管理",
+        "title": "班级",
         "placeholder": {
           "classCode": "请输入班级代码",
           "chineseName": "请输入班级名称",
@@ -472,6 +475,30 @@
           "address": "请输入地址",
           "intro": "请输入介绍"
         }
+      }
+    }
+  },
+  "trainingProgram": {
+    "title": "培养方案",
+    "formulation": {
+      "title": "制定",
+      "version": {
+        "title": "版本"
+      },
+      "majorCourse": {
+        "title": "专业课程"
+      }
+    },
+    "implementation": {
+      "title": "执行",
+      "majorCourse": {
+        "title": "专业课程"
+      },
+      "adjustment": {
+        "title": "微调"
+      },
+      "review": {
+        "title": "审核"
       }
     }
   }

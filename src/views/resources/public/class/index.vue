@@ -1,5 +1,6 @@
 <template>
   <div class="art-full-height">
+    <Search v-model="searchParams" @search="getData" @reset="resetSearchParams"></Search>
     <ElCard class="art-table-card" shadow="never">
       <!-- 表格头部 -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
@@ -13,7 +14,19 @@
       </ArtTableHeader>
 
       <!-- 表格 -->
-      <ArtTable :loading="loading" :data="data" :columns="columns"> </ArtTable>
+      <ArtTable
+        :loading="loading"
+        :data="data"
+        :pagination="pagination"
+        :table-layout="tableLayout"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+        :columns="columns"
+        stripe
+        ><template #isEnabled="{ row }">
+          <ElSwitch v-if="!row.name" v-model="row.isEnabled" @change="handleToggleEnabled(row)" />
+        </template>
+      </ArtTable>
 
       <EditDialog
         v-model:visible="dialogVisible"
@@ -28,57 +41,51 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { fetchGetCollegePage, fetchDeleteCollege } from '@/api/resources/college'
-  import { fetchGetCampusList } from '@/api/resources/campus'
+  import { fetchGetClassPage, fetchDeleteClass, fetchSaveClass } from '@/api/resources/class'
   import EditDialog from './modules/edit-dialog.vue'
+  import Search from './modules/search.vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
-  import { onMounted } from 'vue'
 
-  defineOptions({ name: 'College' })
+  defineOptions({ name: 'Major' })
 
-  type Item = Api.ResourcesManage.CollegeItem
+  type Item = Api.ResourcesManage.ClassItem
 
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const editData = ref<Partial<Item>>({})
-  const campusList = ref<Api.ResourcesManage.CampusItem[]>([])
+  const tableLayout = ref<'auto' | 'fixed'>('fixed')
 
-  // 获取校区列表数据
-  const getCampusList = async () => {
-    try {
-      campusList.value = await fetchGetCampusList()
-    } catch (error) {
-      console.error('获取校区列表失败:', error)
-      ElMessage.error('获取校区列表失败')
-    }
-  }
-
-  // 组件加载时获取校区列表
-  onMounted(() => {
-    getCampusList()
-  })
-
-  const { columns, columnChecks, data, loading, refreshData } = useTable({
+  const {
+    columns,
+    columnChecks,
+    data,
+    loading,
+    pagination,
+    handleSizeChange,
+    handleCurrentChange,
+    getData,
+    searchParams,
+    resetSearchParams,
+    refreshData
+  } = useTable({
     // 核心配置
     core: {
-      apiFn: fetchGetCollegePage,
+      apiFn: fetchGetClassPage,
       columnsFactory: () => [
         { type: 'index', label: '序号' },
-        {
-          prop: 'campusName',
-          label: '校区名称',
-          formatter: (row) => {
-            return campusList.value.find((item) => item.id === row.campusId)?.campusName || ''
-          }
-        },
-        { prop: 'collegeCode', label: '学院编码' },
-        { prop: 'collegeName', label: '学院名称' },
+        { prop: 'className', label: '班级名称', showOverflowTooltip: true },
+        { prop: 'classAbbr', label: '班级简称' },
+        { prop: 'majorName', label: '专业名称', showOverflowTooltip: true },
+        { prop: 'collegeName', label: '学院名称', showOverflowTooltip: true },
+        { prop: 'teacherName', label: '班主任' },
+        { prop: 'classSize', label: '班级人数', formatter: (row) => row.classSize || 0 },
         {
           prop: 'operation',
           label: '操作',
           fixed: 'right', // 固定列
+          width: 100,
           formatter: (row) =>
             h('div', [
               h(ArtButtonTable, {
@@ -87,7 +94,7 @@
               }),
               h(ArtButtonTable, {
                 type: 'delete',
-                onClick: () => deleteCollege(row)
+                onClick: () => deleteUnit(row)
               })
             ])
         }
@@ -109,13 +116,13 @@
   /**
    * 删除校区
    */
-  const deleteCollege = (row: Item): void => {
-    ElMessageBox.confirm(`确定要删除${row.collegeName}吗？`, '删除校区', {
+  const deleteUnit = (row: Item): void => {
+    ElMessageBox.confirm(`确定要删除${row.className}吗？`, '删除班级', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
     }).then(async () => {
-      await fetchDeleteCollege([row.id])
+      await fetchDeleteClass([row.id])
       refreshData()
       ElMessage.success('删除成功')
     })
@@ -133,4 +140,17 @@
       console.error('提交失败:', error)
     }
   }
+
+  const handleToggleEnabled = async (row: Item) => {
+    await fetchSaveClass(row)
+    ElMessage.success('状态更新成功')
+  }
 </script>
+
+<style scoped>
+  .tree-card :deep(.el-card__body) {
+    flex: 1;
+    min-height: 0;
+    padding: 10px 2px 10px 10px;
+  }
+</style>
