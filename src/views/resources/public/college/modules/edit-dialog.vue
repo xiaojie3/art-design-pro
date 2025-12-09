@@ -205,8 +205,8 @@
   const loadCampusOptions = async () => {
     const data = await fetchGetCampusList()
     campusOptions.value = data.map((item) => ({
-      label: item.campusName || '',
-      value: item.id || ''
+      label: item.label || '',
+      value: item.value || ''
     }))
   }
 
