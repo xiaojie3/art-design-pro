@@ -373,6 +373,23 @@ declare namespace Api {
       Pick<ClassItem, 'id' | 'majorId' | 'className' | 'englishName'> &
         Api.Common.CommonSearchParams
     >
+    type StudentPage = Api.Common.PaginatedResponse<StudentItem>
+    interface StudentItem {
+      id: string
+      userId: string
+      studentNo: string
+      studentName: string
+      gender: string
+      phone: string
+      email: string
+      majorId: string
+      grade: string
+      classId: string
+    }
+    type StudentSearchParams = Partial<
+      Pick<StudentItem, 'id' | 'majorId' | 'classId' | 'studentName' | 'grade'> &
+        Api.Common.CommonSearchParams
+    >
   }
   namespace FileManage {
     /** 上传文件参数 */

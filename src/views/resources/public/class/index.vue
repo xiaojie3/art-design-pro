@@ -34,6 +34,12 @@
         :edit-data="editData"
         @submit="handleDialogSubmit"
       />
+
+      <StudentDialog
+        v-model:visible="studentsDialogVisible"
+        :class-id="currentClass.id || ''"
+        :class-name="currentClass.className || ''"
+      />
     </ElCard>
   </div>
 </template>
@@ -43,6 +49,7 @@
   import { useTable } from '@/hooks/core/useTable'
   import { fetchGetClassPage, fetchDeleteClass, fetchSaveClass } from '@/api/resources/class'
   import EditDialog from './modules/edit-dialog.vue'
+  import StudentDialog from '@/views/common/student-dialog.vue'
   import Search from './modules/search.vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
@@ -80,7 +87,19 @@
         { prop: 'majorName', label: '专业名称', showOverflowTooltip: true },
         { prop: 'collegeName', label: '学院名称', showOverflowTooltip: true },
         { prop: 'teacherName', label: '班主任' },
-        { prop: 'classSize', label: '班级人数', formatter: (row) => row.classSize || 0 },
+        {
+          prop: 'classSize',
+          label: '班级人数',
+          formatter: (row) =>
+            h(
+              'span',
+              {
+                style: 'color: var(--el-color-primary); cursor: pointer;',
+                onClick: () => openStudentsDialog(row)
+              },
+              String(row.classSize || 0)
+            )
+        },
         {
           prop: 'operation',
           label: '操作',
@@ -144,6 +163,16 @@
   const handleToggleEnabled = async (row: Item) => {
     await fetchSaveClass(row)
     ElMessage.success('状态更新成功')
+  }
+
+  const studentsDialogVisible = ref(false)
+  const studentsLoading = ref(false)
+  const currentClass = ref<Partial<Item>>({})
+
+  const openStudentsDialog = async (row: Item) => {
+    currentClass.value = row
+    studentsDialogVisible.value = true
+    studentsLoading.value = true
   }
 </script>
 
