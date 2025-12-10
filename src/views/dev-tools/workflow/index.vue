@@ -1,7 +1,8 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import type { Node, Edge } from '@vue-flow/core'
-  import { VueFlow } from '@vue-flow/core'
+  import { VueFlow, Panel } from '@vue-flow/core'
+  import { Background } from '@vue-flow/background'
 
   // these components are only shown as examples of how to use a custom node or edge
   // you can find many examples of how to create these custom components in the examples page of the docs
@@ -23,7 +24,7 @@
     // default node, you can omit `type: 'default'` as it's the fallback type
     {
       id: '2',
-      position: { x: 100, y: 100 },
+      position: { x: 250, y: 100 },
       data: { label: 'Node 2' }
     },
 
@@ -31,7 +32,7 @@
     {
       id: '3',
       type: 'output',
-      position: { x: 400, y: 200 },
+      position: { x: 250, y: 200 },
       data: { label: 'Node 3' }
     },
 
@@ -41,7 +42,7 @@
     {
       id: '4',
       type: 'special', // <-- this is the custom node type name
-      position: { x: 400, y: 200 },
+      position: { x: 250, y: 300 },
       data: {
         label: 'Node 4',
         hello: 'world'
@@ -81,11 +82,24 @@
       }
     }
   ])
+  function addNode() {
+    const id = Date.now().toString()
+
+    nodes.value.push({
+      id,
+      position: { x: 150, y: 50 },
+      data: { label: `Node ${id}` }
+    })
+  }
 </script>
 
 <template>
   <ElCard shadow="never" class="art-full-height">
     <VueFlow :nodes="nodes" :edges="edges">
+      <Background />
+      <Panel>
+        <button type="button" @click="addNode">Add a node</button>
+      </Panel>
       <!-- bind your custom node type to a component by using slots, slot names are always `node-<type>` -->
       <template #node-special="specialNodeProps">
         <SpecialNode v-bind="specialNodeProps" />
