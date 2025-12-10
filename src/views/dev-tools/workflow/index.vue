@@ -1,52 +1,42 @@
 <script setup lang="ts">
   import { ref } from 'vue'
   import type { Node, Edge } from '@vue-flow/core'
-  import { VueFlow, Panel } from '@vue-flow/core'
+  import { VueFlow, Panel, Position } from '@vue-flow/core'
   import { Background } from '@vue-flow/background'
 
   // these components are only shown as examples of how to use a custom node or edge
   // you can find many examples of how to create these custom components in the examples page of the docs
-  import SpecialNode from './components/special-node.vue'
-  import SpecialEdge from './components/special-edge.vue'
+  import JudgeNode from './components/judge-node.vue'
 
-  // these are our nodes
   const nodes = ref<Node[]>([
-    // an input node, specified by using `type: 'input'`
     {
       id: '1',
       type: 'input',
       position: { x: 250, y: 5 },
-      // all nodes can have a data object containing any data you want to pass to the node
-      // a label can property can be used for default nodes
-      data: { label: 'Node 1' }
+      data: { label: '流程开始' }
     },
-
-    // default node, you can omit `type: 'default'` as it's the fallback type
     {
       id: '2',
       position: { x: 250, y: 100 },
-      data: { label: 'Node 2' }
+      data: { label: '上级领导审核' }
     },
-
-    // An output node, specified by using `type: 'output'`
+    {
+      id: '4',
+      position: { x: 250, y: 200 },
+      type: 'judge',
+      data: { label: '条件判断' },
+      sourcePosition: Position.Right
+    },
+    {
+      id: '5',
+      position: { x: 500, y: 200 },
+      data: { label: '部门总监审核' }
+    },
     {
       id: '3',
       type: 'output',
-      position: { x: 250, y: 200 },
-      data: { label: 'Node 3' }
-    },
-
-    // this is a custom node
-    // we set it by using a custom type name we choose, in this example `special`
-    // the name can be freely chosen, there are no restrictions as long as it's a string
-    {
-      id: '4',
-      type: 'special', // <-- this is the custom node type name
-      position: { x: 250, y: 300 },
-      data: {
-        label: 'Node 4',
-        hello: 'world'
-      }
+      position: { x: 250, y: 350 },
+      data: { label: '流程结束' }
     }
   ])
 
@@ -57,29 +47,28 @@
     {
       id: 'e1->2',
       source: '1',
-      target: '2'
-    },
-
-    // set `animated: true` to create an animated edge path
-    {
-      id: 'e2->3',
-      source: '2',
-      target: '3',
+      target: '2',
       animated: true
     },
-
-    // a custom edge, specified by using a custom type name
-    // we choose `type: 'special'` for this example
     {
-      id: 'e3->4',
-      type: 'special',
-      source: '3',
+      id: 'e2->4',
+      source: '2',
       target: '4',
-
-      // all edges can have a data object containing any data you want to pass to the edge
-      data: {
-        hello: 'world'
-      }
+      animated: true
+    },
+    {
+      id: 'e4->3',
+      source: '4',
+      target: '3',
+      label: '小于等于1天',
+      animated: true
+    },
+    {
+      id: 'e4->5',
+      source: '4',
+      target: '5',
+      label: '大于1天',
+      animated: true
     }
   ])
   function addNode() {
@@ -97,17 +86,12 @@
   <ElCard shadow="never" class="art-full-height">
     <VueFlow :nodes="nodes" :edges="edges">
       <Background />
-      <Panel>
+      <Panel position="top-left">
         <button type="button" @click="addNode">Add a node</button>
       </Panel>
       <!-- bind your custom node type to a component by using slots, slot names are always `node-<type>` -->
-      <template #node-special="specialNodeProps">
-        <SpecialNode v-bind="specialNodeProps" />
-      </template>
-
-      <!-- bind your custom edge type to a component by using slots, slot names are always `edge-<type>` -->
-      <template #edge-special="specialEdgeProps">
-        <SpecialEdge v-bind="specialEdgeProps" />
+      <template #node-judge="judgeNodeProps">
+        <JudgeNode v-bind="judgeNodeProps" />
       </template>
     </VueFlow>
   </ElCard>
