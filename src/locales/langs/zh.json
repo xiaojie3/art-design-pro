@@ -36,7 +36,9 @@
     "tips": "提示",
     "cancel": "取消",
     "confirm": "确定",
-    "logOutTips": "您是否要退出登录?"
+    "logOutTips": "您是否要退出登录?",
+    "yes": "是",
+    "no": "否"
   },
   "search": {
     "placeholder": "搜索页面",
@@ -260,6 +262,13 @@
     "border": "边框",
     "headerBackground": "表头背景"
   },
+  "form": {
+    "placeholder": {
+      "input": "请输入",
+      "select": "请选择",
+      "selectDatetime": "请选择日期时间"
+    }
+  },
   "home": {
     "title": "首页"
   },
@@ -480,6 +489,27 @@
   },
   "trainingProgram": {
     "title": "培养方案",
+    "setting": {
+      "title": "设置",
+      "control": {
+        "title": "控制",
+        "label": {
+          "controlStartTime": "控制开始时间",
+          "controlEndTime": "控制结束时间",
+          "isTotalClassHourModifiable": "可修改总学时",
+          "isWeeklyClassHourModifiable": "可修改周学时",
+          "isCreditModifiable": "可修改学分",
+          "isCourseInfoModifiable": "可修改课程信息",
+          "isCourseNatureModifiable": "可修改课程性质",
+          "isCourseAttributeModifiable": "可修改课程属性"
+        },
+        "placeholder": {
+          "controlStartTime": "请选择控制开始时间",
+          "controlEndTime": "请选择控制结束时间",
+          "controlEndTimeError": "控制结束时间不能早于控制开始时间"
+        }
+      }
+    },
     "formulation": {
       "title": "制定",
       "version": {

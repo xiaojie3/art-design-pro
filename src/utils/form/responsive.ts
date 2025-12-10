@@ -53,7 +53,7 @@ interface BreakpointConfig {
  * 响应式断点配置
  */
 const BREAKPOINT_CONFIG: Record<ResponsiveBreakpoint, BreakpointConfig | null> = {
-  xs: { threshold: 12, fallback: 24 }, // 手机：小于 12 时使用满宽
+  xs: { threshold: 24, fallback: 24 }, // 手机：小于 12 时使用满宽
   sm: { threshold: 12, fallback: 12 }, // 平板：小于 12 时使用半宽
   md: { threshold: 8, fallback: 8 }, // 中等屏幕：小于 8 时使用三分之一宽
   lg: null, // 大屏幕：直接使用设置的 span

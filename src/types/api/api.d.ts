@@ -391,6 +391,19 @@ declare namespace Api {
         Api.Common.CommonSearchParams
     >
   }
+  namespace TrainingProgram {
+    interface ControlItem {
+      id: string
+      controlStartTime: string
+      controlEndTime: string
+      isTotalClassHourModifiable: boolean
+      isWeeklyClassHourModifiable: boolean
+      isCreditModifiable: boolean
+      isCourseInfoModifiable: boolean
+      isCourseNatureModifiable: boolean
+      isCourseAttributeModifiable: boolean
+    }
+  }
   namespace FileManage {
     /** 上传文件参数 */
     interface UploadFileParams {
