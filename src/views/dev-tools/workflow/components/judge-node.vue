@@ -11,7 +11,6 @@
     <div>请假天数</div>
 
     <Handle type="target" :position="Position.Top" />
-    <Handle type="target" :position="Position.Right" />
     <Handle type="source" :position="Position.Bottom" />
   </div>
 </template>
