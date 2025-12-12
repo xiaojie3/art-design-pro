@@ -3,6 +3,7 @@
   import type { Node, Edge } from '@vue-flow/core'
   import { VueFlow, Panel, useVueFlow } from '@vue-flow/core'
   import { Background } from '@vue-flow/background'
+  import AuditConfigDialog from './components/audit-config-dialog.vue'
 
   // these components are only shown as examples of how to use a custom node or edge
   // you can find many examples of how to create these custom components in the examples page of the docs
@@ -123,10 +124,26 @@
     console.log('on connect', params)
     addEdges(params)
   }
+
   // 配置窗口显示状态
   const configPanelVisible = ref(false)
   // 当前选中的节点
   const selectedNode = ref<any>(null)
+  // 审计配置对话框引用
+  const auditConfigDialog = ref<InstanceType<any>>()
+
+  // 保存节点配置
+  const saveNodeConfig = (data: any) => {
+    if (!data || !data.node) return
+
+    // 将配置保存到节点数据中
+    data.node.data = {
+      ...data.node.data,
+      approverConfig: data.approverConfig
+    }
+
+    console.log('节点配置已保存:', data.node.data)
+  }
 
   function onNodeClick({ event, node }: { event: any; node: any }) {
     if (node.type === 'input' || node.type === 'output') {
@@ -147,21 +164,16 @@
     console.log('save', getEdges.value)
   }
 </script>
-
 <template>
   <ElCard shadow="never" class="art-full-height">
     <div class="workflow-container">
-      <!-- 右侧配置窗口 -->
-      <el-dialog v-model="configPanelVisible" :modal="false" class="dialog-right">
-        <span>It's a modal Dialog</span>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="configPanelVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="configPanelVisible = false"> Confirm </el-button>
-          </div>
-        </template>
-      </el-dialog>
-
+      <!-- 左侧配置面板 -->
+      <AuditConfigDialog
+        ref="auditConfigDialog"
+        v-model:visible="configPanelVisible"
+        :node="selectedNode"
+        @save="saveNodeConfig"
+      />
       <VueFlow
         :nodes="nodes"
         :edges="edges"
@@ -171,8 +183,8 @@
         class="flow-container"
       >
         <Background />
-        <Panel position="top-left" class="bg-black text-white p-2">
-          <button type="button" @click="addStartNode">添加开始节点</button>
+        <Panel position="top-left" class="m-0!">
+          <ArtIconButton icon="ri-add-circle-fill" @click="addStartNode" />
           <button type="button" @click="save">保存</button>
         </Panel>
         <!-- bind your custom node type to a component by using slots, slot names are always `node-<type>` -->
