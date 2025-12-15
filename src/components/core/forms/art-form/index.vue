@@ -115,6 +115,7 @@
     ElTimePicker,
     ElTimeSelect,
     ElTreeSelect,
+    ElSegmented,
     type FormInstance
   } from 'element-plus'
   import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@/utils/form/responsive'
@@ -139,7 +140,8 @@
     cascader: ElCascader, // 级联选择器
     timepicker: ElTimePicker, // 时间选择器
     timeselect: ElTimeSelect, // 时间选择
-    treeselect: ElTreeSelect // 树选择器
+    treeselect: ElTreeSelect, // 树选择器
+    segmented: ElSegmented // 分段器
   }
 
   const { width } = useWindowSize()

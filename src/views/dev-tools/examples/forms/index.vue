@@ -97,6 +97,7 @@
     imageUpload: UploadUserFile[]
     multipleFiles: UploadUserFile[]
     richTextContent: string
+    location: string
   }
 
   const emit = defineEmits<Emits>()
@@ -127,7 +128,8 @@
     fileUpload: [],
     imageUpload: [],
     multipleFiles: [],
-    richTextContent: ''
+    richTextContent: '',
+    location: 'Home'
   })
 
   /**
@@ -143,6 +145,11 @@
   const gutter = ref(12)
 
   const levelOptions = ref<OptionItem[]>([])
+  const locationOptions = ref<OptionItem[]>([
+    { label: 'Home', value: 'Home' },
+    { label: 'Company', value: 'Company' },
+    { label: 'School', value: 'School' }
+  ])
 
   /**
    * 用户等级选项
@@ -233,6 +240,14 @@
       props: {
         placeholder: '请选择等级',
         options: LEVEL_OPTIONS
+      }
+    }),
+    location: createFormItem({
+      label: '位置',
+      key: 'location',
+      type: 'segmented',
+      props: {
+        options: locationOptions
       }
     }),
     address: createFormItem({
@@ -591,6 +606,11 @@
       type: 'input',
       span: 12,
       placeholder: '示例：栅格 span=12 占容器一半宽度，span=24 占满容器'
+    },
+    {
+      ...baseFormItems.location,
+      span: 12,
+      props: { placeholder: '请选择位置', options: locationOptions.value }
     },
     // 文件上传示例 - 使用 render 函数渲染
     {
