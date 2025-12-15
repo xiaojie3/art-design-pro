@@ -1,6 +1,12 @@
 <template>
   <!-- 配置窗口 -->
-  <el-dialog v-model="configPanelVisible" :modal="false" class="dialog-right" title="审批节点配置">
+  <el-drawer
+    v-model="configPanelVisible"
+    class="right-9! bottom-8! top-30! h-auto!"
+    title="审批节点配置"
+    header-class="mb-0!"
+  >
+    <ElInput v-model="nodeData.label" placeholder="请输入节点名称" style="width: 100%" />
     <el-tabs v-model="activeTab" type="card">
       <!-- 选择用户标签页 -->
       <el-tab-pane label="选择用户" name="user">
@@ -43,15 +49,34 @@
         <el-button type="primary" @click="saveNodeConfig">保存配置</el-button>
       </div>
     </template>
-  </el-dialog>
+  </el-drawer>
 </template>
 <script setup lang="ts">
   import { ref, watch, computed } from 'vue'
+  interface AuditNodeData {
+    id: string
+    label: string
+    type: string
+    value: string
+  }
+  interface AuditNode {
+    id: string
+    type: string
+    data: AuditNodeData
+  }
   interface Props {
     visible: boolean
-    node?: any
+    node?: AuditNode
   }
   const props = defineProps<Props>()
+  const nodeData = ref<AuditNodeData>(
+    props.node?.data || {
+      id: '',
+      label: '',
+      type: 'user',
+      value: ''
+    }
+  )
   const emit = defineEmits<{
     'update:visible': [value: boolean]
     save: [config: any]
@@ -70,20 +95,11 @@
 
   // 监听props.node变化，更新内部状态
   watch(
-    () => props.node,
+    () => nodeData,
     (newNode) => {
-      if (newNode && newNode.data?.approverConfig) {
-        const { type, value } = newNode.data.approverConfig
-        activeTab.value = type
-
-        // 根据类型设置对应的值
-        if (type === 'user') {
-          selectedUser.value = value
-        } else if (type === 'role') {
-          selectedRole.value = value
-        } else if (type === 'javaMethod') {
-          javaMethod.value = value
-        }
+      console.log(newNode)
+      if (newNode) {
+        nodeData.value = newNode.value
       } else {
         // 重置状态
         activeTab.value = 'user'
@@ -97,22 +113,11 @@
 
   // 保存节点配置
   const saveNodeConfig = () => {
-    if (!props.node) return
-
-    // 根据当前激活的标签页获取审批人配置
-    let approverConfig = {}
-    if (activeTab.value === 'user') {
-      approverConfig = { type: 'user', value: selectedUser.value }
-    } else if (activeTab.value === 'role') {
-      approverConfig = { type: 'role', value: selectedRole.value }
-    } else if (activeTab.value === 'javaMethod') {
-      approverConfig = { type: 'javaMethod', value: javaMethod.value }
-    }
+    if (!nodeData.value) return
 
     // 触发save事件，将配置传递给父组件
     emit('save', {
-      node: props.node,
-      approverConfig
+      node: nodeData.value
     })
 
     // 关闭配置窗口
