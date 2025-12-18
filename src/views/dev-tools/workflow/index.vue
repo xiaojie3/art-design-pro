@@ -145,14 +145,13 @@
     console.log('节点配置已保存:', data.node.data)
   }
 
-  function onNodeClick({ event, node }: { event: any; node: any }) {
+  function onNodeDoubleClick({ node }: { node: any }) {
     if (node.type === 'input' || node.type === 'output') {
       return
     }
     // 点击节点时显示配置窗口
     configPanelVisible.value = true
     selectedNode.value = node
-    console.log('Node clicked:', node, event)
   }
 
   // Edge click event handler
@@ -178,7 +177,7 @@
         :nodes="nodes"
         :edges="edges"
         @connect="onConnect"
-        @nodeClick="onNodeClick"
+        @nodeDoubleClick="onNodeDoubleClick"
         @edgeClick="onEdgeClick"
         class="flow-container"
       >
