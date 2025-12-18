@@ -1,115 +1,22 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import type { Node, Edge } from '@vue-flow/core'
   import { VueFlow, Panel, useVueFlow } from '@vue-flow/core'
   import { Background } from '@vue-flow/background'
   import AuditConfigDialog from './components/audit-config-dialog.vue'
 
-  // these components are only shown as examples of how to use a custom node or edge
-  // you can find many examples of how to create these custom components in the examples page of the docs
+  // 自定义节点组件
   import JudgeNode from './components/judge-node.vue'
   import StartNode from './components/start-node.vue'
 
-  const nodes = ref<Node[]>([
-    {
-      id: '1',
-      type: 'input',
-      position: { x: 250, y: 5 },
-      data: { label: '流程开始' }
-    },
-    {
-      id: '2',
-      position: { x: 250, y: 100 },
-      data: { label: '上级领导审核' }
-    },
-    {
-      id: '4',
-      position: { x: 250, y: 200 },
-      type: 'judge',
-      data: { label: '条件判断' }
-    },
-    {
-      id: '5',
-      position: { x: 500, y: 100 },
-      data: { label: '部门经理审核' }
-    },
-    {
-      id: '6',
-      position: { x: 500, y: 200 },
-      type: 'judge',
-      data: { label: '条件判断' }
-    },
-    {
-      id: '7',
-      position: { x: 750, y: 100 },
-      data: { label: '部门总监审核' }
-    },
-    {
-      id: '3',
-      type: 'output',
-      position: { x: 500, y: 350 },
-      data: { label: '流程结束' }
-    }
-  ])
+  // 初始化为空数组，实现动态nodes
+  const nodes = ref<Node[]>([])
 
-  // these are our edges
-  const edges = ref<Edge[]>([
-    // default bezier edge
-    // consists of an edge id, source node id and target node id
-    {
-      id: 'e1->2',
-      source: '1',
-      target: '2',
-      animated: true
-    },
-    {
-      id: 'e2->4',
-      source: '2',
-      target: '4',
-      animated: true
-    },
-    {
-      id: 'e4->3',
-      source: '4',
-      target: '3',
-      label: '小于等于1天',
-      animated: true
-    },
-    {
-      id: 'e4->5',
-      source: '4',
-      target: '5',
-      label: '大于1天',
-      animated: true
-    },
-    {
-      id: 'e5->6',
-      source: '5',
-      target: '6',
-      animated: true
-    },
-    {
-      id: 'e6->3',
-      source: '6',
-      target: '3',
-      label: '小于等于3天',
-      animated: true
-    },
-    {
-      id: 'e6->7',
-      source: '6',
-      target: '7',
-      label: '大于3天',
-      animated: true
-    },
-    {
-      id: 'e7->3',
-      source: '7',
-      target: '3',
-      animated: true
-    }
-  ])
-  function addStartNode() {
+  // 边数组
+  const edges = ref<Edge[]>([])
+
+  // 添加开始节点
+  const addStartNode = () => {
     const id = Date.now().toString()
 
     nodes.value.push({
@@ -119,6 +26,54 @@
       type: 'start'
     })
   }
+
+  // 添加审批节点
+  const addAuditNode = () => {
+    const id = Date.now().toString()
+
+    nodes.value.push({
+      id,
+      position: { x: 150, y: nodes.value.length * 100 + 50 },
+      data: {
+        label: `审批节点${nodes.value.length}`,
+        type: 'user',
+        value: ''
+      }
+    })
+  }
+
+  // 添加判断节点
+  const addJudgeNode = () => {
+    const id = Date.now().toString()
+
+    nodes.value.push({
+      id,
+      position: { x: 150, y: nodes.value.length * 100 + 50 },
+      data: { label: `条件判断${nodes.value.length}` },
+      type: 'judge'
+    })
+  }
+
+  // 添加结束节点
+  const addEndNode = () => {
+    const id = Date.now().toString()
+
+    nodes.value.push({
+      id,
+      position: { x: 150, y: nodes.value.length * 100 + 50 },
+      data: { label: `流程结束` },
+      type: 'output'
+    })
+  }
+
+  // 删除节点
+  const deleteNode = (nodeId: string) => {
+    // 删除节点
+    nodes.value = nodes.value.filter((node) => node.id !== nodeId)
+    // 删除与该节点相关的边
+    edges.value = edges.value.filter((edge) => edge.source !== nodeId && edge.target !== nodeId)
+  }
+
   const { addEdges } = useVueFlow()
   function onConnect(params: any) {
     console.log('on connect', params)
@@ -136,32 +91,85 @@
   const saveNodeConfig = (data: any) => {
     if (!data || !data.node) return
 
-    // 将配置保存到节点数据中
-    data.node.data = {
-      ...data.node.data,
-      approverConfig: data.approverConfig
+    // 找到对应的节点索引
+    const nodeIndex = nodes.value.findIndex((node) => node.id === data.node.id)
+    if (nodeIndex === -1) return
+
+    // 更新节点数据
+    nodes.value[nodeIndex].data = {
+      ...nodes.value[nodeIndex].data,
+      ...data.node
     }
 
-    console.log('节点配置已保存:', data.node.data)
+    console.log('节点配置已保存:', nodes.value[nodeIndex].data)
   }
 
-  function onNodeDoubleClick({ node }: { node: any }) {
+  // 点击节点时显示配置窗口
+  function onNodeClick({ node }: { node: any }) {
     if (node.type === 'input' || node.type === 'output') {
       return
     }
-    // 点击节点时显示配置窗口
     configPanelVisible.value = true
     selectedNode.value = node
+  }
+
+  // 点击删除节点
+  function onNodeDelete({ node }: { node: any }) {
+    deleteNode(node.id)
   }
 
   // Edge click event handler
   function onEdgeClick({ event, edge }: { event: any; edge: any }) {
     console.log('Edge clicked:', edge, event)
   }
+
   const { getEdges } = useVueFlow()
   const save = async (): Promise<void> => {
-    console.log('save', getEdges.value)
+    console.log('保存流程:', nodes.value, getEdges.value)
   }
+
+  // 模拟从API获取节点数据
+  onMounted(() => {
+    // 这里可以替换为实际的API调用
+    setTimeout(() => {
+      // 初始化一些示例节点
+      nodes.value = [
+        {
+          id: '1',
+          type: 'input',
+          position: { x: 250, y: 5 },
+          data: { label: '流程开始' }
+        },
+        {
+          id: '2',
+          position: { x: 250, y: 100 },
+          data: { label: '上级领导审核' }
+        },
+        {
+          id: '4',
+          position: { x: 250, y: 200 },
+          type: 'judge',
+          data: { label: '条件判断' }
+        }
+      ]
+
+      // 初始化一些示例边
+      edges.value = [
+        {
+          id: 'e1->2',
+          source: '1',
+          target: '2',
+          animated: true
+        },
+        {
+          id: 'e2->4',
+          source: '2',
+          target: '4',
+          animated: true
+        }
+      ]
+    }, 1000)
+  })
 </script>
 <template>
   <ElCard shadow="never" class="art-full-height">
@@ -177,16 +185,24 @@
         :nodes="nodes"
         :edges="edges"
         @connect="onConnect"
-        @nodeDoubleClick="onNodeDoubleClick"
+        @nodeClick="onNodeClick"
         @edgeClick="onEdgeClick"
+        @nodeDelete="onNodeDelete"
         class="flow-container"
       >
         <Background />
         <Panel position="top-left" class="m-0!">
-          <ArtIconButton icon="ri-add-circle-fill" @click="addStartNode" />
-          <button type="button" @click="save">保存</button>
+          <ArtIconButton icon="ri-add-circle-fill" @click="addStartNode" title="添加开始节点" />
+          <ArtIconButton icon="ri-user-add-fill" @click="addAuditNode" title="添加审批节点" />
+          <ArtIconButton
+            icon="ri-checkbox-circle-fill"
+            @click="addJudgeNode"
+            title="添加判断节点"
+          />
+          <ArtIconButton icon="ri-close-circle-fill" @click="addEndNode" title="添加结束节点" />
+          <button type="button" @click="save" class="ml-2">保存流程</button>
         </Panel>
-        <!-- bind your custom node type to a component by using slots, slot names are always `node-<type>` -->
+        <!-- 自定义节点类型 -->
         <template #node-judge="judgeNodeProps">
           <JudgeNode v-bind="judgeNodeProps" />
         </template>

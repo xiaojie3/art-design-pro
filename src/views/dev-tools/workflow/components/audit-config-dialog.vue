@@ -70,12 +70,17 @@
   }
   const props = defineProps<Props>()
   const nodeData = ref<AuditNodeData>(
-    props.node?.data || {
-      id: '',
-      label: '',
-      type: 'user',
-      value: ''
-    }
+    props.node?.data
+      ? {
+          ...props.node.data,
+          id: props.node.id // 确保id是节点的id，而不是数据的id
+        }
+      : {
+          id: '',
+          label: '',
+          type: 'user',
+          value: ''
+        }
   )
   const emit = defineEmits<{
     'update:visible': [value: boolean]
@@ -95,13 +100,33 @@
 
   // 监听props.node变化，更新内部状态
   watch(
-    () => nodeData,
+    () => props.node,
     (newNode) => {
-      console.log(newNode)
       if (newNode) {
-        nodeData.value = newNode.value
+        nodeData.value = {
+          ...newNode.data,
+          id: newNode.id // 确保id是节点的id
+        }
+        // 根据节点数据类型设置activeTab
+        if (newNode.data.type) {
+          activeTab.value = newNode.data.type
+          // 设置对应的值
+          if (newNode.data.type === 'user') {
+            selectedUser.value = newNode.data.value
+          } else if (newNode.data.type === 'role') {
+            selectedRole.value = newNode.data.value
+          } else if (newNode.data.type === 'javaMethod') {
+            javaMethod.value = newNode.data.value
+          }
+        }
       } else {
         // 重置状态
+        nodeData.value = {
+          id: '',
+          label: '',
+          type: 'user',
+          value: ''
+        }
         activeTab.value = 'user'
         selectedUser.value = ''
         selectedRole.value = ''
@@ -114,6 +139,22 @@
   // 保存节点配置
   const saveNodeConfig = () => {
     if (!nodeData.value) return
+
+    // 根据activeTab更新配置数据
+    let configType = activeTab.value
+    let configValue = ''
+
+    if (configType === 'user') {
+      configValue = selectedUser.value
+    } else if (configType === 'role') {
+      configValue = selectedRole.value
+    } else if (configType === 'javaMethod') {
+      configValue = javaMethod.value
+    }
+
+    // 更新nodeData
+    nodeData.value.type = configType
+    nodeData.value.value = configValue
 
     // 触发save事件，将配置传递给父组件
     emit('save', {
