@@ -6,8 +6,9 @@
   import AuditConfigDialog from './components/audit-config-dialog.vue'
 
   // 自定义节点组件
-  import JudgeNode from './components/judge-node.vue'
   import StartNode from './components/start-node.vue'
+  import AuditNode from './components/audit-node.vue'
+  import JudgeNode from './components/judge-node.vue'
 
   // 初始化为空数组，实现动态nodes
   const nodes = ref<Node[]>([])
@@ -36,7 +37,7 @@
       position: { x: 150, y: nodes.value.length * 100 + 50 },
       data: {
         label: `审批节点${nodes.value.length}`,
-        type: 'user',
+        type: 'audit',
         value: ''
       }
     })
@@ -89,19 +90,17 @@
 
   // 保存节点配置
   const saveNodeConfig = (data: any) => {
-    if (!data || !data.node) return
+    console.log('saveNodeConfig', data)
+    if (!data || !data.id) return
 
     // 找到对应的节点索引
-    const nodeIndex = nodes.value.findIndex((node) => node.id === data.node.id)
+    const nodeIndex = nodes.value.findIndex((node) => node.id === data.id)
     if (nodeIndex === -1) return
 
     // 更新节点数据
-    nodes.value[nodeIndex].data = {
-      ...nodes.value[nodeIndex].data,
-      ...data.node
-    }
+    nodes.value[nodeIndex] = data
 
-    console.log('节点配置已保存:', nodes.value[nodeIndex].data)
+    console.log('节点配置已保存:', nodes.value[nodeIndex])
   }
 
   // 点击节点时显示配置窗口
@@ -142,6 +141,7 @@
         },
         {
           id: '2',
+          type: 'audit',
           position: { x: 250, y: 100 },
           data: { label: '上级领导审核' }
         },
@@ -203,11 +203,14 @@
           <button type="button" @click="save" class="ml-2">保存流程</button>
         </Panel>
         <!-- 自定义节点类型 -->
-        <template #node-judge="judgeNodeProps">
-          <JudgeNode v-bind="judgeNodeProps" />
-        </template>
         <template #node-start="startNodeProps">
           <StartNode v-bind="startNodeProps" />
+        </template>
+        <template #node-audit="auditNodeProps">
+          <AuditNode v-bind="auditNodeProps" />
+        </template>
+        <template #node-judge="judgeNodeProps">
+          <JudgeNode v-bind="judgeNodeProps" />
         </template>
       </VueFlow>
     </div>

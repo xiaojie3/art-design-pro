@@ -78,7 +78,7 @@
       : {
           id: '',
           label: '',
-          type: 'user',
+          type: 'audit',
           value: ''
         }
   )
@@ -107,8 +107,13 @@
           ...newNode.data,
           id: newNode.id // 确保id是节点的id
         }
-        // 根据节点数据类型设置activeTab
-        if (newNode.data.type) {
+
+        // 如果是条件判断节点，设置activeTab为'judge'
+        if (newNode.type === 'judge') {
+          activeTab.value = 'judge'
+        }
+        // 否则，根据节点数据类型设置activeTab
+        else if (newNode.data.type) {
           activeTab.value = newNode.data.type
           // 设置对应的值
           if (newNode.data.type === 'user') {
@@ -140,26 +145,34 @@
   const saveNodeConfig = () => {
     if (!nodeData.value) return
 
-    // 根据activeTab更新配置数据
-    let configType = activeTab.value
-    let configValue = ''
-
-    if (configType === 'user') {
-      configValue = selectedUser.value
-    } else if (configType === 'role') {
-      configValue = selectedRole.value
-    } else if (configType === 'javaMethod') {
-      configValue = javaMethod.value
+    // 创建要传递给父组件的配置对象
+    const config = {
+      id: nodeData.value.id, // 节点的id，用于在父组件中找到对应的节点
+      data: {
+        ...nodeData.value
+      }
     }
 
-    // 更新nodeData
-    nodeData.value.type = configType
-    nodeData.value.value = configValue
+    // 只有当节点不是条件判断节点时，才根据activeTab更新配置数据
+    if (activeTab.value !== 'judge') {
+      let configType = activeTab.value
+      let configValue = ''
+
+      if (configType === 'user') {
+        configValue = selectedUser.value
+      } else if (configType === 'role') {
+        configValue = selectedRole.value
+      } else if (configType === 'javaMethod') {
+        configValue = javaMethod.value
+      }
+
+      // 更新配置对象
+      config.data.type = configType
+      config.data.value = configValue
+    }
 
     // 触发save事件，将配置传递给父组件
-    emit('save', {
-      node: nodeData.value
-    })
+    emit('save', config)
 
     // 关闭配置窗口
     emit('update:visible', false)
