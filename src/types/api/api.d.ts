@@ -415,4 +415,17 @@ declare namespace Api {
       id: string
     }
   }
+  namespace Ai {
+    type ComicPage = Api.Common.PaginatedResponse<ComicItem>
+    /** 漫画列表项 */
+    interface ComicItem {
+      id: string
+      comicType: string
+      comicName: string
+    }
+    /** 漫画搜索参数 */
+    type ComicSearchParams = Partial<
+      Pick<ComicItem, 'id' | 'comicType' | 'comicName'> & Api.Common.CommonSearchParams
+    >
+  }
 }
