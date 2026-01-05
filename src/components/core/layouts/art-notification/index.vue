@@ -103,8 +103,11 @@
 </template>
 
 <script setup lang="ts">
+  import { useUserStore } from '@/store/modules/user'
   import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { ElMessage } from 'element-plus'
+  import appConfig from '@/config'
 
   // 导入头像图片
   import avatar1 from '@/assets/images/avatar/avatar1.webp'
@@ -158,6 +161,7 @@
   type NoticeType = 'email' | 'message' | 'collection' | 'user' | 'notice'
 
   const { t } = useI18n()
+  const userStore = useUserStore()
 
   const props = defineProps<{
     value: boolean
@@ -170,6 +174,10 @@
   const show = ref(false)
   const visible = ref(false)
   const barActiveIndex = ref(0)
+
+  // SSE连接相关
+  const sseEventSource = ref<EventSource | null>(null)
+  const isSseConnected = ref(false)
 
   const useNotificationData = () => {
     // 通知数据
@@ -243,6 +251,164 @@
     // 待办数据
     const pendingList = ref<PendingItem[]>([])
 
+    // SSE连接管理
+    const initSseConnection = () => {
+      // 模拟客户端ID
+      const CLIENT_ID = userStore.getUserInfo.id
+
+      // 检查是否已有连接
+      if (sseEventSource.value) {
+        sseEventSource.value.close()
+      }
+
+      try {
+        // 从配置中获取SSE连接URL
+        const { baseUrl, connectPath, withCredentials } = appConfig.sseConfig
+        const sseUrl = `${baseUrl}${connectPath}?clientId=${CLIENT_ID}`
+
+        console.log('初始化SSE连接:', sseUrl)
+
+        // 创建SSE连接
+        sseEventSource.value = new EventSource(sseUrl, {
+          withCredentials
+        })
+
+        // 监听连接成功
+        sseEventSource.value.onopen = () => {
+          isSseConnected.value = true
+          console.log('通知SSE连接已建立')
+        }
+
+        // 监听通用消息
+        sseEventSource.value.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data)
+            console.log('收到SSE消息:', data)
+
+            // 处理不同类型的通知
+            handleSseNotification(data)
+          } catch (error) {
+            console.error('解析SSE消息失败:', error)
+          }
+        }
+
+        // 监听通知事件
+        sseEventSource.value.addEventListener('notification', (event) => {
+          try {
+            const data = JSON.parse((event as MessageEvent).data)
+            console.log('收到通知事件:', data)
+            addNotification(data)
+          } catch (error) {
+            console.error('解析通知事件失败:', error)
+          }
+        })
+
+        // 监听消息事件
+        sseEventSource.value.addEventListener('message', (event) => {
+          try {
+            const data = JSON.parse((event as MessageEvent).data)
+            console.log('收到消息事件:', data)
+            addMessage(data)
+          } catch (error) {
+            console.error('解析消息事件失败:', error)
+          }
+        })
+
+        // 监听待办事件
+        sseEventSource.value.addEventListener('todo', (event) => {
+          try {
+            const data = JSON.parse((event as MessageEvent).data)
+            console.log('收到待办事件:', data)
+            addTodo(data)
+          } catch (error) {
+            console.error('解析待办事件失败:', error)
+          }
+        })
+
+        // 监听错误
+        sseEventSource.value.onerror = (error) => {
+          console.error('通知SSE连接错误:', error)
+          isSseConnected.value = false
+
+          // 自动重连
+          setTimeout(() => {
+            if (!isSseConnected.value) {
+              console.log('尝试重新连接SSE...')
+              initSseConnection()
+            }
+          }, 5000)
+        }
+      } catch (error) {
+        console.error('初始化SSE连接失败:', error)
+        ElMessage.error('通知连接失败，请刷新页面重试')
+      }
+    }
+
+    // 处理SSE通知
+    const handleSseNotification = (data: any) => {
+      if (!data || !data.type) return
+
+      switch (data.type) {
+        case 'NOTICE':
+          addNotification({
+            title: data.title || '新通知',
+            time: new Date().toLocaleString(),
+            type: data.noticeType || 'notice'
+          })
+          break
+        case 'MESSAGE':
+          addMessage({
+            title: data.title || '新消息',
+            time: new Date().toLocaleString(),
+            avatar: data.avatar || avatar1
+          })
+          break
+        case 'TODO':
+          addTodo({
+            title: data.title || '新待办',
+            time: new Date().toLocaleString()
+          })
+          break
+      }
+    }
+
+    // 添加通知
+    const addNotification = (notification: NoticeItem) => {
+      noticeList.value.unshift(notification)
+      // 限制通知数量
+      if (noticeList.value.length > 50) {
+        noticeList.value = noticeList.value.slice(0, 50)
+      }
+    }
+
+    // 添加消息
+    const addMessage = (message: MessageItem) => {
+      msgList.value.unshift(message)
+      // 限制消息数量
+      if (msgList.value.length > 50) {
+        msgList.value = msgList.value.slice(0, 50)
+      }
+    }
+
+    // 添加待办
+    const addTodo = (todo: PendingItem) => {
+      pendingList.value.unshift(todo)
+      // 限制待办数量
+      if (pendingList.value.length > 50) {
+        pendingList.value = pendingList.value.slice(0, 50)
+      }
+    }
+
+    // 关闭SSE连接
+    const closeSseConnection = () => {
+      if (sseEventSource.value) {
+        sseEventSource.value.close()
+        sseEventSource.value = null
+        isSseConnected.value = false
+        console.log('通知SSE连接已关闭')
+      }
+    }
+
     // 标签栏数据
     const barList = computed<BarItem[]>(() => [
       {
@@ -263,7 +429,12 @@
       noticeList,
       msgList,
       pendingList,
-      barList
+      barList,
+      initSseConnection,
+      closeSseConnection,
+      addNotification,
+      addMessage,
+      addTodo
     }
   }
 
@@ -397,7 +568,17 @@
   }
 
   // 组合所有逻辑
-  const { noticeList, msgList, pendingList, barList } = useNotificationData()
+  const {
+    noticeList,
+    msgList,
+    pendingList,
+    barList,
+    initSseConnection,
+    closeSseConnection,
+    addNotification,
+    addMessage,
+    addTodo
+  } = useNotificationData()
   const { getNoticeStyle } = useNotificationStyles()
   const { showNotice } = useNotificationAnimation()
   const { handleNoticeAll, handleMsgAll, handlePendingAll } = useBusinessLogic()
@@ -413,8 +594,38 @@
     () => props.value,
     (newValue) => {
       showNotice(newValue)
+
+      // 当面板显示时，初始化SSE连接
+      if (newValue) {
+        setTimeout(() => {
+          initSseConnection()
+        }, 100)
+      }
     }
   )
+
+  // 组件挂载时初始化SSE连接
+  onMounted(() => {
+    // 延迟初始化，确保DOM完全加载
+    setTimeout(() => {
+      initSseConnection()
+    }, 500)
+  })
+
+  // 组件卸载时关闭SSE连接
+  onUnmounted(() => {
+    closeSseConnection()
+  })
+
+  // 导出方法供外部使用（如测试）
+  defineExpose({
+    addNotification,
+    addMessage,
+    addTodo,
+    initSseConnection,
+    closeSseConnection,
+    isSseConnected
+  })
 </script>
 
 <style scoped>

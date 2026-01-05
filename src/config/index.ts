@@ -126,6 +126,15 @@ const appConfig: SystemConfig = {
     '#F9901F',
     '#FF80C8'
   ] as const,
+  // SSE配置
+  sseConfig: {
+    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+    connectPath: '/api/sse/connect',
+    pushPath: '/api/sse/push',
+    withCredentials: false,
+    autoReconnect: true,
+    reconnectInterval: 5000
+  },
   // 快速入口配置
   fastEnter: fastEnterConfig,
   // 顶部栏功能配置

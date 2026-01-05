@@ -124,6 +124,22 @@ export interface FastEnterConfig {
   minWidth?: number
 }
 
+// SSE配置
+export interface SseConfig {
+  // SSE基础URL
+  baseUrl: string
+  // SSE连接路径
+  connectPath: string
+  // SSE推送路径
+  pushPath: string
+  // 是否携带凭据
+  withCredentials: boolean
+  // 是否自动重连
+  autoReconnect: boolean
+  // 重连间隔（毫秒）
+  reconnectInterval: number
+}
+
 // 系统配置
 export interface SystemConfig {
   // 系统基础信息
@@ -140,6 +156,8 @@ export interface SystemConfig {
   darkMenuStyles: MenuThemeType[]
   // 系统主色调
   systemMainColor: readonly string[]
+  // SSE配置
+  sseConfig: SseConfig
   // 快速入口配置
   fastEnter?: FastEnterConfig
   // 顶部栏功能配置
