@@ -1,434 +1,347 @@
 <template>
-  <div class="page-content mb-5">
-    <div class="mb-15 text-center">
-      <h1 class="my-4 text-2xl font-semibold leading-tight">SSE 连接示例</h1>
-      <p class="m-0 text-base leading-relaxed text-g-700">
-        基于 Server-Sent Events 的实时通信演示，支持连接管理、消息接收和状态监控
-      </p>
+  <div class="sse-container" style="padding: 30px">
+    <h2 style="margin-bottom: 20px; color: #333"
+      >✅ Vue3 + SpringBoot SSE 实时通信演示（带前端推送按钮）</h2
+    >
+
+    <!-- 1. 连接配置区 -->
+    <div
+      class="config-box"
+      style="padding: 15px; margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px"
+    >
+      <el-input
+        v-model="connectForm.url"
+        placeholder="请输入后端SSE地址，例：http://localhost:8080/api/sse"
+        style="width: 400px; margin-right: 10px"
+      />
+      <el-checkbox v-model="connectForm.withCredentials" label="携带凭证" />
+      <el-button type="primary" @click="handleConnect" :disabled="isConnecting || isConnected">
+        {{ isConnected ? '已连接' : '建立连接' }}
+      </el-button>
+      <el-button
+        type="danger"
+        @click="handleClose"
+        :disabled="!isConnected"
+        style="margin-left: 10px"
+      >
+        关闭连接
+      </el-button>
+      <span style="margin-left: 20px; color: #666">状态：{{ connectionStatusText }}</span>
     </div>
 
-    <!-- 连接状态和统计信息 -->
-    <ElRow :gutter="20" class="mb-15">
-      <ElCol :xs="24" :sm="12" :md="8">
-        <ElCard class="h-full border-0" :body-style="{ padding: '20px' }" shadow="never">
-          <div class="text-center">
-            <div class="text-2xl font-bold text-blue-500 mb-1">{{ messageCount }}</div>
-            <div class="text-sm font-medium text-gray-900 mb-1">消息统计</div>
-            <div class="text-xs text-gray-500">接收到的消息数量</div>
-          </div>
-        </ElCard>
-      </ElCol>
-      <ElCol :xs="24" :sm="12" :md="8">
-        <ElCard class="h-full border-0" :body-style="{ padding: '20px' }" shadow="never">
-          <div class="text-center">
-            <ElTag :type="connectionTagType" size="large" class="mb-2">
-              {{ connectionStatusText || '未连接' }}
-            </ElTag>
-            <div class="text-sm font-medium text-gray-900">连接状态</div>
-            <div class="text-xs text-gray-500">当前SSE连接状态</div>
-          </div>
-        </ElCard>
-      </ElCol>
-      <ElCol :xs="24" :sm="12" :md="8">
-        <ElCard class="h-full border-0" :body-style="{ padding: '20px' }" shadow="never">
-          <div class="text-center">
-            <div class="text-2xl font-bold text-amber-500 mb-1">{{ reconnectCount }}</div>
-            <div class="text-sm font-medium text-gray-900 mb-1">重连次数</div>
-            <div class="text-xs text-gray-500">自动重连尝试次数</div>
-          </div>
-        </ElCard>
-      </ElCol>
-    </ElRow>
+    <!-- ✅ 核心新增：前端测试消息推送按钮区 -->
+    <div
+      class="send-box"
+      style="padding: 15px; margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px"
+    >
+      <h3 style="margin: 0 0 15px; color: #333">🔧 前端测试推送（一键发送，无需Postman）</h3>
+      <el-input
+        v-model="sendForm.message"
+        placeholder="请输入要推送的消息内容"
+        style="width: 300px; margin-right: 10px"
+      />
+      <el-button type="success" @click="sendNormalMsg" :disabled="!isConnected"
+        >发送普通消息</el-button
+      >
+      <el-button
+        type="warning"
+        @click="sendNoticeEvent"
+        :disabled="!isConnected"
+        style="margin-left: 8px"
+        >推送通知事件</el-button
+      >
+      <el-button
+        type="info"
+        @click="sendUpdateEvent"
+        :disabled="!isConnected"
+        style="margin-left: 8px"
+        >推送更新事件</el-button
+      >
+      <el-button
+        type="primary"
+        @click="sendBroadcastMsg"
+        :disabled="!isConnected"
+        style="margin-left: 8px"
+        >全局广播消息</el-button
+      >
+    </div>
 
-    <!-- 连接配置 -->
-    <ElRow :gutter="20" class="mb-15">
-      <ElCol :xs="24" :md="12">
-        <ElCard class="h-full border-0" shadow="never">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="text-base font-bold">连接配置</span>
-              <ElTag :type="connectionTagType" size="large">
-                {{ connectionStatusText || '未连接' }}
-              </ElTag>
-            </div>
-          </template>
-
-          <ElForm :model="connectForm" label-width="100px" class="max-w-md">
-            <ElFormItem label="服务器地址">
-              <ElInput
-                v-model="connectForm.url"
-                placeholder="http://localhost:8080/sse"
-                clearable
-              />
-            </ElFormItem>
-            <ElFormItem label="连接选项">
-              <ElSpace>
-                <ElCheckbox v-model="connectForm.autoReconnect">自动重连</ElCheckbox>
-                <ElCheckbox v-model="connectForm.withCredentials">带凭据</ElCheckbox>
-              </ElSpace>
-            </ElFormItem>
-            <ElFormItem>
-              <ElSpace>
-                <ElButton
-                  type="primary"
-                  @click="handleConnect"
-                  :loading="isConnecting"
-                  :disabled="isConnected"
-                >
-                  {{ isConnecting ? '连接中...' : '连接' }}
-                </ElButton>
-                <ElButton type="danger" @click="handleDisconnect" :disabled="!isConnected">
-                  断开连接
-                </ElButton>
-                <ElButton @click="handleReconnect" :disabled="isConnecting">重连</ElButton>
-              </ElSpace>
-            </ElFormItem>
-          </ElForm>
-        </ElCard>
-      </ElCol>
-
-      <ElCol :xs="24" :md="12">
-        <ElCard class="h-full border-0" shadow="never">
-          <template #header>
-            <span class="text-base font-bold">消息说明</span>
-          </template>
-
-          <div class="text-sm text-gray-600 space-y-2">
-            <p><strong>SSE特性：</strong></p>
-            <ul class="list-disc pl-5 space-y-1">
-              <li>单向通信：只能接收服务器推送的消息</li>
-              <li>自动重连：连接断开后自动重新连接</li>
-              <li>事件流格式：支持多种事件类型</li>
-              <li>基于HTTP协议：兼容性好</li>
-            </ul>
-
-            <p class="mt-4"><strong>限制：</strong></p>
-            <ul class="list-disc pl-5 space-y-1">
-              <li>无法主动向服务器发送消息</li>
-              <li>只能接收文本数据</li>
-            </ul>
-          </div>
-        </ElCard>
-      </ElCol>
-    </ElRow>
-
-    <!-- 接收消息 - 单独占一行 -->
-    <ElRow class="mb-15">
-      <ElCol :span="24">
-        <ElCard class="border-0" shadow="never">
-          <template #header>
-            <div class="flex items-center justify-between">
-              <span class="text-base font-bold">接收消息</span>
-              <ElButton size="small" @click="clearMessages">清空记录</ElButton>
-            </div>
-          </template>
-
-          <div class="message-container">
-            <div v-for="(message, index) in messageList" :key="index" class="message-item">
-              <div class="message-header">
-                <ElTag size="small" type="success"> 接收 </ElTag>
-                <span class="message-time">{{ message.time }}</span>
-                <ElTag v-if="message.event" size="small" type="info">{{ message.event }}</ElTag>
-              </div>
-              <div class="message-content">{{ message.content }}</div>
-            </div>
-
-            <ElEmpty v-if="messageList.length === 0" description="暂无消息记录" :image-size="100" />
-          </div>
-        </ElCard>
-      </ElCol>
-    </ElRow>
-
-    <!-- 连接日志 -->
-    <ElCard class="border-0" shadow="never">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <span class="text-base font-bold">连接日志</span>
-          <ElButton size="small" @click="clearLogs">清空日志</ElButton>
-        </div>
-      </template>
-
-      <div class="log-container">
-        <ElAlert
-          v-for="(log, index) in logList"
+    <!-- 2. 消息接收区 -->
+    <div class="msg-box" style="display: flex; gap: 20px">
+      <!-- 普通消息 -->
+      <div style="flex: 1; padding: 15px; border: 1px solid #eee; border-radius: 8px">
+        <h3>📩 普通消息（{{ normalMsgList.length }}条）</h3>
+        <div
+          v-for="(item, index) in normalMsgList"
           :key="index"
-          :type="log.type"
-          :closable="false"
-          class="!mb-2"
+          style="margin-top: 8px; color: #333"
         >
-          <template #title>
-            <div class="flex items-start gap-2">
-              <span class="text-xs opacity-70 whitespace-nowrap">{{ log.time }}</span>
-              <span class="flex-1">{{ log.message }}</span>
-            </div>
-          </template>
-        </ElAlert>
-
-        <ElEmpty v-if="logList.length === 0" description="暂无日志记录" :image-size="100" />
+          {{ item }}
+        </div>
       </div>
-    </ElCard>
+      <!-- 自定义事件消息 -->
+      <div style="flex: 1; padding: 15px; border: 1px solid #eee; border-radius: 8px">
+        <h3>🔔 自定义事件消息（{{ customMsgList.length }}条）</h3>
+        <div
+          v-for="(item, index) in customMsgList"
+          :key="index"
+          style="margin-top: 8px; color: #333"
+        >
+          {{ item }}
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 操作日志区 -->
+    <div
+      class="log-box"
+      style="padding: 15px; margin-top: 20px; border: 1px solid #eee; border-radius: 8px"
+    >
+      <h3>📝 操作日志（{{ logList.length }}条）</h3>
+      <div
+        v-for="(item, index) in logList"
+        :key="index"
+        :style="{ color: item.color, marginTop: '4px' }"
+      >
+        {{ item.content }}
+      </div>
+    </div>
   </div>
 </template>
-<script setup lang="ts">
-  import { ElMessage } from 'element-plus'
 
-  defineOptions({ name: 'SseChat' })
+<script setup>
+  import { ref, reactive } from 'vue'
+  import { ElMessage, ElInput, ElButton, ElCheckbox } from 'element-plus'
+  import axios from 'axios' // ✅ 新增：引入axios用于调用推送接口
 
-  // SSE连接实例
-  const eventSource = ref<EventSource | null>(null)
+  // ========== 常量配置 ==========
+  // 客户端唯一标识（前后端必须完全一致！）
+  const CLIENT_ID = 'vue3_sse_client_001'
+  // 超时时间配置（毫秒）
+  const CONNECT_TIMEOUT = 5000 // 连接超时
+  const RECONNECT_DELAY = 10000 // 断连重连延迟
 
+  // ========== 状态管理 ==========
+  // 连接表单配置
+  const connectForm = reactive({
+    url: 'http://localhost:8080/api/sse', // 后端SSE接口地址
+    withCredentials: true // 是否携带跨域凭证
+  })
+  // ✅ 新增：推送消息表单配置
+  const sendForm = reactive({
+    message: '测试SSE消息推送' // 默认测试消息
+  })
   // 连接状态
-  const isConnecting = ref(false)
-  const isConnected = ref(false)
-  const connectionStatusText = ref('未连接')
-  const reconnectCount = ref(0)
-  const messageCount = ref(0)
-  const CLIENT_ID = 'user_1001'
+  const isConnecting = ref(false) // 连接中
+  const isConnected = ref(false) // 已连接
+  const connectionStatusText = ref('未连接') // 状态文本
+  // 消息存储
+  const normalMsgList = ref([]) // 普通消息列表
+  const customMsgList = ref([]) // 自定义事件消息列表
+  // 日志存储
+  const logList = ref([])
+  // SSE连接对象
+  let eventSource = null
 
-  // 表单数据
-  const connectForm = ref({
-    url: 'http://localhost:8080/sse',
-    autoReconnect: true,
-    withCredentials: false
-  })
-
-  // 消息和日志列表
-  const messageList = ref<
-    Array<{
-      event: string
-      content: string
-      time: string
-    }>
-  >([])
-
-  const logList = ref<
-    Array<{
-      type: 'info' | 'success' | 'warning' | 'error'
-      message: string
-      time: string
-    }>
-  >([])
-
-  // 计算属性
-  const connectionTagType = computed(() => {
-    if (isConnecting.value) return 'warning'
-    if (isConnected.value) return 'success'
-    return 'danger'
-  })
-
+  // ========== 工具方法 ==========
   /**
-   * 添加日志
+   * 添加操作日志
+   * @param {String} type 类型：success/error/info/warn
+   * @param {String} content 日志内容
    */
-  const addLog = (type: 'info' | 'success' | 'warning' | 'error', message: string) => {
+  const addLog = (type, content) => {
+    const colorMap = { success: '#198754', error: '#dc3545', info: '#0d6efd', warn: '#ffc107' }
     logList.value.unshift({
-      type,
-      message,
-      time: new Date().toLocaleTimeString()
+      color: colorMap[type],
+      content: `[${new Date().toLocaleString()}] ${content}`
     })
-
-    // 限制日志数量
-    if (logList.value.length > 100) {
-      logList.value = logList.value.slice(0, 100)
-    }
+    // 日志最多保留50条
+    if (logList.value.length > 50) logList.value.pop()
   }
 
+  // ========== SSE连接核心方法 ==========
   /**
-   * 添加消息记录
-   */
-  const addMessage = (event: string, content: string) => {
-    messageList.value.unshift({
-      event,
-      content,
-      time: new Date().toLocaleTimeString()
-    })
-
-    // 限制消息数量
-    if (messageList.value.length > 50) {
-      messageList.value = messageList.value.slice(0, 50)
-    }
-  }
-
-  /**
-   * 处理SSE消息
-   */
-  const handleMessage = (event: MessageEvent) => {
-    messageCount.value++
-    const eventType = event.type || 'message'
-    addMessage(eventType, event.data)
-    addLog('success', `收到消息 (${eventType}): ${event.data}`)
-  }
-
-  /**
-   * 处理SSE错误
-   */
-  const handleError = (event: Event) => {
-    console.error('SSE错误:', event)
-    addLog('error', 'SSE连接发生错误')
-
-    if (connectForm.value.autoReconnect) {
-      addLog('warning', 'SSE自动重连中...')
-      setTimeout(() => {
-        handleConnect()
-      }, 3000)
-    }
-  }
-
-  /**
-   * 连接SSE
+   * 建立SSE连接
    */
   const handleConnect = () => {
-    if (isConnecting.value || isConnected.value) {
-      return
-    }
+    if (isConnecting.value || isConnected.value) return
 
+    // 初始化状态
     isConnecting.value = true
     connectionStatusText.value = '连接中...'
-    addLog('info', `开始连接到 ${connectForm.value.url}`)
+    addLog('info', `开始连接SSE服务：${connectForm.url}/connect?clientId=${CLIENT_ID}`)
 
-    try {
-      // 创建EventSource实例
-      eventSource.value = new EventSource(
-        `${connectForm.value.url}/connect?clientId=${CLIENT_ID}`,
-        {
-          withCredentials: false
-        }
-      )
-
-      // 监听连接成功
-      eventSource.value.onopen = () => {
-        isConnected.value = true
+    // 连接超时兜底
+    const timeoutTimer = setTimeout(() => {
+      if (!isConnected.value) {
         isConnecting.value = false
-        connectionStatusText.value = '已连接'
-        addLog('success', 'SSE连接成功')
-        reconnectCount.value = 0
+        connectionStatusText.value = '连接超时'
+        addLog('error', '连接超时，5秒未收到后端响应')
+        ElMessage.error('SSE连接超时，请检查服务地址')
+      }
+    }, CONNECT_TIMEOUT)
+
+    // 创建原生EventSource连接（SSE标准）
+    try {
+      eventSource = new EventSource(`${connectForm.url}/connect?clientId=${CLIENT_ID}`, {
+        withCredentials: connectForm.withCredentials
+      })
+
+      // ✅ 1. 连接成功回调
+      eventSource.onopen = () => {
+        clearTimeout(timeoutTimer)
+        isConnecting.value = false
+        isConnected.value = true
+        connectionStatusText.value = '已连接 ✅'
+        addLog('success', 'SSE连接成功，已就绪接收消息')
+        ElMessage.success('SSE连接成功')
       }
 
-      // 监听消息
-      eventSource.value.onmessage = handleMessage
+      // ✅ 2. 接收普通消息（核心）
+      eventSource.onmessage = (e) => {
+        if (!e.data) return
+        const msg = `普通消息：${e.data}`
+        normalMsgList.value.unshift(msg)
+        addLog('info', `收到普通消息：${e.data}`)
+        // 消息最多保留30条
+        if (normalMsgList.value.length > 30) normalMsgList.value.pop()
+      }
 
-      // 监听错误
-      eventSource.value.onerror = handleError
-
-      // 监听自定义事件
-      eventSource.value.addEventListener('notification', (event) => {
-        messageCount.value++
-        addMessage('notification', (event as MessageEvent).data)
-        addLog('info', '收到通知事件')
+      // ✅ 3. 接收自定义事件 - notification通知
+      eventSource.addEventListener('notification', (e) => {
+        const msg = `通知事件：${e.data}`
+        customMsgList.value.unshift(msg)
+        addLog('info', msg)
       })
 
-      eventSource.value.addEventListener('update', (event) => {
-        messageCount.value++
-        addMessage('update', (event as MessageEvent).data)
-        addLog('info', '收到更新事件')
+      // ✅ 4. 接收自定义事件 - update更新
+      eventSource.addEventListener('update', (e) => {
+        const msg = `更新事件：${e.data}`
+        customMsgList.value.unshift(msg)
+        addLog('info', msg)
       })
+
+      // ✅ 5. 连接异常/断连回调（自动重连）
+      eventSource.onerror = () => {
+        clearTimeout(timeoutTimer)
+        isConnecting.value = false
+        isConnected.value = false
+        connectionStatusText.value = '连接异常 ❌'
+        addLog('error', 'SSE连接异常/断开，准备重连')
+        ElMessage.error('SSE连接断开，正在重连...')
+
+        // 关闭异常连接
+        if (eventSource) eventSource.close()
+        // 自动重连
+        setTimeout(() => handleConnect(), RECONNECT_DELAY)
+      }
     } catch (error) {
+      clearTimeout(timeoutTimer)
       isConnecting.value = false
       connectionStatusText.value = '连接失败'
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      addLog('error', `连接失败: ${errorMessage}`)
-      ElMessage.error('连接失败，请检查服务器地址')
+      addLog('error', `连接失败：${error.message}`)
+      ElMessage.error('SSE连接失败，请检查配置')
     }
   }
 
   /**
-   * 断开连接
+   * 手动关闭SSE连接
    */
-  const handleDisconnect = () => {
-    if (eventSource.value) {
-      eventSource.value.close()
-      eventSource.value = null
-      addLog('info', '手动断开SSE连接')
-    }
-
+  const handleClose = () => {
+    if (!eventSource) return
+    eventSource.close()
+    eventSource = null
     isConnected.value = false
-    isConnecting.value = false
-    connectionStatusText.value = '未连接'
+    connectionStatusText.value = '已断开'
+    addLog('warn', '手动关闭SSE连接')
+    ElMessage.warning('SSE连接已关闭')
   }
 
+  // ========== ✅ 核心新增：前端推送消息的4个方法 ==========
   /**
-   * 重新连接
+   * 1. 发送普通消息
    */
-  const handleReconnect = () => {
-    handleDisconnect()
-    setTimeout(() => {
-      handleConnect()
-    }, 1000)
-  }
-
-  /**
-   * 清空消息记录
-   */
-  const clearMessages = () => {
-    messageList.value = []
-    messageCount.value = 0
-  }
-
-  /**
-   * 清空日志
-   */
-  const clearLogs = () => {
-    logList.value = []
-  }
-
-  /**
-   * 页面卸载时清理连接
-   */
-  onUnmounted(() => {
-    handleDisconnect()
-  })
-
-  /**
-   * 监听页面可见性变化，页面隐藏时断开连接
-   */
-  onMounted(() => {
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && isConnected.value) {
-        addLog('info', '页面隐藏，保持连接')
+  const sendNormalMsg = async () => {
+    if (!sendForm.message) return ElMessage.warning('请输入推送消息内容')
+    try {
+      const res = await axios.get(`${connectForm.url}/send`, {
+        params: { clientId: CLIENT_ID, message: sendForm.message },
+        withCredentials: connectForm.withCredentials
+      })
+      if (res.data.code === 200) {
+        addLog('success', `前端主动推送普通消息成功：${sendForm.message}`)
+        ElMessage.success('普通消息推送成功')
       }
-    })
-  })
+    } catch (err) {
+      addLog('error', `普通消息推送失败：${err.message}`)
+      ElMessage.error('普通消息推送失败')
+    }
+  }
+
+  /**
+   * 2. 推送通知事件（notification）
+   */
+  const sendNoticeEvent = async () => {
+    if (!sendForm.message) return ElMessage.warning('请输入推送消息内容')
+    try {
+      const res = await axios.get(`${connectForm.url}/send-event`, {
+        params: { clientId: CLIENT_ID, eventName: 'notification', message: sendForm.message },
+        withCredentials: connectForm.withCredentials
+      })
+      if (res.data.code === 200) {
+        addLog('success', `前端主动推送通知事件成功：${sendForm.message}`)
+        ElMessage.success('通知事件推送成功')
+      }
+    } catch (err) {
+      addLog('error', `通知事件推送失败：${err.message}`)
+      ElMessage.error('通知事件推送失败')
+    }
+  }
+
+  /**
+   * 3. 推送更新事件（update）
+   */
+  const sendUpdateEvent = async () => {
+    if (!sendForm.message) return ElMessage.warning('请输入推送消息内容')
+    try {
+      const res = await axios.get(`${connectForm.url}/send-event`, {
+        params: { clientId: CLIENT_ID, eventName: 'update', message: sendForm.message },
+        withCredentials: connectForm.withCredentials
+      })
+      if (res.data.code === 200) {
+        addLog('success', `前端主动推送更新事件成功：${sendForm.message}`)
+        ElMessage.success('更新事件推送成功')
+      }
+    } catch (err) {
+      addLog('error', `更新事件推送失败：${err.message}`)
+      ElMessage.error('更新事件推送失败')
+    }
+  }
+
+  /**
+   * 4. 全局广播消息
+   */
+  const sendBroadcastMsg = async () => {
+    if (!sendForm.message) return ElMessage.warning('请输入推送消息内容')
+    try {
+      const res = await axios.get(`${connectForm.url}/broadcast`, {
+        params: { message: sendForm.message },
+        withCredentials: connectForm.withCredentials
+      })
+      if (res.data.code === 200) {
+        addLog('success', `前端主动推送全局广播消息成功：${sendForm.message}`)
+        ElMessage.success('全局广播推送成功')
+      }
+    } catch (err) {
+      addLog('error', `全局广播推送失败：${err.message}`)
+      ElMessage.error('全局广播推送失败')
+    }
+  }
 </script>
 
 <style scoped>
-  @reference '@styles/core/tailwind.css';
-
-  .message-container {
-    @apply max-h-96 overflow-y-auto space-y-3;
-  }
-
-  .message-item {
-    @apply p-3 rounded-lg border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700;
-  }
-
-  .message-header {
-    @apply flex items-center justify-between mb-2;
-  }
-
-  .message-time {
-    @apply text-xs text-gray-500;
-  }
-
-  .message-content {
-    @apply text-sm text-gray-800 dark:text-gray-200 break-words font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded;
-  }
-
-  .log-container {
-    @apply max-h-64 overflow-y-auto;
-  }
-
-  /* 滚动条样式 */
-  .message-container::-webkit-scrollbar,
-  .log-container::-webkit-scrollbar {
-    @apply w-4;
-  }
-
-  .message-container::-webkit-scrollbar-track,
-  .log-container::-webkit-scrollbar-track {
-    @apply bg-gray-100 rounded;
-  }
-
-  .message-container::-webkit-scrollbar-thumb,
-  .log-container::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded hover:bg-gray-400;
+  .sse-container {
+    box-sizing: border-box;
+    width: 100%;
   }
 </style>
