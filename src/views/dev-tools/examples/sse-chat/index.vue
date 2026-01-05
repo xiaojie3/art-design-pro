@@ -1,9 +1,9 @@
 <template>
   <div class="page-content mb-5">
     <div class="mb-15 text-center">
-      <h1 class="my-4 text-2xl font-semibold leading-tight">WebSocket 连接示例</h1>
+      <h1 class="my-4 text-2xl font-semibold leading-tight">SSE 连接示例</h1>
       <p class="m-0 text-base leading-relaxed text-g-700">
-        基于 WebSocketClient 的实时通信演示，支持连接管理、消息收发和状态监控
+        基于 Server-Sent Events 的实时通信演示，支持连接管理、消息接收和状态监控
       </p>
     </div>
 
@@ -22,10 +22,10 @@
         <ElCard class="h-full border-0" :body-style="{ padding: '20px' }" shadow="never">
           <div class="text-center">
             <ElTag :type="connectionTagType" size="large" class="mb-2">
-              {{ wsClient?.connectionStatusText || '未连接' }}
+              {{ connectionStatusText || '未连接' }}
             </ElTag>
             <div class="text-sm font-medium text-gray-900">连接状态</div>
-            <div class="text-xs text-gray-500">当前WebSocket连接状态</div>
+            <div class="text-xs text-gray-500">当前SSE连接状态</div>
           </div>
         </ElCard>
       </ElCol>
@@ -40,7 +40,7 @@
       </ElCol>
     </ElRow>
 
-    <!-- 连接配置和发送消息 -->
+    <!-- 连接配置 -->
     <ElRow :gutter="20" class="mb-15">
       <ElCol :xs="24" :md="12">
         <ElCard class="h-full border-0" shadow="never">
@@ -48,19 +48,23 @@
             <div class="flex items-center justify-between">
               <span class="text-base font-bold">连接配置</span>
               <ElTag :type="connectionTagType" size="large">
-                {{ wsClient?.connectionStatusText || '未连接' }}
+                {{ connectionStatusText || '未连接' }}
               </ElTag>
             </div>
           </template>
 
           <ElForm :model="connectForm" label-width="100px" class="max-w-md">
             <ElFormItem label="服务器地址">
-              <ElInput v-model="connectForm.url" placeholder="ws://localhost:8080/ws" clearable />
+              <ElInput
+                v-model="connectForm.url"
+                placeholder="http://localhost:8080/sse"
+                clearable
+              />
             </ElFormItem>
             <ElFormItem label="连接选项">
               <ElSpace>
                 <ElCheckbox v-model="connectForm.autoReconnect">自动重连</ElCheckbox>
-                <ElCheckbox v-model="connectForm.heartbeat">心跳检测</ElCheckbox>
+                <ElCheckbox v-model="connectForm.withCredentials">带凭据</ElCheckbox>
               </ElSpace>
             </ElFormItem>
             <ElFormItem>
@@ -86,38 +90,24 @@
       <ElCol :xs="24" :md="12">
         <ElCard class="h-full border-0" shadow="never">
           <template #header>
-            <span class="text-base font-bold">发送消息</span>
+            <span class="text-base font-bold">消息说明</span>
           </template>
 
-          <ElForm :model="messageForm" @submit.prevent="handleSendMessage">
-            <ElFormItem label="消息类型">
-              <ElSelect v-model="messageForm.type" class="w-full">
-                <ElOption label="文本消息" value="text" />
-                <ElOption label="JSON数据" value="json" />
-                <ElOption label="心跳包" value="ping" />
-              </ElSelect>
-            </ElFormItem>
-            <ElFormItem label="消息内容">
-              <ElInput
-                v-model="messageForm.content"
-                type="textarea"
-                :rows="4"
-                placeholder="请输入要发送的消息内容"
-              />
-            </ElFormItem>
-            <ElFormItem>
-              <ElSpace>
-                <ElButton
-                  type="primary"
-                  @click="handleSendMessage"
-                  :disabled="!isConnected || !messageForm.content"
-                >
-                  发送消息
-                </ElButton>
-                <ElButton @click="clearMessageForm">清空</ElButton>
-              </ElSpace>
-            </ElFormItem>
-          </ElForm>
+          <div class="text-sm text-gray-600 space-y-2">
+            <p><strong>SSE特性：</strong></p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>单向通信：只能接收服务器推送的消息</li>
+              <li>自动重连：连接断开后自动重新连接</li>
+              <li>事件流格式：支持多种事件类型</li>
+              <li>基于HTTP协议：兼容性好</li>
+            </ul>
+
+            <p class="mt-4"><strong>限制：</strong></p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>无法主动向服务器发送消息</li>
+              <li>只能接收文本数据</li>
+            </ul>
+          </div>
         </ElCard>
       </ElCol>
     </ElRow>
@@ -136,10 +126,9 @@
           <div class="message-container">
             <div v-for="(message, index) in messageList" :key="index" class="message-item">
               <div class="message-header">
-                <ElTag size="small" :type="message.type === 'received' ? 'success' : 'info'">
-                  {{ message.type === 'received' ? '接收' : '发送' }}
-                </ElTag>
+                <ElTag size="small" type="success"> 接收 </ElTag>
                 <span class="message-time">{{ message.time }}</span>
+                <ElTag v-if="message.event" size="small" type="info">{{ message.event }}</ElTag>
               </div>
               <div class="message-content">{{ message.content }}</div>
             </div>
@@ -180,42 +169,33 @@
     </ElCard>
   </div>
 </template>
-
 <script setup lang="ts">
-  import WebSocketClient from '@/utils/socket'
   import { ElMessage } from 'element-plus'
 
-  defineOptions({ name: 'WidgetsSocketChat' })
+  defineOptions({ name: 'SseChat' })
 
-  // WebSocket客户端实例
-  const wsClient = ref<WebSocketClient | null>(null)
+  // SSE连接实例
+  const eventSource = ref<EventSource | null>(null)
 
   // 连接状态
   const isConnecting = ref(false)
   const isConnected = ref(false)
+  const connectionStatusText = ref('未连接')
   const reconnectCount = ref(0)
   const messageCount = ref(0)
-
-  // 用于清理 watch 的函数
-  let stopWatchConnection: (() => void) | null = null
-  let stopWatchStatus: (() => void) | null = null
+  const CLIENT_ID = 'user_1001'
 
   // 表单数据
   const connectForm = ref({
-    url: 'ws://localhost:8080/ws',
+    url: 'http://localhost:8080/sse',
     autoReconnect: true,
-    heartbeat: true
-  })
-
-  const messageForm = ref({
-    type: 'text',
-    content: ''
+    withCredentials: false
   })
 
   // 消息和日志列表
   const messageList = ref<
     Array<{
-      type: 'sent' | 'received'
+      event: string
       content: string
       time: string
     }>
@@ -255,9 +235,9 @@
   /**
    * 添加消息记录
    */
-  const addMessage = (type: 'sent' | 'received', content: string) => {
+  const addMessage = (event: string, content: string) => {
     messageList.value.unshift({
-      type,
+      event,
       content,
       time: new Date().toLocaleTimeString()
     })
@@ -269,73 +249,81 @@
   }
 
   /**
-   * 处理WebSocket消息
+   * 处理SSE消息
    */
-  const handleSocketMessage = (event: MessageEvent) => {
+  const handleMessage = (event: MessageEvent) => {
     messageCount.value++
-    addMessage('received', event.data)
-    addLog('success', `收到消息: ${event.data}`)
+    const eventType = event.type || 'message'
+    addMessage(eventType, event.data)
+    addLog('success', `收到消息 (${eventType}): ${event.data}`)
   }
 
   /**
-   * 连接WebSocket
+   * 处理SSE错误
+   */
+  const handleError = (event: Event) => {
+    console.error('SSE错误:', event)
+    addLog('error', 'SSE连接发生错误')
+
+    if (connectForm.value.autoReconnect) {
+      addLog('warning', 'SSE自动重连中...')
+      setTimeout(() => {
+        handleConnect()
+      }, 3000)
+    }
+  }
+
+  /**
+   * 连接SSE
    */
   const handleConnect = () => {
     if (isConnecting.value || isConnected.value) {
       return
     }
 
-    // 清理之前的 watch
-    if (stopWatchConnection) {
-      stopWatchConnection()
-      stopWatchConnection = null
-    }
-    if (stopWatchStatus) {
-      stopWatchStatus()
-      stopWatchStatus = null
-    }
-
     isConnecting.value = true
+    connectionStatusText.value = '连接中...'
     addLog('info', `开始连接到 ${connectForm.value.url}`)
 
     try {
-      wsClient.value = WebSocketClient.getInstance({
-        url: connectForm.value.url,
-        messageHandler: handleSocketMessage,
-        reconnectInterval: connectForm.value.autoReconnect ? 5000 : 0,
-        heartbeatInterval: connectForm.value.heartbeat ? 10000 : 0,
-        maxReconnectAttempts: 5
-      })
-
-      wsClient.value.init()
-
-      // 监听连接状态变化
-      stopWatchConnection = watch(
-        () => wsClient.value?.isWebSocketConnected,
-        (connected) => {
-          isConnected.value = connected || false
-          isConnecting.value = false
-
-          if (connected) {
-            addLog('success', 'WebSocket连接成功')
-            reconnectCount.value = 0
-          }
-        },
-        { immediate: true }
-      )
-
-      // 监听连接状态文本变化
-      stopWatchStatus = watch(
-        () => wsClient.value?.connectionStatusText,
-        (status) => {
-          if (status && status.includes('重连中')) {
-            reconnectCount.value++
-            addLog('warning', `自动重连中 (第${reconnectCount.value}次)`)
-          }
+      // 创建EventSource实例
+      eventSource.value = new EventSource(
+        `${connectForm.value.url}/connect?clientId=${CLIENT_ID}`,
+        {
+          withCredentials: false
         }
       )
+
+      // 监听连接成功
+      eventSource.value.onopen = () => {
+        isConnected.value = true
+        isConnecting.value = false
+        connectionStatusText.value = '已连接'
+        addLog('success', 'SSE连接成功')
+        reconnectCount.value = 0
+      }
+
+      // 监听消息
+      eventSource.value.onmessage = handleMessage
+
+      // 监听错误
+      eventSource.value.onerror = handleError
+
+      // 监听自定义事件
+      eventSource.value.addEventListener('notification', (event) => {
+        messageCount.value++
+        addMessage('notification', (event as MessageEvent).data)
+        addLog('info', '收到通知事件')
+      })
+
+      eventSource.value.addEventListener('update', (event) => {
+        messageCount.value++
+        addMessage('update', (event as MessageEvent).data)
+        addLog('info', '收到更新事件')
+      })
     } catch (error) {
       isConnecting.value = false
+      connectionStatusText.value = '连接失败'
       const errorMessage = error instanceof Error ? error.message : String(error)
       addLog('error', `连接失败: ${errorMessage}`)
       ElMessage.error('连接失败，请检查服务器地址')
@@ -346,23 +334,15 @@
    * 断开连接
    */
   const handleDisconnect = () => {
-    if (wsClient.value) {
-      wsClient.value.close()
-      addLog('info', '手动断开WebSocket连接')
-    }
-
-    // 清理 watch
-    if (stopWatchConnection) {
-      stopWatchConnection()
-      stopWatchConnection = null
-    }
-    if (stopWatchStatus) {
-      stopWatchStatus()
-      stopWatchStatus = null
+    if (eventSource.value) {
+      eventSource.value.close()
+      eventSource.value = null
+      addLog('info', '手动断开SSE连接')
     }
 
     isConnected.value = false
     isConnecting.value = false
+    connectionStatusText.value = '未连接'
   }
 
   /**
@@ -376,56 +356,11 @@
   }
 
   /**
-   * 发送消息
-   */
-  const handleSendMessage = () => {
-    if (!isConnected.value || !wsClient.value) {
-      ElMessage.warning('请先建立WebSocket连接')
-      return
-    }
-
-    let message = messageForm.value.content
-
-    // 根据消息类型处理内容
-    switch (messageForm.value.type) {
-      case 'json':
-        try {
-          // 验证是否为有效JSON
-          JSON.parse(message)
-        } catch {
-          ElMessage.error('请输入有效的JSON格式数据')
-          return
-        }
-        break
-      case 'ping':
-        message = 'ping'
-        break
-    }
-
-    try {
-      wsClient.value.send(message)
-      addMessage('sent', message)
-      addLog('info', `发送消息: ${message}`)
-      ElMessage.success('消息发送成功')
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      addLog('error', `发送失败: ${errorMessage}`)
-      ElMessage.error('发送消息失败')
-    }
-  }
-
-  /**
-   * 清空消息表单
-   */
-  const clearMessageForm = () => {
-    messageForm.value.content = ''
-  }
-
-  /**
    * 清空消息记录
    */
   const clearMessages = () => {
     messageList.value = []
+    messageCount.value = 0
   }
 
   /**
