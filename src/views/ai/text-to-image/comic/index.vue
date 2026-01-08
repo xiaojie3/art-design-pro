@@ -1,5 +1,6 @@
 <template>
   <div class="art-full-height">
+    <Search v-model="searchForm" @search="handleSearch" @reset="resetSearchParams"></Search>
     <ElCard class="art-table-card" shadow="never">
       <!-- 表格头部 -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
@@ -13,7 +14,15 @@
       </ArtTableHeader>
 
       <!-- 表格 -->
-      <ArtTable :loading="loading" :data="data" :columns="columns"> </ArtTable>
+      <ArtTable
+        :loading="loading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+      >
+      </ArtTable>
 
       <EditDialog
         v-model:visible="dialogVisible"
@@ -30,18 +39,34 @@
   import { useTable } from '@/hooks/core/useTable'
   import { fetchGetComicPage, fetchDeleteComic } from '@/api/ai/comic'
   import EditDialog from './modules/edit-dialog.vue'
+  import Search from './modules/search.vue'
   import { ElMessageBox, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'Comic' })
 
   type Item = Api.Ai.ComicItem
-
+  // 搜索表单
+  const searchForm = ref({
+    comicName: ''
+  })
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const editData = ref<Partial<Item>>({})
-  const { columns, columnChecks, data, loading, refreshData } = useTable({
+  const {
+    columns,
+    columnChecks,
+    data,
+    loading,
+    pagination,
+    getData,
+    searchParams,
+    resetSearchParams,
+    handleSizeChange,
+    handleCurrentChange,
+    refreshData
+  } = useTable({
     // 核心配置
     core: {
       apiFn: fetchGetComicPage,
@@ -74,6 +99,16 @@
       ]
     }
   })
+  /**
+   * 搜索处理
+   * @param params 参数
+   */
+  const handleSearch = (params: Record<string, any>) => {
+    console.log(params)
+    // 搜索参数赋值
+    Object.assign(searchParams, params)
+    getData()
+  }
   /**
    * 显示用户弹窗
    */
