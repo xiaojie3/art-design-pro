@@ -422,10 +422,20 @@ declare namespace Api {
       id: string
       comicType: string
       comicName: string
+      collectionId: string
+      collectionName: string
+      comicSort: number
     }
     /** 漫画搜索参数 */
     type ComicSearchParams = Partial<
-      Pick<ComicItem, 'id' | 'comicType' | 'comicName'> & Api.Common.CommonSearchParams
+      Pick<ComicItem, 'id' | 'collectionId' | 'comicName'> & Api.Common.CommonSearchParams
     >
+    interface ComicCollectionItem {
+      id: string
+      collectionName: string
+      collectionDesc: string
+      coverUrl: string
+      sortNum: number
+    }
   }
 }

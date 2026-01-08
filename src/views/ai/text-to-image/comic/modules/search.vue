@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+  import { fetchGetComicCollectionList } from '@/api/ai/comic'
   interface Props {
     modelValue: Record<string, any>
   }
@@ -33,7 +34,12 @@
   const rules = {
     // userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
   }
-
+  // 动态 options
+  const collectionOptions = ref<Api.Common.OptionItem[]>([])
+  // 获取合集列表
+  onMounted(async () => {
+    collectionOptions.value = await fetchGetComicCollectionList()
+  })
   // 表单配置
   const formItems = computed(() => [
     {
@@ -42,6 +48,16 @@
       type: 'input',
       placeholder: '请输入漫画名称',
       clearable: true
+    },
+    {
+      label: '合集',
+      key: 'collectionId',
+      type: 'select',
+      placeholder: '请选择合集',
+      clearable: true,
+      props: {
+        options: collectionOptions.value
+      }
     }
   ])
 

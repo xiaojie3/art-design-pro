@@ -129,7 +129,7 @@
                   type="textarea"
                   :rows="2"
                   placeholder="请输入动作描述，用逗号分隔"
-                  @change="handleListInputChange(panel, 'action')"
+                  @change="handleListInputChange()"
                 />
               </ElFormItem>
             </ElCol>
@@ -140,7 +140,7 @@
                   type="textarea"
                   :rows="2"
                   placeholder="请输入表情描述，用逗号分隔"
-                  @change="handleListInputChange(panel, 'expression')"
+                  @change="handleListInputChange()"
                 />
               </ElFormItem>
             </ElCol>
@@ -198,10 +198,32 @@
   interface Panel {
     description: string
     scene: string
-    action: string | string[]
-    expression: string | string[]
+    action: string
+    expression: string
     details: string
     text: string
+  }
+
+  // 用于提交的数据接口，action 和 expression 为数组类型
+  interface SubmitPanel {
+    description: string
+    scene: string
+    action: string[]
+    expression: string[]
+    details: string
+    text: string
+  }
+
+  interface SubmitData {
+    comicType: string
+    language: string
+    style: string
+    colorScheme: string
+    characters: Character[]
+    backgroundStyle: string
+    comicName: string
+    remark: string
+    panels: SubmitPanel[]
   }
 
   interface FormData {
@@ -224,7 +246,7 @@
 
   const emit = defineEmits<{
     'update:visible': [value: boolean]
-    submit: [data: FormData]
+    submit: [data: SubmitData]
   }>()
 
   const formRef = ref()
@@ -307,25 +329,22 @@
     try {
       await formRef.value.validate()
 
-      // 处理面板数据
-      const submitData = { ...formData }
-      submitData.panels = submitData.panels.map((panel) => {
-        const processedPanel = { ...panel }
-        // 确保action和expression是数组
-        if (typeof processedPanel.action === 'string') {
-          processedPanel.action = processedPanel.action
+      // 处理面板数据 - 创建新的提交数据对象，避免类型冲突
+      const submitData = {
+        ...formData,
+        panels: formData.panels.map((panel) => ({
+          ...panel,
+          // 将action和expression从字符串转换为数组
+          action: panel.action
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean),
+          expression: panel.expression
             .split(',')
             .map((item) => item.trim())
             .filter(Boolean)
-        }
-        if (typeof processedPanel.expression === 'string') {
-          processedPanel.expression = processedPanel.expression
-            .split(',')
-            .map((item) => item.trim())
-            .filter(Boolean)
-        }
-        return processedPanel
-      })
+        }))
+      }
 
       emit('submit', submitData)
       emit('update:visible', false)
@@ -354,8 +373,8 @@
     formData.panels.push({
       description: '',
       scene: '',
-      action: [],
-      expression: [],
+      action: '',
+      expression: '',
       details: '',
       text: ''
     })
@@ -366,14 +385,9 @@
     formData.panels.splice(index, 1)
   }
 
-  // 处理列表类型输入变化
-  const handleListInputChange = (panel: Panel, field: 'action' | 'expression') => {
-    if (typeof panel[field] === 'string') {
-      panel[field] = panel[field]
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean)
-    }
+  // 处理列表类型输入变化 - 移除数组转换，保持字符串类型
+  const handleListInputChange = () => {
+    // 输入已直接作为字符串存储，无需转换
   }
 </script>
 

@@ -47,8 +47,9 @@
 
   type Item = Api.Ai.ComicItem
   // 搜索表单
-  const searchForm = ref({
-    comicName: ''
+  const searchForm = ref<Api.Ai.ComicSearchParams>({
+    comicName: '',
+    collectionId: ''
   })
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
@@ -80,6 +81,8 @@
           }
         },
         { prop: 'comicType', label: '漫画类型' },
+        { prop: 'collectionName', label: '合集' },
+        { prop: 'comicSort', label: '漫画排序' },
         {
           prop: 'operation',
           label: '操作',
