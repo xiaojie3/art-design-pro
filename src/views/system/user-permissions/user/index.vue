@@ -25,6 +25,7 @@
         :columns="columns"
         :pagination="pagination"
         :enableBatchAction="true"
+        @row-click="handleRowClick"
         @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
@@ -61,6 +62,13 @@
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const currentUserData = ref<Partial<UserListItem>>({})
+
+  /**
+   * 处理行点击事件
+   */
+  const handleRowClick = (row: UserListItem) => {
+    console.log(row)
+  }
 
   // 选中行
   const selectedRows = ref<UserListItem[]>([])

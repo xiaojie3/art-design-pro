@@ -50,8 +50,11 @@ export const formatMenuTitle = (title: string): string => {
     if (i18n.global.te(title)) {
       return $t(title)
     } else {
-      // 如果翻译不存在，返回键值的最后部分作为fallback
-      return title.split('.').pop() || title
+      // 拆分标题为数组
+      const titleArr = title.split('.')
+      // 逻辑：如果数组长度 >=2，取倒数第二个；否则返回原标题
+      const fallbackTitle = titleArr.length >= 2 ? titleArr[titleArr.length - 2] : title
+      return fallbackTitle || title
     }
   }
   return ''
