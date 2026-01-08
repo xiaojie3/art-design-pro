@@ -38,6 +38,16 @@
               <ElInput v-model="formData.backgroundStyle" placeholder="请输入背景风格" />
             </ElFormItem>
           </ElCol>
+          <ElCol :span="8">
+            <ElFormItem label="合集" prop="collection">
+              <ElSelect v-model="formData.collection" placeholder="请选择合集">
+                <!-- 这里可以根据实际需求动态加载合集列表 -->
+                <ElOption label="科普系列" value="science" />
+                <ElOption label="童话系列" value="fairy_tale" />
+                <ElOption label="历史系列" value="history" />
+              </ElSelect>
+            </ElFormItem>
+          </ElCol>
           <ElCol :span="24">
             <ElFormItem label="漫画名称" prop="comicName">
               <ElInput v-model="formData.comicName" placeholder="请输入漫画名称" />
@@ -221,6 +231,7 @@
     colorScheme: string
     characters: Character[]
     backgroundStyle: string
+    collection: string
     comicName: string
     remark: string
     panels: SubmitPanel[]
@@ -233,6 +244,7 @@
     colorScheme: string
     characters: Character[]
     backgroundStyle: string
+    collection: string
     comicName: string
     remark: string
     panels: Panel[]
@@ -258,6 +270,7 @@
     colorScheme: '',
     characters: [],
     backgroundStyle: '',
+    collection: '',
     comicName: '',
     remark: '',
     panels: []
@@ -267,6 +280,7 @@
     comicType: [{ required: true, message: '请输入漫画类型', trigger: 'blur' }],
     language: [{ required: true, message: '请选择语言', trigger: 'change' }],
     style: [{ required: true, message: '请输入漫画风格', trigger: 'blur' }],
+    collection: [{ required: true, message: '请选择合集', trigger: 'change' }],
     colorScheme: [{ required: true, message: '请输入配色方案', trigger: 'blur' }],
     comicName: [{ required: true, message: '请输入漫画名称', trigger: 'blur' }],
     characters: [{ required: true, message: '请至少添加一个角色', trigger: 'change' }],
@@ -312,6 +326,7 @@
     formData.colorScheme = ''
     formData.characters = []
     formData.backgroundStyle = ''
+    formData.collection = ''
     formData.comicName = ''
     formData.remark = ''
     formData.panels = []
