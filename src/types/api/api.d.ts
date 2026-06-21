@@ -88,7 +88,7 @@ declare namespace Api {
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      account: string
+      username: string
       password: string
     }
 
@@ -226,13 +226,13 @@ declare namespace Api {
     /** 学校列表项 */
     interface SchoolItem {
       id: string
-      schoolCode: string
-      schoolName: string
-      schoolAbbr: string
+      code: string
+      name: string
+      shortName: string
       englishName: string
-      englishAbbr: string
+      englishShortName: string
       address: string
-      intro: string
+      description: string
       createTime: string
     }
     /** 校区列表 */
@@ -241,14 +241,9 @@ declare namespace Api {
     /** 校区列表项 */
     interface CampusItem {
       id: string
-      campusCode: string
       schoolId: string
-      campusName: string
-      englishName: string
+      name: string
       address: string
-      principal: string
-      phone: string
-      intro: string
       createTime: string
     }
 

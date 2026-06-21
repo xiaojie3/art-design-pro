@@ -11,9 +11,18 @@
   >
     <div class="flex-cb px-3.5 mt-3.5">
       <span class="text-base font-medium text-g-800">{{ $t('notice.title') }}</span>
-      <span class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200">
-        {{ $t('notice.btnRead') }}
-      </span>
+      <div class="flex items-center gap-1">
+        <span
+          v-if="!isSseConnected"
+          class="text-xs text-danger px-1.5 py-1 c-p select-none rounded hover:bg-danger/10"
+          @click="initSseConnection"
+        >
+          重连SSE
+        </span>
+        <span class="text-xs text-g-800 px-1.5 py-1 c-p select-none rounded hover:bg-g-200">
+          {{ $t('notice.btnRead') }}
+        </span>
+      </div>
     </div>
 
     <ul class="box-border flex items-end w-full h-12.5 px-3.5 border-b-d">
@@ -263,10 +272,8 @@
 
       try {
         // 从配置中获取SSE连接URL
-        const { baseUrl, connectPath, withCredentials } = appConfig.sseConfig
-        const sseUrl = `${baseUrl}${connectPath}?clientId=${CLIENT_ID}`
-
-        console.log('初始化SSE连接:', sseUrl)
+        const { connectPath, withCredentials } = appConfig.sseConfig
+        const sseUrl = `${connectPath}?clientId=${CLIENT_ID}`
 
         // 创建SSE连接
         sseEventSource.value = new EventSource(sseUrl, {
@@ -329,14 +336,6 @@
         sseEventSource.value.onerror = (error) => {
           console.error('通知SSE连接错误:', error)
           isSseConnected.value = false
-
-          // 自动重连
-          setTimeout(() => {
-            if (!isSseConnected.value) {
-              console.log('尝试重新连接SSE...')
-              initSseConnection()
-            }
-          }, 5000)
         }
       } catch (error) {
         console.error('初始化SSE连接失败:', error)

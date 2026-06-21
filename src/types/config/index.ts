@@ -126,8 +126,6 @@ export interface FastEnterConfig {
 
 // SSE配置
 export interface SseConfig {
-  // SSE基础URL
-  baseUrl: string
   // SSE连接路径
   connectPath: string
   // SSE推送路径

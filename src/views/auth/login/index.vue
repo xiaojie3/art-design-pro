@@ -18,11 +18,11 @@
             @keyup.enter="handleSubmit"
             style="margin-top: 25px"
           >
-            <ElFormItem prop="account">
+            <ElFormItem prop="username">
               <ElInput
                 class="custom-height"
-                :placeholder="$t('login.placeholder.account')"
-                v-model.trim="formData.account"
+                :placeholder="$t('login.placeholder.username')"
+                v-model.trim="formData.username"
               />
             </ElFormItem>
             <ElFormItem prop="password">
@@ -83,7 +83,7 @@
             </div>
 
             <div class="mt-5 text-sm text-gray-600">
-              <span>{{ $t('login.noAccount') }}</span>
+              <span>{{ $t('login.nousername') }}</span>
               <RouterLink class="text-theme" :to="{ name: 'Register' }">{{
                 $t('login.register')
               }}</RouterLink>
@@ -116,10 +116,10 @@
     formKey.value++
   })
 
-  type AccountKey = 'super' | 'admin' | 'user'
+  type usernameKey = 'super' | 'admin' | 'user'
 
-  export interface Account {
-    key: AccountKey
+  export interface username {
+    key: usernameKey
     label: string
     userName: string
     password: string
@@ -138,26 +138,26 @@
   const formRef = ref<FormInstance>()
 
   const formData = reactive({
-    account: '',
     username: '',
+    nickname: '',
     password: '',
     rememberPassword: true
   })
 
   const rules = computed<FormRules>(() => ({
-    account: [{ required: true, message: t('login.placeholder.account'), trigger: 'blur' }],
+    username: [{ required: true, message: t('login.placeholder.username'), trigger: 'blur' }],
     password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }]
   }))
 
   const loading = ref(false)
 
   onMounted(() => {
-    setupAccount()
+    setupusername()
   })
 
   // 设置账号
-  const setupAccount = () => {
-    formData.account = 'admin'
+  const setupusername = () => {
+    formData.username = 'admin'
     formData.password = 'admin123'
   }
 
@@ -179,10 +179,10 @@
       loading.value = true
 
       // 登录请求
-      const { account, password } = formData
+      const { username, password } = formData
 
       const { token, refreshToken } = await fetchLogin({
-        account,
+        username,
         password
       })
 

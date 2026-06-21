@@ -47,13 +47,13 @@
    */
   const formData = ref<Api.ResourcesManage.SchoolItem>({
     id: '',
-    schoolCode: '',
-    schoolName: '',
-    schoolAbbr: '',
+    code: '',
+    name: '',
+    shortName: '',
     englishName: '',
-    englishAbbr: '',
+    englishShortName: '',
     address: '',
-    intro: '',
+    description: '',
     createTime: ''
   })
 
@@ -122,22 +122,22 @@
 
   // 基础表单项配置 - 包含默认值和验证规则
   const baseFormItems = {
-    schoolCode: createFormItem({
+    code: createFormItem({
       label: $t('resources.public.school.label.schoolCode'),
-      key: 'schoolCode',
+      key: 'code',
       type: 'input',
       placeholder: $t('resources.public.school.placeholder.schoolCode'),
       clearable: true
     }),
-    schoolName: createFormItem({
+    name: createFormItem({
       label: $t('resources.public.school.label.schoolName'),
-      key: 'schoolName',
+      key: 'name',
       type: 'input',
       placeholder: $t('resources.public.school.placeholder.schoolName')
     }),
-    schoolAbbr: createFormItem({
+    shortName: createFormItem({
       label: $t('resources.public.school.label.schoolAbbr'),
-      key: 'schoolAbbr',
+      key: 'shortName',
       type: 'input',
       placeholder: $t('resources.public.school.placeholder.schoolAbbr')
     }),
@@ -147,16 +147,11 @@
       type: 'input',
       placeholder: $t('resources.public.school.placeholder.englishName')
     }),
-    englishAbbr: createFormItem({
+    englishShortName: createFormItem({
       label: $t('resources.public.school.label.englishAbbr'),
-      key: 'englishAbbr',
+      key: 'englishShortName',
       type: 'input',
       placeholder: $t('resources.public.school.placeholder.englishAbbr')
-    }),
-    province: createFormItem({
-      label: $t('resources.public.school.label.province'),
-      key: 'province',
-      type: 'select'
     }),
     address: createFormItem({
       label: $t('resources.public.school.label.address'),
@@ -165,9 +160,9 @@
       placeholder: $t('resources.public.school.placeholder.address')
       // address字段不需要验证，所以没有rules配置
     }),
-    intro: createFormItem({
+    description: createFormItem({
       label: $t('resources.public.school.label.intro'),
-      key: 'intro',
+      key: 'description',
       type: 'input',
       span: 24,
       props: {
@@ -181,22 +176,13 @@
 
   // 表单配置 - 自动包含baseFormItems中的所有字段
   const formItems = computed(() => [
-    baseFormItems.schoolCode,
-    baseFormItems.schoolName,
-    baseFormItems.schoolAbbr,
+    baseFormItems.code,
+    baseFormItems.name,
+    baseFormItems.shortName,
     baseFormItems.englishName,
-    baseFormItems.englishAbbr,
-    {
-      ...baseFormItems.province,
-      props: {
-        clearable: true,
-        filterable: true,
-        placeholder: t('resources.public.school.placeholder.province'),
-        options: provinceOptions.value
-      }
-    },
+    baseFormItems.englishShortName,
     baseFormItems.address,
-    baseFormItems.intro
+    baseFormItems.description
   ])
 
   /**

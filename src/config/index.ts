@@ -128,7 +128,6 @@ const appConfig: SystemConfig = {
   ] as const,
   // SSE配置
   sseConfig: {
-    baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
     connectPath: '/api/sse/connect',
     pushPath: '/api/sse/push',
     withCredentials: false,

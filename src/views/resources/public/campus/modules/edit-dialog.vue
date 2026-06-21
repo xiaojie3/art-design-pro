@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
   import { fetchSaveCampus } from '@/api/resources/campus'
-  import { fetchGetSchoolList } from '@/api/resources/school'
   import type { FormInstance } from 'element-plus'
   import { ElMessage } from 'element-plus'
   import { ref, computed, reactive, watch } from 'vue'
@@ -54,14 +53,9 @@
   // 表单数据
   const formData = reactive<Item>({
     id: '',
-    campusCode: '',
     schoolId: '',
-    campusName: '',
-    englishName: '',
+    name: '',
     address: '',
-    principal: '',
-    phone: '',
-    intro: '',
     createTime: ''
   })
 
@@ -84,28 +78,12 @@
 
   // 基础表单项配置
   const baseFormItems = {
-    campusCode: createFormItem({
-      label: '校区编码',
-      key: 'campusCode',
-      type: 'input',
-      span: 12,
-      placeholder: '请输入校区编码',
-      clearable: true
-    }),
-    campusName: createFormItem({
+    name: createFormItem({
       label: '校区名称',
-      key: 'campusName',
+      key: 'name',
       type: 'input',
       span: 12,
       placeholder: '请输入校区名称',
-      clearable: true
-    }),
-    schoolId: createFormItem({
-      label: '所属学校',
-      key: 'schoolId',
-      type: 'select',
-      span: 12,
-      placeholder: '请选择所属学校',
       clearable: true
     }),
     address: createFormItem({
@@ -118,17 +96,7 @@
     })
   }
 
-  const formItems = computed(() => [
-    baseFormItems.campusCode,
-    baseFormItems.campusName,
-    {
-      ...baseFormItems.schoolId,
-      props: {
-        options: schoolOptions.value
-      }
-    },
-    baseFormItems.address
-  ])
+  const formItems = computed(() => [baseFormItems.name, baseFormItems.address])
 
   // 表单验证规则
   const formRules = {
@@ -152,21 +120,10 @@
     const row = props.editData
 
     Object.assign(formData, {
-      campusCode: isEdit && row ? row.campusCode || '' : '',
-      campusName: isEdit && row ? row.campusName || '' : '',
-      schoolId: isEdit && row ? row.schoolId || '' : '',
+      name: isEdit && row ? row.name || '' : '',
       address: isEdit && row ? row.address || '' : ''
     })
   }
-  const schoolOptions = ref<Api.Common.OptionItem[]>([])
-  const loadSchoolOptions = async () => {
-    const data = await fetchGetSchoolList()
-    schoolOptions.value = data.map((item) => ({
-      label: item.schoolName || '',
-      value: item.id || ''
-    }))
-  }
-
   /**
    * 监听对话框状态变化
    * 当对话框打开时初始化表单数据并清除验证状态
@@ -175,7 +132,6 @@
     () => [props.visible, props.type, props.editData],
     ([visible]) => {
       if (visible) {
-        loadSchoolOptions()
         initFormData()
       }
     },
